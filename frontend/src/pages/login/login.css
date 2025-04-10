@@ -1,0 +1,62 @@
+.login-container {
+  background: #0A0626;
+  position: relative;
+}
+
+.blur-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.blur-circle-1 {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  top: -150px;
+  left: -150px;
+  background: rgba(56, 102, 242, 0.1);
+  filter: blur(75px);
+  border-radius: 50%;
+}
+
+.blur-circle-2 {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  top: 150px;
+  left: -150px;
+  background: rgba(56, 102, 242, 0.1);
+  filter: blur(75px);
+  border-radius: 50%;
+}
+
+.blur-circle-3 {
+  position: absolute;
+  width: 890px;
+  height: 890px;
+  top: -200px;
+  right: -400px;
+  background: rgba(56, 102, 242, 0.15);
+  filter: blur(75px);
+  border-radius: 50%;
+}
+
+.blur-circle-4 {
+  position: absolute;
+  width: 1576px;
+  height: 1576px;
+  bottom: -800px;
+  left: -400px;
+  background: rgba(56, 102, 242, 0.15);
+  filter: blur(75px);
+  border-radius: 50%;
+}
+
+.paddingLeft {
+  padding-left: 40px;
+}
+
+.paddingBottom {
+  padding-bottom: 20px;
+}

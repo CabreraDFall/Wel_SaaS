@@ -1,0 +1,13 @@
+.navbar{
+    background-color:white;
+    height: 80px;
+    padding: 0 40px;
+    gap: 18px;
+
+}
+.profile{
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: #e6f3ff;
+}

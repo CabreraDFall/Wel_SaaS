@@ -1,0 +1,46 @@
+.sidebar {
+    flex: 1;
+    border-right: 0.5px solid rgb(230, 227, 227);
+    min-height: 100vh;
+    background-color: white;
+    max-width: 240px; /* Prevent sidebar from getting too wide */
+}
+.top{
+   padding: 40px;
+}
+.sidebarItems{
+    padding: 0; /* Remove left padding to allow full width */
+}
+
+p.title {
+    padding-left: 40px;
+}
+/* Sidebar link styles */
+.sidebarItems a {
+    text-decoration: none;
+    color: #333;
+    padding: 12px 20px; /* Increase padding for better touch targets */
+    transition: all 0.3s ease;
+    width: 100%; /* Make links take full width */
+    display: block; /* Ensure the link takes up full width */
+}
+
+.sidebarItems a:hover {
+    background-color: #f5f5f5;
+}
+
+.sidebarItems a.active {
+    background-color: #e6f3ff;
+    color: #1a73e8;
+}
+
+.sidebarItems a.active .title {
+    font-weight: 600;
+}
+
+/* Responsive adjustments for larger screens */
+@media screen and (min-width: 1920px) {
+    .sidebar {
+        max-width: 240px; /* Slightly wider sidebar on larger screens */
+    }
+}
