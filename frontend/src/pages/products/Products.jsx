@@ -11,7 +11,7 @@ const Products = () => {
           <Navbar />
           <div className='products-container flex flex-col gap-4'>
             <div className='products-header flex justify-between items-center'>
-              <h1>Productos</h1>
+              <h4>Productos</h4>
               <button>Nuevo productos</button>
             </div>
             <div className='products-body'>

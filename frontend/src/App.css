@@ -1,9 +1,24 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'DM Sans';
+  src: url('./assets/DM_Sans/DMSans-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('./assets/DM_Sans/DMSans-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'DM Sans', sans-serif;
 }
 
 body {
@@ -13,3 +28,11 @@ body {
 nav {
   padding: 40px;
 }
+
+h4 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+
