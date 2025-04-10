@@ -1,60 +1,26 @@
 import React, { useState } from 'react'
-import './products.css'
+import './users.css'
 import Sidebar from '../../components/sidebar/Sidebar'  
 import Navbar from '../../components/navBar/Navbar'
 import SearchIcon from '../../components/icons/SearchIcon'
 
-const Products = () => {
+const Users = () => {
   // All products data
-  const allProducts = [
+  const allUsers = [
     {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
+      idEmpleado: 'SC-102500100',
+      email: 'juanpastilzal@gmail.com',
+      name: 'Juan Pastilzal',
+      jobTitle: 'Administrador',
+      lastLogin: '2025-01-01',
     },
     {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
+      idEmpleado: 'SC-102500101',
+      email: 'velariecarro@gmail.com',
+      name: 'Velarie Carro',
+      jobTitle: 'Empleado',
+      lastLogin: '2025-01-01',
     },
-    {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500100',
-      producto: 'pechuga entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500102',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Maximo',
-      fecha: '2025-01-01'
-    }
   ]
 
   // State declarations
@@ -65,18 +31,18 @@ const Products = () => {
   const itemsPerPage = 3
 
   // Filter products based on search query and date
-  const filteredProducts = allProducts.filter(product => {
+  const filteredUsers = allUsers.filter(user => {
     const searchLower = searchQuery.toLowerCase()
     const matchesSearch = 
-      product.producto.toLowerCase().includes(searchLower) ||
-      product.codigo.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? product.fecha === selectedDate : true
+      user.name.toLowerCase().includes(searchLower) ||
+      user.email.toLowerCase().includes(searchLower)
+    const matchesDate = selectedDate ? user.lastLogin === selectedDate : true
     return matchesSearch && matchesDate
   })
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
-  const paginatedProducts = filteredProducts.slice(
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
+  const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
@@ -106,18 +72,18 @@ const Products = () => {
         <Sidebar />        
         <div className='container'>
           <Navbar />
-          <div className='products-container flex flex-col gap-4'>
-            <div className='products-header flex justify-between items-center'>
-              <h4>Productos</h4>
-              <button>Nuevo productos</button>
+          <div className='users-container flex flex-col gap-4'>
+            <div className='users-header flex justify-between items-center'>
+              <h4>Usuarios</h4>
+              <button>Nuevo usuario</button>
             </div>
-            <div className='products-filters flex justify-between items-center'>
+            <div className='users-filters flex justify-between items-center'>
               <div className='search-container'>
                 <div className="search-wrapper">
                   <SearchIcon />
                   <input 
                     type="text" 
-                    placeholder="Buscar producto" 
+                    placeholder="Buscar usuario" 
                     className="search-input"
                     value={searchQuery}
                     onChange={handleSearch}
@@ -140,29 +106,27 @@ const Products = () => {
                 )}
               </div>
             </div>
-            <div className='products-body'>
-              <div className='products-table'>
+            <div className='users-body'>
+              <div className='users-table'>
                 <table className="w-full">
                   <thead>
                     <tr>
-                      <th>Codigo</th>
-                      <th>Productos</th>
-                      <th>UDM</th>
-                      <th>Formato</th>
-                      <th>Proveedor</th>
-                      <th>Fecha</th>
+                      <th>ID Empleado</th>
+                      <th>Email</th>
+                      <th>Nombre</th>
+                      <th>Cargo</th>
+                      <th>Último login</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedProducts.map((product, index) => (
+                    {paginatedUsers.map((user, index) => (
                       <tr key={index}>
-                        <td>{product.codigo}</td>
-                        <td>{product.producto}</td>
-                        <td>{product.udm}</td>
-                        <td>{product.formato}</td>
-                        <td>{product.proveedor}</td>
-                        <td>{product.fecha}</td>
+                        <td>{user.idEmpleado}</td>
+                        <td>{user.email}</td>
+                        <td>{user.name}</td>
+                        <td>{user.jobTitle}</td>
+                        <td>{user.lastLogin}</td>
                         <td>
                           <button className="more-options">•••</button>
                         </td>
@@ -208,4 +172,4 @@ const Products = () => {
   )
 }
 
-export default Products
+export default Users

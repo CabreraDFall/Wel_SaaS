@@ -1,60 +1,24 @@
 import React, { useState } from 'react'
-import './products.css'
+import './labels.css'
 import Sidebar from '../../components/sidebar/Sidebar'  
 import Navbar from '../../components/navBar/Navbar'
 import SearchIcon from '../../components/icons/SearchIcon'
+import CloseContenedorIcon from '../../components/icons/closeContenedor_icon'
+import PrintingIcon from '../../components/icons/printing_icon'
+import EyesIcon from '../../components/icons/eyes'
 
-const Products = () => {
+const Labels = () => {
   // All products data
-  const allProducts = [
+  const allLabels = [
     {
-      codigo: '102500100',
+      fecha: '2025-01-01',
+      barcode: '01-123456789012',
+      codigo:"102500100",
       producto: 'Pollo entero',
       udm: 'libras',
       formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
+     
     },
-    {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500100',
-      producto: 'pechuga entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500102',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Maximo',
-      fecha: '2025-01-01'
-    }
   ]
 
   // State declarations
@@ -65,18 +29,18 @@ const Products = () => {
   const itemsPerPage = 3
 
   // Filter products based on search query and date
-  const filteredProducts = allProducts.filter(product => {
+  const filteredLabels = allLabels.filter(label => {
     const searchLower = searchQuery.toLowerCase()
     const matchesSearch = 
-      product.producto.toLowerCase().includes(searchLower) ||
-      product.codigo.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? product.fecha === selectedDate : true
+      label.producto.toLowerCase().includes(searchLower) ||
+      label.codigo.toLowerCase().includes(searchLower)
+    const matchesDate = selectedDate ? label.fecha === selectedDate : true
     return matchesSearch && matchesDate
   })
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
-  const paginatedProducts = filteredProducts.slice(
+  const totalPages = Math.ceil(filteredLabels.length / itemsPerPage)
+  const paginatedLabels = filteredLabels.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
@@ -108,8 +72,8 @@ const Products = () => {
           <Navbar />
           <div className='products-container flex flex-col gap-4'>
             <div className='products-header flex justify-between items-center'>
-              <h4>Productos</h4>
-              <button>Nuevo productos</button>
+              <h4>Etiquetas</h4>
+            <button>Nuevo etiqueta</button>
             </div>
             <div className='products-filters flex justify-between items-center'>
               <div className='search-container'>
@@ -117,7 +81,7 @@ const Products = () => {
                   <SearchIcon />
                   <input 
                     type="text" 
-                    placeholder="Buscar producto" 
+                    placeholder="Buscar etiqueta" 
                     className="search-input"
                     value={searchQuery}
                     onChange={handleSearch}
@@ -145,26 +109,26 @@ const Products = () => {
                 <table className="w-full">
                   <thead>
                     <tr>
+                      <th>Fecha</th>
+                      <th>Barcode</th>
                       <th>Codigo</th>
-                      <th>Productos</th>
+                      <th>Producto</th>
                       <th>UDM</th>
                       <th>Formato</th>
-                      <th>Proveedor</th>
-                      <th>Fecha</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedProducts.map((product, index) => (
+                    {paginatedLabels.map((label, index) => (
                       <tr key={index}>
-                        <td>{product.codigo}</td>
-                        <td>{product.producto}</td>
-                        <td>{product.udm}</td>
-                        <td>{product.formato}</td>
-                        <td>{product.proveedor}</td>
-                        <td>{product.fecha}</td>
-                        <td>
-                          <button className="more-options">•••</button>
+                        <td>{label.fecha}</td>  
+                        <td>{label.barcode}</td>
+                        <td>{label.codigo}</td>
+                        <td>{label.producto}</td>
+                        <td>{label.udm}</td>
+                        <td>{label.formato}</td>
+                        <td className='flex gap-4'>
+                        <button className="more-options">•••</button>
                         </td>
                       </tr>
                     ))}
@@ -208,4 +172,4 @@ const Products = () => {
   )
 }
 
-export default Products
+export default Labels

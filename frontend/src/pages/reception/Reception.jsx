@@ -1,60 +1,36 @@
 import React, { useState } from 'react'
-import './products.css'
+import './reception.css'
 import Sidebar from '../../components/sidebar/Sidebar'  
 import Navbar from '../../components/navBar/Navbar'
 import SearchIcon from '../../components/icons/SearchIcon'
+import CloseContenedorIcon from '../../components/icons/closeContenedor_icon'
+import PrintingIcon from '../../components/icons/printing_icon'
+import EyesIcon from '../../components/icons/eyes'
 
-const Products = () => {
+const Reception = () => {
   // All products data
-  const allProducts = [
+  const allReceptions = [
     {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
+      fecha: '2025-01-01',
+      vehiculo: 'AA351558',    
+      items: '120',
+      orden: 'PO 26032021-000001',
+      estatus: 'Descargando',
+    }, 
+    {
+        fecha: '2025-01-01',
+        vehiculo: 'AA351559',    
+        items: '120',
+        orden: 'PO 26032021-000002',
+        estatus: 'Descargando',
+      },
+      {
+        fecha: '2025-01-01',
+        vehiculo: 'AA351560',    
+        items: '120',
+        orden: 'PO 26032021-000003',
+        estatus: 'Descargando',
     },
-    {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500100',
-      producto: 'pechuga entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500100',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Juan Pastilzal',
-      fecha: '2025-01-01'
-    },
-    {
-      codigo: '102500102',
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-      proveedor: 'Maximo',
-      fecha: '2025-01-01'
-    }
   ]
 
   // State declarations
@@ -65,18 +41,18 @@ const Products = () => {
   const itemsPerPage = 3
 
   // Filter products based on search query and date
-  const filteredProducts = allProducts.filter(product => {
+  const filteredReceptions = allReceptions.filter(reception => {
     const searchLower = searchQuery.toLowerCase()
     const matchesSearch = 
-      product.producto.toLowerCase().includes(searchLower) ||
-      product.codigo.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? product.fecha === selectedDate : true
+      reception.vehiculo.toLowerCase().includes(searchLower) ||
+      reception.orden.toLowerCase().includes(searchLower)
+    const matchesDate = selectedDate ? reception.fecha === selectedDate : true
     return matchesSearch && matchesDate
   })
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
-  const paginatedProducts = filteredProducts.slice(
+  const totalPages = Math.ceil(filteredReceptions.length / itemsPerPage)
+  const paginatedReceptions = filteredReceptions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
@@ -106,18 +82,18 @@ const Products = () => {
         <Sidebar />        
         <div className='container'>
           <Navbar />
-          <div className='products-container flex flex-col gap-4'>
-            <div className='products-header flex justify-between items-center'>
-              <h4>Productos</h4>
-              <button>Nuevo productos</button>
+          <div className='reception-container flex flex-col gap-4'>
+            <div className='reception-header flex justify-between items-center'>
+              <h4>Recepción</h4>
+              <button>Nuevo pedido</button>
             </div>
-            <div className='products-filters flex justify-between items-center'>
+            <div className='reception-filters flex justify-between items-center'>
               <div className='search-container'>
                 <div className="search-wrapper">
                   <SearchIcon />
                   <input 
                     type="text" 
-                    placeholder="Buscar producto" 
+                    placeholder="Buscar pedido" 
                     className="search-input"
                     value={searchQuery}
                     onChange={handleSearch}
@@ -140,32 +116,32 @@ const Products = () => {
                 )}
               </div>
             </div>
-            <div className='products-body'>
-              <div className='products-table'>
+            <div className='reception-body'>
+              <div className='reception-table'>
                 <table className="w-full">
                   <thead>
                     <tr>
-                      <th>Codigo</th>
-                      <th>Productos</th>
-                      <th>UDM</th>
-                      <th>Formato</th>
-                      <th>Proveedor</th>
                       <th>Fecha</th>
+                      <th>Vehiculo</th>
+                      <th>Items</th>
+                      <th>Orden de compra</th>
+                      <th>Estatus</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedProducts.map((product, index) => (
+                    {paginatedReceptions.map((reception, index) => (
                       <tr key={index}>
-                        <td>{product.codigo}</td>
-                        <td>{product.producto}</td>
-                        <td>{product.udm}</td>
-                        <td>{product.formato}</td>
-                        <td>{product.proveedor}</td>
-                        <td>{product.fecha}</td>
-                        <td>
-                          <button className="more-options">•••</button>
-                        </td>
+                        <td>{reception.fecha}</td>
+                        <td>{reception.vehiculo}</td>
+                        <td>{reception.items}</td>
+                        <td>{reception.orden}</td>
+                        <td>{reception.estatus}</td>
+                        <td className='flex gap-4'>
+                          <CloseContenedorIcon />
+                          <PrintingIcon />
+                          <EyesIcon />
+                        </td>                        
                       </tr>
                     ))}
                   </tbody>
@@ -208,4 +184,4 @@ const Products = () => {
   )
 }
 
-export default Products
+export default Reception
