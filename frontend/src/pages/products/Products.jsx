@@ -67,9 +67,13 @@ const Products = () => {
   // Filter products based on search query and date
   const filteredProducts = allProducts.filter(product => {
     const searchLower = searchQuery.toLowerCase()
+<<<<<<< HEAD
     const matchesSearch = 
       product.producto.toLowerCase().includes(searchLower) ||
       product.codigo.toLowerCase().includes(searchLower)
+=======
+    const matchesSearch = product.producto.toLowerCase().includes(searchLower)
+>>>>>>> 12a4bf48120bbb42fa7967eeaa0046bfb9a93987
     const matchesDate = selectedDate ? product.fecha === selectedDate : true
     return matchesSearch && matchesDate
   })
