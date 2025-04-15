@@ -38,16 +38,16 @@ router.get('/:id', async (req, res) => {
 // @access  Private
 router.post('/', async (req, res) => {
   try {
-    const { name, description, price, category } = req.body;
+    const { code, barcode, udm, format, supplier } = req.body;
 
     // Basic validation
-    if (!name || !price) {
-      return res.status(400).json({ message: 'Name and price are required' });
+    if (!code || !barcode || !udm || !format || !supplier) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
 
     const result = await pool.query(
-      'INSERT INTO products (name, description, price, category) VALUES ($1, $2, $3, $4) RETURNING *',
-      [name, description, price, category]
+      'INSERT INTO products (code, barcode, udm, format, supplier) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [code, barcode, udm, format, supplier]
     );
 
     res.status(201).json(result.rows[0]);
@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
 // @access  Private
 router.put('/:id', async (req, res) => {
   try {
-    const { name, description, price, category } = req.body;
+    const { code, barcode, udm, format, supplier } = req.body;
 
     // Check if product exists
     const product = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
@@ -72,8 +72,8 @@ router.put('/:id', async (req, res) => {
     }
 
     const result = await pool.query(
-      'UPDATE products SET name = COALESCE($1, name), description = COALESCE($2, description), price = COALESCE($3, price), category = COALESCE($4, category) WHERE id = $5 RETURNING *',
-      [name, description, price, category, req.params.id]
+      'UPDATE products SET code = COALESCE($1, code), barcode = COALESCE($2, barcode), udm = COALESCE($3, udm), format = COALESCE($4, format), supplier = COALESCE($5, supplier) WHERE id = $6 RETURNING *',
+      [code, barcode, udm, format, supplier, req.params.id]
     );
 
     res.json(result.rows[0]);

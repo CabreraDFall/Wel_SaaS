@@ -7,6 +7,9 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/products', require('./routes/products'));
+app.use('/receptions', require('./routes/receptions'));
+app.use('/labels', require('./routes/labels'));
+app.use('/warehouses', require('./routes/warehouses'));
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API');
