@@ -12,7 +12,7 @@
     padding: 60px 80px;
 }
 
-.reception-header button{
+.reception-header button, .reception-header-button {
     background-color: #3866F2;
     color: white;
     border: none;

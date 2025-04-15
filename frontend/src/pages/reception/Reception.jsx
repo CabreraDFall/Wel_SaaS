@@ -85,7 +85,7 @@ const Reception = () => {
           <div className='reception-container flex flex-col gap-4'>
             <div className='reception-header flex justify-between items-center'>
               <h4>Recepción</h4>
-              <button>Nuevo pedido</button>
+              <button>Nuevo viaje</button>
             </div>
             <div className='reception-filters flex justify-between items-center'>
               <div className='search-container'>

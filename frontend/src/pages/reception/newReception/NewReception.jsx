@@ -1,47 +1,44 @@
-import React, { useState, useEffect } from 'react'
-import './products.css'
-import Sidebar from '../../components/sidebar/Sidebar'  
-import Navbar from '../../components/navBar/Navbar'
-import SearchIcon from '../../components/icons/SearchIcon'
+import React, { useState } from 'react'
+import './newReception.css'
+import Sidebar from '../../../components/sidebar/Sidebar'  
+import Navbar from '../../../components/navBar/Navbar'  
+import SearchIcon from '../../../components/icons/SearchIcon'
+import { Link } from 'react-router-dom'
 
-const Products = () => {
-  // State declarations
-  const [allProducts, setAllProducts] = useState([]);
-
-  // Load products from local storage
-  useEffect(() => {
-    const storedProducts = localStorage.getItem('products');
-    if (storedProducts) {
-      setAllProducts(JSON.parse(storedProducts));
-    }
-  }, []);
-
-  // Save products to local storage whenever they change
-  useEffect(() => {
-    localStorage.setItem('products', JSON.stringify(allProducts));
-  }, [allProducts]);
-
+const NewReception = () => {
   // All products data
+  const allReceptions = [
+    {
+      fecha: '2025-01-01',
+      barcode: '01-123456789012',
+      codigo:"102500100",
+      producto: 'Pollo entero',
+      udm: 'libras',
+      formato: 'variable',
+     
+    },
+  ]
+
+  // State declarations
   const [searchQuery, setSearchQuery] = useState('')
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 3
-  const [newProduct, setNewProduct] = useState(null)
 
   // Filter products based on search query and date
-  const filteredProducts = allProducts.filter(product => {
+  const filteredReceptions = allReceptions.filter(reception => {
     const searchLower = searchQuery.toLowerCase()
     const matchesSearch = 
-      product.producto.toLowerCase().includes(searchLower) ||
-      product.codigo.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? product.fecha === selectedDate : true
+      reception.barcode.toLowerCase().includes(searchLower) ||
+      reception.codigo.toLowerCase().includes(searchLower)
+    const matchesDate = selectedDate ? reception.fecha === selectedDate : true
     return matchesSearch && matchesDate
   })
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
-  const paginatedProducts = filteredProducts.slice(
+  const totalPages = Math.ceil(filteredReceptions.length / itemsPerPage)
+    const paginatedReceptions = filteredReceptions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
@@ -66,34 +63,15 @@ const Products = () => {
     setCurrentPage(pageNumber)
   }
 
-  const handleNewProduct = () => {
-    setNewProduct({ codigo: '', producto: '', udm: '', formato: '', proveedor: '', fecha: '' });
-  };
-
-  const handleInputChange = (e, field) => {
-    setNewProduct({ ...newProduct, [field]: e.target.value });
-  };
-
-  const handleSave = () => {
-    if (newProduct.codigo && newProduct.producto && newProduct.udm && newProduct.formato) {
-      setAllProducts([newProduct, ...allProducts]);
-      setNewProduct(null);
-    }
-  };
-
-  const handleCancel = () => {
-    setNewProduct(null);
-  };
-
   return (
     <div className='wrapper'>
         <Sidebar />        
         <div className='container'>
           <Navbar />
-          <div className='products-container flex flex-col gap-4'>
-            <div className='products-header flex justify-between items-center'>
-              <h4>Productos</h4>
-              <button onClick={handleNewProduct}>Nuevo productos</button>
+          <div className='reception-container flex flex-col gap-4'>
+            <div className='reception-header flex justify-between items-center'>
+              <h4>Etiquetas</h4>
+            <Link className='reception-header-button' to="/labels/new-label">Nuevo etiqueta</Link>
             </div>
             <div className='products-filters flex justify-between items-center'>
               <div className='search-container'>
@@ -101,7 +79,7 @@ const Products = () => {
                   <SearchIcon />
                   <input 
                     type="text" 
-                    placeholder="Buscar producto" 
+                    placeholder="Buscar etiqueta" 
                     className="search-input"
                     value={searchQuery}
                     onChange={handleSearch}
@@ -129,43 +107,26 @@ const Products = () => {
                 <table className="w-full">
                   <thead>
                     <tr>
+                      <th>Fecha</th>
+                      <th>Barcode</th>
                       <th>Codigo</th>
-                      <th>Productos</th>
+                      <th>Producto</th>
                       <th>UDM</th>
                       <th>Formato</th>
-                      <th>Proveedor</th>
-                      <th>Fecha</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {newProduct && (
-                      <tr>
-                        <td><input type="text" value={newProduct.codigo} onChange={(e) => handleInputChange(e, 'codigo')} /></td>
-                        <td><input type="text" value={newProduct.producto} onChange={(e) => handleInputChange(e, 'producto')} /></td>
-                        <td><input type="text" value={newProduct.udm} onChange={(e) => handleInputChange(e, 'udm')} /></td>
-                        <td><input type="text" value={newProduct.formato} onChange={(e) => handleInputChange(e, 'formato')} /></td>
-                        <td><input type="text" value={newProduct.proveedor} onChange={(e) => handleInputChange(e, 'proveedor')} /></td>
-                        <td><input type="date" value={newProduct.fecha} onChange={(e) => handleInputChange(e, 'fecha')} /></td>
-                        <td>
-                          {newProduct.codigo && newProduct.producto && newProduct.udm && newProduct.formato ? (
-                            <button onClick={handleSave}>Save</button>
-                          ) : (
-                            <button onClick={handleCancel}>Cancel</button>
-                          )}
-                        </td>
-                      </tr>
-                    )}
-                    {paginatedProducts.map((product, index) => (
+                    {paginatedReceptions.map((reception, index) => (
                       <tr key={index}>
-                        <td>{product.codigo}</td>
-                        <td>{product.producto}</td>
-                        <td>{product.udm}</td>
-                        <td>{product.formato}</td>
-                        <td>{product.proveedor}</td>
-                        <td>{product.fecha}</td>
-                        <td>
-                          <button className="more-options">•••</button>
+                        <td>{reception.fecha}</td>  
+                        <td>{reception.barcode}</td>
+                        <td>{reception.codigo}</td>
+                        <td>{reception.producto}</td>
+                        <td>{reception.udm}</td>
+                        <td>{reception.formato}</td>
+                        <td className='flex gap-4'>
+                        <button className="more-options">•••</button>
                         </td>
                       </tr>
                     ))}
@@ -209,4 +170,4 @@ const Products = () => {
   )
 }
 
-export default Products
+export default NewReception

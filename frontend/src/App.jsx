@@ -7,6 +7,8 @@ import Reception from './pages/reception/reception'
 import Labels from './pages/labels/Labels'
 import Users from './pages/users/Users'
 import Dashboard from './pages/dashboard/dashboard'
+import NewReception from './pages/reception/newReception/newReception'
+import NewLabel from './pages/labels/newLabel/NewLabel'
 function App() {
   return (
     <>
@@ -15,7 +17,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/products" element={<Products />} />
         <Route path="/reception" element={<Reception />} />
+        <Route path="/reception/new-reception" element={<NewReception />} />
         <Route path="/labels" element={<Labels />} />
+        <Route path="/labels/new-label" element={<NewLabel />} />
         <Route path="/users" element={<Users />} />
       </Routes>
     </>

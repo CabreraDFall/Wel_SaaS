@@ -1,0 +1,18 @@
+const express = require('express');
+const app = express();
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Routes
+app.use('/products', require('./routes/products'));
+
+app.get('/', (req, res) => {
+  res.send('Welcome to the API');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
