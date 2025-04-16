@@ -7,11 +7,10 @@ const pool = require('../config/db');
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM products');
+    const result = await pool.query('SELECT * FROM products ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });
 
@@ -28,8 +27,7 @@ router.get('/:id', async (req, res) => {
     
     res.json(result.rows[0]);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });
 
@@ -38,22 +36,54 @@ router.get('/:id', async (req, res) => {
 // @access  Private
 router.post('/', async (req, res) => {
   try {
-    const { code, barcode, udm, format, supplier } = req.body;
+    console.log('Received request body:', req.body);
+    const { code, product_name, udm, format, supplier } = req.body;
 
     // Basic validation
-    if (!code || !barcode || !udm || !format || !supplier) {
-      return res.status(400).json({ message: 'All fields are required' });
+    if (!code || !product_name || !udm || !format || !supplier) {
+      console.log('Missing fields:', {
+        code: !code,
+        product_name: !product_name,
+        udm: !udm,
+        format: !format,
+        supplier: !supplier
+      });
+      return res.status(400).json({ 
+        message: 'All fields are required',
+        required: ['code', 'product_name', 'udm', 'format', 'supplier'],
+        received: req.body
+      });
     }
 
+    // Validate format
+    if (!['fijo', 'variable'].includes(format)) {
+      return res.status(400).json({ 
+        message: 'Format must be either "fijo" or "variable"',
+        received: format
+      });
+    }
+
+    console.log('Attempting to insert product:', { code, product_name, udm, format, supplier });
     const result = await pool.query(
-      'INSERT INTO products (code, barcode, udm, format, supplier) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [code, barcode, udm, format, supplier]
+      'INSERT INTO products (code, product_name, udm, format, supplier) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [code, product_name, udm, format, supplier]
     );
 
+    console.log('Product created successfully:', result.rows[0]);
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    if (error.code === '23502') { // not null violation
+      return res.status(400).json({ 
+        message: 'Missing required fields',
+        error: error.detail,
+        received: req.body
+      });
+    }
+    res.status(500).json({ 
+      message: 'Server Error', 
+      error: error.message,
+      detail: error.detail
+    });
   }
 });
 
@@ -62,7 +92,7 @@ router.post('/', async (req, res) => {
 // @access  Private
 router.put('/:id', async (req, res) => {
   try {
-    const { code, barcode, udm, format, supplier } = req.body;
+    const { code, product_name, udm, format, supplier } = req.body;
 
     // Check if product exists
     const product = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
@@ -71,15 +101,33 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    // Validate format if provided
+    if (format && !['fijo', 'variable'].includes(format)) {
+      return res.status(400).json({ 
+        message: 'Format must be either "fijo" or "variable"',
+        received: format
+      });
+    }
+
     const result = await pool.query(
-      'UPDATE products SET code = COALESCE($1, code), barcode = COALESCE($2, barcode), udm = COALESCE($3, udm), format = COALESCE($4, format), supplier = COALESCE($5, supplier) WHERE id = $6 RETURNING *',
-      [code, barcode, udm, format, supplier, req.params.id]
+      'UPDATE products SET code = COALESCE($1, code), product_name = COALESCE($2, product_name), udm = COALESCE($3, udm), format = COALESCE($4, format), supplier = COALESCE($5, supplier) WHERE id = $6 RETURNING *',
+      [code, product_name, udm, format, supplier, req.params.id]
     );
 
     res.json(result.rows[0]);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    if (error.code === '23502') {
+      return res.status(400).json({ 
+        message: 'Missing required fields',
+        error: error.detail,
+        received: req.body
+      });
+    }
+    res.status(500).json({ 
+      message: 'Server Error', 
+      error: error.message,
+      detail: error.detail
+    });
   }
 });
 
@@ -96,8 +144,11 @@ router.delete('/:id', async (req, res) => {
 
     res.json({ message: 'Product removed' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ 
+      message: 'Server Error', 
+      error: error.message,
+      detail: error.detail
+    });
   }
 });
 

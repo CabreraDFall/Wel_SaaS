@@ -3,23 +3,31 @@ import './products.css'
 import Sidebar from '../../components/sidebar/Sidebar'  
 import Navbar from '../../components/navBar/Navbar'
 import SearchIcon from '../../components/icons/SearchIcon'
+import { productService } from '../../services/api/productService'
 
 const Products = () => {
   // State declarations
   const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Load products from local storage
-  useEffect(() => {
-    const storedProducts = localStorage.getItem('products');
-    if (storedProducts) {
-      setAllProducts(JSON.parse(storedProducts));
+  // Fetch products from backend API
+  const fetchProducts = async () => {
+    try {
+      const data = await productService.getAll();
+      setAllProducts(data);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
-  // Save products to local storage whenever they change
+  // Load products on component mount
   useEffect(() => {
-    localStorage.setItem('products', JSON.stringify(allProducts));
-  }, [allProducts]);
+    fetchProducts();
+  }, []);
 
   // All products data
   const [searchQuery, setSearchQuery] = useState('')
@@ -33,9 +41,9 @@ const Products = () => {
   const filteredProducts = allProducts.filter(product => {
     const searchLower = searchQuery.toLowerCase()
     const matchesSearch = 
-      product.producto.toLowerCase().includes(searchLower) ||
-      product.codigo.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? product.fecha === selectedDate : true
+      product.product_name.toLowerCase().includes(searchLower) ||
+      product.code.toLowerCase().includes(searchLower)
+    const matchesDate = selectedDate ? new Date(product.created_at).toISOString().split('T')[0] === selectedDate : true
     return matchesSearch && matchesDate
   })
 
@@ -49,13 +57,13 @@ const Products = () => {
   // Event handlers
   const handleSearch = (e) => {
     setSearchQuery(e.target.value)
-    setCurrentPage(1) // Reset to first page when searching
+    setCurrentPage(1)
   }
 
   const handleDateSelect = (e) => {
     setSelectedDate(e.target.value)
     setShowDatePicker(false)
-    setCurrentPage(1) // Reset to first page when changing date
+    setCurrentPage(1)
   }
 
   const toggleDatePicker = () => {
@@ -67,23 +75,54 @@ const Products = () => {
   }
 
   const handleNewProduct = () => {
-    setNewProduct({ codigo: '', producto: '', udm: '', formato: '', proveedor: '', fecha: '' });
+    setNewProduct({ code: '', product_name: '', udm: '', format: '', supplier: '' });
   };
 
   const handleInputChange = (e, field) => {
     setNewProduct({ ...newProduct, [field]: e.target.value });
   };
 
-  const handleSave = () => {
-    if (newProduct.codigo && newProduct.producto && newProduct.udm && newProduct.formato) {
-      setAllProducts([newProduct, ...allProducts]);
+  const handleSave = async () => {
+    // Validar que todos los campos requeridos estén presentes y no vacíos
+    const requiredFields = ['code', 'product_name', 'udm', 'format', 'supplier'];
+    const missingFields = requiredFields.filter(field => !newProduct[field]?.trim());
+    
+    if (missingFields.length > 0) {
+      setError(`Campos requeridos faltantes: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    try {
+      const savedProduct = await productService.create(newProduct);
+      setAllProducts([savedProduct, ...allProducts]);
       setNewProduct(null);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await productService.delete(id);
+      setAllProducts(allProducts.filter(product => product.id !== id));
+      setError(null);
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   const handleCancel = () => {
     setNewProduct(null);
   };
+
+  if (loading) {
+    return <div>Cargando productos...</div>;
+  }
+
+  if (error) {
+    return <div className="error-message">Error: {error}</div>;
+  }
 
   return (
     <div className='wrapper'>
@@ -135,37 +174,49 @@ const Products = () => {
                       <th>Formato</th>
                       <th>Proveedor</th>
                       <th>Fecha</th>
-                      <th></th>
+                      <th>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
                     {newProduct && (
                       <tr>
-                        <td><input type="text" value={newProduct.codigo} onChange={(e) => handleInputChange(e, 'codigo')} /></td>
-                        <td><input type="text" value={newProduct.producto} onChange={(e) => handleInputChange(e, 'producto')} /></td>
-                        <td><input type="text" value={newProduct.udm} onChange={(e) => handleInputChange(e, 'udm')} /></td>
-                        <td><input type="text" value={newProduct.formato} onChange={(e) => handleInputChange(e, 'formato')} /></td>
-                        <td><input type="text" value={newProduct.proveedor} onChange={(e) => handleInputChange(e, 'proveedor')} /></td>
-                        <td><input type="date" value={newProduct.fecha} onChange={(e) => handleInputChange(e, 'fecha')} /></td>
+                        <td><input type="text" value={newProduct.code} onChange={(e) => handleInputChange(e, 'code')} placeholder="Código" /></td>
+                        <td><input type="text" value={newProduct.product_name} onChange={(e) => handleInputChange(e, 'product_name')} placeholder="Nombre del producto" /></td>
+                        <td><input type="text" value={newProduct.udm} onChange={(e) => handleInputChange(e, 'udm')} placeholder="UDM" /></td>
                         <td>
-                          {newProduct.codigo && newProduct.producto && newProduct.udm && newProduct.formato ? (
-                            <button onClick={handleSave}>Save</button>
-                          ) : (
-                            <button onClick={handleCancel}>Cancel</button>
+                          <select value={newProduct.format} onChange={(e) => handleInputChange(e, 'format')}>
+                            <option value="">Seleccionar formato...</option>
+                            <option value="fijo">Fijo</option>
+                            <option value="variable">Variable</option>
+                          </select>
+                        </td>
+                        <td><input type="text" value={newProduct.supplier} onChange={(e) => handleInputChange(e, 'supplier')} placeholder="Proveedor" /></td>
+                        <td>-</td>
+                        <td>
+                          {newProduct.code?.trim() && newProduct.product_name?.trim() && newProduct.format?.trim() && (
+                            <button 
+                              onClick={handleSave} 
+                              className="save-btn"
+                            >
+                              Guardar
+                            </button>
                           )}
+                          <button onClick={handleCancel} className="cancel-btn">Cancelar</button>
                         </td>
                       </tr>
                     )}
-                    {paginatedProducts.map((product, index) => (
-                      <tr key={index}>
-                        <td>{product.codigo}</td>
-                        <td>{product.producto}</td>
+                    {paginatedProducts.map((product) => (
+                      <tr key={product.id}>
+                        <td>{product.code}</td>
+                        <td>{product.product_name}</td>
                         <td>{product.udm}</td>
-                        <td>{product.formato}</td>
-                        <td>{product.proveedor}</td>
-                        <td>{product.fecha}</td>
+                        <td>{product.format}</td>
+                        <td>{product.supplier}</td>
+                        <td>{new Date(product.created_at).toLocaleDateString()}</td>
                         <td>
-                          <button className="more-options">•••</button>
+                          <button onClick={() => handleDelete(product.id)} className="delete-btn">
+                            Eliminar
+                          </button>
                         </td>
                       </tr>
                     ))}
