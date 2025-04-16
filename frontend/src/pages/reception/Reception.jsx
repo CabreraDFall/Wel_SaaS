@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './reception.css'
 import Sidebar from '../../components/sidebar/Sidebar'  
 import Navbar from '../../components/navBar/Navbar'
@@ -6,48 +6,65 @@ import SearchIcon from '../../components/icons/SearchIcon'
 import CloseContenedorIcon from '../../components/icons/closeContenedor_icon'
 import PrintingIcon from '../../components/icons/printing_icon'
 import EyesIcon from '../../components/icons/eyes'
+import { receptionService } from '../../services/api/receptionService'
 
 const Reception = () => {
-  // All products data
-  const allReceptions = [
-    {
-      fecha: '2025-01-01',
-      vehiculo: 'AA351558',    
-      items: '120',
-      orden: 'PO 26032021-000001',
-      estatus: 'Descargando',
-    }, 
-    {
-        fecha: '2025-01-01',
-        vehiculo: 'AA351559',    
-        items: '120',
-        orden: 'PO 26032021-000002',
-        estatus: 'Descargando',
-      },
-      {
-        fecha: '2025-01-01',
-        vehiculo: 'AA351560',    
-        items: '120',
-        orden: 'PO 26032021-000003',
-        estatus: 'Descargando',
-    },
-  ]
-
   // State declarations
+  const [receptions, setReceptions] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [newTrip, setNewTrip] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const itemsPerPage = 3
 
-  // Filter products based on search query and date
-  const filteredReceptions = allReceptions.filter(reception => {
+  // Fetch receptions on component mount
+  useEffect(() => {
+    fetchReceptions()
+  }, [])
+
+  // Fetch receptions when date changes
+  useEffect(() => {
+    if (selectedDate) {
+      fetchReceptionsByDate(selectedDate)
+    }
+  }, [selectedDate])
+
+  const fetchReceptions = async () => {
+    try {
+      setLoading(true)
+      const data = await receptionService.getAllReceptions()
+      setReceptions(data)
+      setError(null)
+    } catch (err) {
+      setError('Error al cargar las recepciones')
+      console.error('Error fetching receptions:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchReceptionsByDate = async (date) => {
+    try {
+      setLoading(true)
+      const data = await receptionService.getReceptionsByDate(date)
+      setReceptions(data)
+      setError(null)
+    } catch (err) {
+      setError('Error al cargar las recepciones por fecha')
+      console.error('Error fetching receptions by date:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Filter receptions based on search query
+  const filteredReceptions = receptions.filter(reception => {
     const searchLower = searchQuery.toLowerCase()
-    const matchesSearch = 
-      reception.vehiculo.toLowerCase().includes(searchLower) ||
-      reception.orden.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? reception.fecha === selectedDate : true
-    return matchesSearch && matchesDate
+    return reception.vehicle.toLowerCase().includes(searchLower) ||
+           reception.purchase_order.toLowerCase().includes(searchLower)
   })
 
   // Pagination calculations
@@ -60,13 +77,13 @@ const Reception = () => {
   // Event handlers
   const handleSearch = (e) => {
     setSearchQuery(e.target.value)
-    setCurrentPage(1) // Reset to first page when searching
+    setCurrentPage(1)
   }
 
   const handleDateSelect = (e) => {
     setSelectedDate(e.target.value)
     setShowDatePicker(false)
-    setCurrentPage(1) // Reset to first page when changing date
+    setCurrentPage(1)
   }
 
   const toggleDatePicker = () => {
@@ -77,6 +94,58 @@ const Reception = () => {
     setCurrentPage(pageNumber)
   }
 
+  const handleNewTrip = () => {
+    setNewTrip({ 
+      reception_date: '', 
+      vehicle: '', 
+      items: '', 
+      purchase_order: '', 
+      status: 'descargando' 
+    })
+  }
+
+  const handleInputChange = (e, field) => {
+    setNewTrip({ ...newTrip, [field]: e.target.value })
+  }
+
+  const handleSave = async () => {
+    try {
+      setLoading(true)
+      await receptionService.createReception(newTrip)
+      setNewTrip(null)
+      await fetchReceptions() // Refresh the list
+      setError(null)
+    } catch (err) {
+      setError('Error al guardar la recepción')
+      console.error('Error saving reception:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Está seguro de que desea eliminar esta recepción?')) {
+      try {
+        setLoading(true)
+        await receptionService.deleteReception(id)
+        await fetchReceptions() // Refresh the list
+        setError(null)
+      } catch (err) {
+        setError('Error al eliminar la recepción')
+        console.error('Error deleting reception:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
+  const handleCancel = () => {
+    setNewTrip(null)
+  }
+
+  if (loading) return <div className="loading">Cargando...</div>
+  if (error) return <div className="error">{error}</div>
+
   return (
     <div className='wrapper'>
         <Sidebar />        
@@ -85,7 +154,7 @@ const Reception = () => {
           <div className='reception-container flex flex-col gap-4'>
             <div className='reception-header flex justify-between items-center'>
               <h4>Recepción</h4>
-              <button>Nuevo viaje</button>
+              <button onClick={handleNewTrip}>Nuevo viaje</button>
             </div>
             <div className='reception-filters flex justify-between items-center'>
               <div className='search-container'>
@@ -130,17 +199,36 @@ const Reception = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedReceptions.map((reception, index) => (
-                      <tr key={index}>
-                        <td>{reception.fecha}</td>
-                        <td>{reception.vehiculo}</td>
-                        <td>{reception.items}</td>
-                        <td>{reception.orden}</td>
-                        <td>{reception.estatus}</td>
+                    {newTrip && (
+                      <tr>
+                        <td><input type="date" value={newTrip.reception_date} onChange={(e) => handleInputChange(e, 'reception_date')} /></td>
+                        <td><input type="text" value={newTrip.vehicle} onChange={(e) => handleInputChange(e, 'vehicle')} placeholder="Vehiculo" /></td>
+                        <td><input type="number" value={newTrip.items} onChange={(e) => handleInputChange(e, 'items')} placeholder="Items" /></td>
+                        <td><input type="text" value={newTrip.purchase_order} onChange={(e) => handleInputChange(e, 'purchase_order')} placeholder="Orden de compra" /></td>
+                        <td>
+                          <select value={newTrip.status} onChange={(e) => handleInputChange(e, 'status')}>
+                            <option value="descargando">Descargando</option>
+                            <option value="finalizado">Finalizado</option>
+                            <option value="en camino">En camino</option>
+                          </select>
+                        </td>
                         <td className='flex gap-4'>
-                          <CloseContenedorIcon />
-                          <PrintingIcon />
-                          <EyesIcon />
+                          <button onClick={handleSave} className="save-btn">Guardar</button>
+                          <button onClick={handleCancel} className="cancel-btn">Cancelar</button>
+                        </td>
+                      </tr>
+                    )}
+                    {paginatedReceptions.map((reception) => (
+                      <tr key={reception.id}>
+                        <td>{new Date(reception.reception_date).toLocaleDateString()}</td>
+                        <td>{reception.vehicle}</td>
+                        <td>{reception.items}</td>
+                        <td>{reception.purchase_order}</td>
+                        <td>{reception.status}</td>
+                        <td className='flex gap-4'>
+                          <button onClick={() => handleDelete(reception.id)}><CloseContenedorIcon /></button>
+                          <button><PrintingIcon /></button>
+                          <button><EyesIcon /></button>
                         </td>                        
                       </tr>
                     ))}

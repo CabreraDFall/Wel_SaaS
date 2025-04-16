@@ -5,7 +5,7 @@ const pool = require('../config/db');
 // GET - Obtener todas las recepciones
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM receptions ORDER BY fecha_recepcion DESC');
+    const result = await pool.query('SELECT * FROM receptions ORDER BY reception_date DESC');
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -25,14 +25,28 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// GET - Obtener recepciones por fecha
+router.get('/date/:date', async (req, res) => {
+  try {
+    const date = req.params.date;
+    const result = await pool.query(
+      "SELECT * FROM receptions WHERE DATE(reception_date) = DATE($1) ORDER BY reception_date DESC",
+      [date]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // POST - Crear una nueva recepción
 router.post('/', async (req, res) => {
-  const { vehiculo, items, ordenCompra, estatus = 'en camino' } = req.body;
+  const { vehicle, items, purchase_order, status = 'en camino', reception_date = new Date() } = req.body;
   
   try {
     const result = await pool.query(
-      'INSERT INTO receptions (vehiculo, items, orden_compra, estatus) VALUES ($1, $2, $3, $4) RETURNING *',
-      [vehiculo, items, ordenCompra, estatus]
+      'INSERT INTO receptions (reception_date, vehicle, items, purchase_order, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [reception_date, vehicle, items, purchase_order, status]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -44,16 +58,16 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { vehiculo, items, ordenCompra, estatus } = req.body;
+    const { vehicle, items, purchase_order, status, reception_date } = req.body;
     
     // Construir la consulta dinámica
     let updates = [];
     let values = [];
     let paramCount = 1;
     
-    if (vehiculo) {
-      updates.push(`vehiculo = $${paramCount}`);
-      values.push(vehiculo);
+    if (vehicle) {
+      updates.push(`vehicle = $${paramCount}`);
+      values.push(vehicle);
       paramCount++;
     }
     if (items !== undefined) {
@@ -61,14 +75,19 @@ router.patch('/:id', async (req, res) => {
       values.push(items);
       paramCount++;
     }
-    if (ordenCompra) {
-      updates.push(`orden_compra = $${paramCount}`);
-      values.push(ordenCompra);
+    if (purchase_order) {
+      updates.push(`purchase_order = $${paramCount}`);
+      values.push(purchase_order);
       paramCount++;
     }
-    if (estatus) {
-      updates.push(`estatus = $${paramCount}`);
-      values.push(estatus);
+    if (status) {
+      updates.push(`status = $${paramCount}`);
+      values.push(status);
+      paramCount++;
+    }
+    if (reception_date) {
+      updates.push(`reception_date = $${paramCount}`);
+      values.push(reception_date);
       paramCount++;
     }
     
