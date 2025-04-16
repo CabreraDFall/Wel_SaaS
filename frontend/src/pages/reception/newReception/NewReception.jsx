@@ -1,13 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './newReception.css'
 import Sidebar from '../../../components/sidebar/Sidebar'  
 import Navbar from '../../../components/navBar/Navbar'  
 import SearchIcon from '../../../components/icons/SearchIcon'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 const NewReception = () => {
+  const { purchase_order } = useParams()
+
   // All products data
-  const allReceptions = [
+  const [allReceptions, setAllReceptions] = useState([
     {
       fecha: '2025-01-01',
       barcode: '01-123456789012',
@@ -15,9 +17,15 @@ const NewReception = () => {
       producto: 'Pollo entero',
       udm: 'libras',
       formato: 'variable',
-     
     },
-  ]
+  ])
+
+  useEffect(() => {
+    // Here you would typically fetch the reception details using the purchase_order
+    // For now we'll just log it
+    console.log('Purchase Order:', purchase_order)
+    // TODO: Fetch reception details based on purchase_order
+  }, [purchase_order])
 
   // State declarations
   const [searchQuery, setSearchQuery] = useState('')

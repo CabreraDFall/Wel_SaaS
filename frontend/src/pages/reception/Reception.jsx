@@ -7,8 +7,10 @@ import CloseContenedorIcon from '../../components/icons/closeContenedor_icon'
 import PrintingIcon from '../../components/icons/printing_icon'
 import EyesIcon from '../../components/icons/eyes'
 import { receptionService } from '../../services/api/receptionService'
+import { useNavigate } from 'react-router-dom'
 
 const Reception = () => {
+  const navigate = useNavigate()
   // State declarations
   const [receptions, setReceptions] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -143,6 +145,10 @@ const Reception = () => {
     setNewTrip(null)
   }
 
+  const handleReceptionClick = (purchase_order) => {
+    navigate(`/reception/${purchase_order}`)
+  }
+
   if (loading) return <div className="loading">Cargando...</div>
   if (error) return <div className="error">{error}</div>
 
@@ -219,16 +225,16 @@ const Reception = () => {
                       </tr>
                     )}
                     {paginatedReceptions.map((reception) => (
-                      <tr key={reception.id}>
+                      <tr key={reception.id} onClick={() => handleReceptionClick(reception.purchase_order)} style={{ cursor: 'pointer' }}>
                         <td>{new Date(reception.reception_date).toLocaleDateString()}</td>
                         <td>{reception.vehicle}</td>
                         <td>{reception.items}</td>
                         <td>{reception.purchase_order}</td>
                         <td>{reception.status}</td>
                         <td className='flex gap-4'>
-                          <button onClick={() => handleDelete(reception.id)}><CloseContenedorIcon /></button>
-                          <button><PrintingIcon /></button>
-                          <button><EyesIcon /></button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(reception.id)}}><CloseContenedorIcon /></button>
+                          <button onClick={(e) => e.stopPropagation()}><PrintingIcon /></button>
+                          <button onClick={(e) => e.stopPropagation()}><EyesIcon /></button>
                         </td>                        
                       </tr>
                     ))}
