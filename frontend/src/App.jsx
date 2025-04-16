@@ -21,6 +21,7 @@ function App() {
         <Route path="/reception/new-reception" element={<NewReception />} />
         <Route path="/labels" element={<Labels />} />
         <Route path="/labels/new-label" element={<NewLabel />} />
+        <Route path="/labels/:purchase_order" element={<NewLabel />} />
         <Route path="/users" element={<Users />} />
       </Routes>
     </>

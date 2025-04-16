@@ -79,7 +79,7 @@ const NewReception = () => {
           <div className='reception-container flex flex-col gap-4'>
             <div className='reception-header flex justify-between items-center'>
               <h4>Etiquetas</h4>
-            <Link className='reception-header-button' to="/labels/new-label">Nuevo etiqueta</Link>
+            <Link className='reception-header-button' to={`/labels/${purchase_order}`}>Nuevo etiqueta</Link>
             </div>
             <div className='products-filters flex justify-between items-center'>
               <div className='search-container'>
