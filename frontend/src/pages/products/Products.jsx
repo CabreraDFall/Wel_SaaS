@@ -3,6 +3,7 @@ import './products.css'
 import Sidebar from '../../components/sidebar/Sidebar'  
 import Navbar from '../../components/navBar/Navbar'
 import SearchIcon from '../../components/icons/SearchIcon'
+import api from '../../services/api'
 
 const Products = () => {
   // All products data
@@ -58,6 +59,22 @@ const Products = () => {
   ]
 
   // State declarations
+  const [allProducts, setAllProducts] = useState([]);
+
+  // Load products from local storage
+  useEffect(() => {
+    const storedProducts = localStorage.getItem('products');
+    if (storedProducts) {
+      setAllProducts(JSON.parse(storedProducts));
+    }
+  }, []);
+
+  // Save products to local storage whenever they change
+  useEffect(() => {
+    localStorage.setItem('products', JSON.stringify(allProducts));
+  }, [allProducts]);
+
+  // All products data
   const [searchQuery, setSearchQuery] = useState('')
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
@@ -68,9 +85,9 @@ const Products = () => {
   const filteredProducts = allProducts.filter(product => {
     const searchLower = searchQuery.toLowerCase()
     const matchesSearch = 
-      product.producto.toLowerCase().includes(searchLower) ||
-      product.codigo.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? product.fecha === selectedDate : true
+      product.product_name?.toLowerCase().includes(searchLower) ||
+      product.code?.toLowerCase().includes(searchLower)
+    const matchesDate = selectedDate ? product.created_at?.includes(selectedDate) : true
     return matchesSearch && matchesDate
   })
 
@@ -100,6 +117,25 @@ const Products = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber)
   }
+
+  const handleNewProduct = () => {
+    setNewProduct({ codigo: '', producto: '', udm: '', formato: '', proveedor: '', fecha: '' });
+  };
+
+  const handleInputChange = (e, field) => {
+    setNewProduct({ ...newProduct, [field]: e.target.value });
+  };
+
+  const handleSave = () => {
+    if (newProduct.codigo && newProduct.producto && newProduct.udm && newProduct.formato) {
+      setAllProducts([newProduct, ...allProducts]);
+      setNewProduct(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setNewProduct(null);
+  };
 
   return (
     <div className='wrapper'>
@@ -155,14 +191,31 @@ const Products = () => {
                     </tr>
                   </thead>
                   <tbody>
+                    {newProduct && (
+                      <tr>
+                        <td><input type="text" value={newProduct.codigo} onChange={(e) => handleInputChange(e, 'codigo')} /></td>
+                        <td><input type="text" value={newProduct.producto} onChange={(e) => handleInputChange(e, 'producto')} /></td>
+                        <td><input type="text" value={newProduct.udm} onChange={(e) => handleInputChange(e, 'udm')} /></td>
+                        <td><input type="text" value={newProduct.formato} onChange={(e) => handleInputChange(e, 'formato')} /></td>
+                        <td><input type="text" value={newProduct.proveedor} onChange={(e) => handleInputChange(e, 'proveedor')} /></td>
+                        <td><input type="date" value={newProduct.fecha} onChange={(e) => handleInputChange(e, 'fecha')} /></td>
+                        <td>
+                          {newProduct.codigo && newProduct.producto && newProduct.udm && newProduct.formato ? (
+                            <button onClick={handleSave}>Save</button>
+                          ) : (
+                            <button onClick={handleCancel}>Cancel</button>
+                          )}
+                        </td>
+                      </tr>
+                    )}
                     {paginatedProducts.map((product, index) => (
                       <tr key={index}>
                         <td>{product.codigo}</td>
                         <td>{product.producto}</td>
                         <td>{product.udm}</td>
-                        <td>{product.formato}</td>
-                        <td>{product.proveedor}</td>
-                        <td>{product.fecha}</td>
+                        <td>{product.format}</td>
+                        <td>{product.supplier}</td>
+                        <td>{new Date(product.created_at).toLocaleDateString()}</td>
                         <td>
                           <button className="more-options">•••</button>
                         </td>
