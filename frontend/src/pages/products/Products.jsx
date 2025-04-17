@@ -4,10 +4,12 @@ import Sidebar from '../../components/sidebar/Sidebar'
 import Navbar from '../../components/navBar/Navbar'
 import SearchIcon from '../../components/icons/SearchIcon'
 import { productService } from '../../services/api/productService'
+import { httpService } from '../../services/api/httpService'
 
 const Products = () => {
   // State declarations
   const [allProducts, setAllProducts] = useState([]);
+  const [uomOptions, setUomOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,9 +26,20 @@ const Products = () => {
     }
   };
 
-  // Load products on component mount
+  // Fetch UOM options
+  const fetchUomOptions = async () => {
+    try {
+      const data = await httpService.get('/uom_master');
+      setUomOptions(data);
+    } catch (err) {
+      console.error("Error fetching UOM options:", err);
+    }
+  };
+
+  // Load products and UOM options on component mount
   useEffect(() => {
     fetchProducts();
+    fetchUomOptions();
   }, []);
 
   // All products data
@@ -84,7 +97,7 @@ const Products = () => {
 
   const handleSave = async () => {
     // Validar que todos los campos requeridos estén presentes y no vacíos
-    const requiredFields = ['code', 'product_name', 'udm', 'format', 'supplier'];
+    const requiredFields = ['code', 'product_name', 'format', 'supplier'];
     const missingFields = requiredFields.filter(field => !newProduct[field]?.trim());
     
     if (missingFields.length > 0) {
@@ -182,7 +195,14 @@ const Products = () => {
                       <tr>
                         <td><input type="text" value={newProduct.code} onChange={(e) => handleInputChange(e, 'code')} placeholder="Código" /></td>
                         <td><input type="text" value={newProduct.product_name} onChange={(e) => handleInputChange(e, 'product_name')} placeholder="Nombre del producto" /></td>
-                        <td><input type="text" value={newProduct.udm} onChange={(e) => handleInputChange(e, 'udm')} placeholder="UDM" /></td>
+                        <td>
+                          <select value={newProduct.udm} onChange={(e) => handleInputChange(e, 'udm')}>
+                            <option value="">Seleccionar UDM...</option>
+                            {uomOptions.map(uom => (
+                              <option key={uom.id} value={uom.id}>{uom.name} ({uom.code})</option>
+                            ))}
+                          </select>
+                        </td>
                         <td>
                           <select value={newProduct.format} onChange={(e) => handleInputChange(e, 'format')}>
                             <option value="">Seleccionar formato...</option>
@@ -209,7 +229,7 @@ const Products = () => {
                       <tr key={product.id}>
                         <td>{product.code}</td>
                         <td>{product.product_name}</td>
-                        <td>{product.udm}</td>
+                        <td>{product.udm_name || product.udm || 'N/A'}</td>
                         <td>{product.format}</td>
                         <td>{product.supplier}</td>
                         <td>{new Date(product.created_at).toLocaleDateString()}</td>

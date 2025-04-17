@@ -12,6 +12,7 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/receptions', require('./routes/receptions'));
 app.use('/api/labels', require('./routes/labels'));
 app.use('/api/warehouses', require('./routes/warehouses'));
+app.use('/api/uom_master', require('./routes/uom'));
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API');

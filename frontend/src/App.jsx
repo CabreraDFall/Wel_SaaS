@@ -12,7 +12,7 @@ import NewLabel from './pages/labels/newLabel/NewLabel'
 function App() {
   return (
     <>
-      <Routes>
+      <Routes>  
         <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/products" element={<Products />} />
