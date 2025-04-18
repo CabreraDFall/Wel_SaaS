@@ -36,6 +36,17 @@ const NewLabel = () => {
     fetchProducts();
   }, []);
 
+  const handlePrint = () => {
+    // Add printing logic here
+    console.log('Printing label for:', {
+      ...formData,
+      productName,
+      productCode,
+      udm,
+      format
+    });
+  };
+
   // Filter products based on search query
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -101,18 +112,17 @@ const NewLabel = () => {
         <div className='container'>
             <Navbar />
             <div className='new-label-container'>
-                <h4>Etiqueta {purchase_order && `- Orden de compra: ${purchase_order}`}</h4>
+              <div className='flex flex justify-between items-center'>
+                <div>
+                <h4>Etiqueta </h4>
+                <h6>{purchase_order && `Orden de compra: ${purchase_order}`}</h6>
+
+                </div>
+
+                <button className='btn-primary' onClick={handlePrint}>Imprimir</button>
+              </div>
                 {selectedProduct ? (
                     <div className="selected-product-container">
-                        <div className="selected-product">
-                            <h5>Producto seleccionado:</h5>
-                            <div className="product-details">
-                                <p><strong>Código:</strong> {selectedProduct.code}</p>
-                                <p><strong>Nombre:</strong> {selectedProduct.product_name}</p>
-                                <p><strong>UDM:</strong> {selectedProduct.udm}</p>
-                                <p><strong>Formato:</strong> {selectedProduct.format}</p>
-                            </div>
-                        </div>
                         <GenerateLabels 
                             productName={selectedProduct.product_name}
                             productCode={selectedProduct.code}

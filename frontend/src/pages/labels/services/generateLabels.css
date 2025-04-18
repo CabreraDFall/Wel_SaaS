@@ -1,0 +1,29 @@
+.genarateLabel-contaniner{
+    padding: 20px;
+    margin: 50px;
+    
+}
+
+.genarateLabel-contaniner h2{
+    font-weight: 500;
+    font-size: 24px;
+    padding-bottom: 10px;
+}
+
+.genarateLabel-contaniner .storage, .genarateLabel-contaniner .quantity{
+    width: 30px;
+    height: 30px;
+}
+
+.genarateLabel-contaniner input[type=number]::-webkit-outer-spin-button,
+.genarateLabel-contaniner input[type=number]::-webkit-inner-spin-button,
+.genarateLabel-contaniner input[type=number]::-webkit-outer-spin-button,
+.genarateLabel-contaniner input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+.genarateLabel-contaniner  input[type=number],
+.genarateLabel-contaniner  input[type=number] {
+  appearance: none !important;
+}
