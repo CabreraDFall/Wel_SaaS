@@ -47,19 +47,20 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     console.log('Received request body:', req.body);
-    const { code, product_name, udm, format, supplier } = req.body;
+    const { code, product_name, udm, format, supplier_id, description } = req.body;
 
     // Basic validation
-    if (!code || !product_name || !format || !supplier) {
+    if (!code || !product_name || !format || !supplier_id || !description) {
       console.log('Missing fields:', {
         code: !code,
         product_name: !product_name,
         format: !format,
-        supplier: !supplier
+        supplier_id: !supplier_id,
+        description: !description
       });
       return res.status(400).json({ 
         message: 'All fields are required',
-        required: ['code', 'product_name', 'format', 'supplier'],
+        required: ['code', 'product_name', 'format', 'supplier_id', 'description'],
         received: req.body
       });
     }
@@ -87,10 +88,10 @@ router.post('/', async (req, res) => {
       }
     }
 
-    console.log('Attempting to insert product:', { code, product_name, uom_id, format, supplier });
+    console.log('Attempting to insert product:', { code, product_name, uom_id, format, supplier_id });
     const result = await pool.query(
-      'INSERT INTO products (code, product_name, uom_id, format, supplier) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [code, product_name, uom_id, format, supplier]
+      'INSERT INTO products (code, product_name, uom_id, format, supplier_id, description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [code, product_name, uom_id, format, supplier_id, description]
     );
 
     // Fetch the complete product with UDM name
@@ -123,10 +124,26 @@ router.post('/', async (req, res) => {
 // @access  Private
 router.put('/:id', async (req, res) => {
   try {
-    const { code, product_name, udm, format, supplier } = req.body;
+    const { code, product_name, udm, format, supplier_id, description } = req.body;
 
     // Check if product exists
     const product = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
+
+    // Basic validation
+    if (!code || !product_name || !format || !supplier_id || !description) {
+      console.log('Missing fields:', {
+        code: !code,
+        product_name: !product_name,
+        format: !format,
+        supplier_id: !supplier_id,
+        description: !description
+      });
+      return res.status(400).json({ 
+        message: 'All fields are required',
+        required: ['code', 'product_name', 'format', 'supplier_id', 'description'],
+        received: req.body
+      });
+    }
 
     if (product.rows.length === 0) {
       return res.status(404).json({ message: 'Product not found' });
@@ -156,8 +173,8 @@ router.put('/:id', async (req, res) => {
     }
 
     const result = await pool.query(
-      'UPDATE products SET code = COALESCE($1, code), product_name = COALESCE($2, product_name), uom_id = COALESCE($3, uom_id), format = COALESCE($4, format), supplier = COALESCE($5, supplier) WHERE id = $6 RETURNING *',
-      [code, product_name, uom_id, format, supplier, req.params.id]
+      'UPDATE products SET code = COALESCE($1, code), product_name = COALESCE($2, product_name), uom_id = COALESCE($3, uom_id), format = COALESCE($4, format), supplier_id = COALESCE($5, supplier_id), description = COALESCE($6, description) WHERE id = $7 RETURNING *',
+      [code, product_name, uom_id, format, supplier_id, description, req.params.id]
     );
 
     // Fetch the complete product with UDM name

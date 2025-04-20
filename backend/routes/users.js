@@ -6,12 +6,12 @@ const pool = require('../config/db');
 // Crear usuario
 router.post('/', async (req, res) => {
   try {
-    const { nombre, apellido, correo, numero_empleado, cargo, password } = req.body;
+    const { first_name, last_name, email, employee_number, role, password } = req.body;
 
     // Verificar si el usuario ya existe
     const userExists = await pool.query(
-      'SELECT * FROM users WHERE correo = $1 OR numero_empleado = $2',
-      [correo, numero_empleado]
+      'SELECT * FROM users WHERE email = $1 OR employee_number = $2',
+      [email, employee_number]
     );
 
     if (userExists.rows.length > 0) {
@@ -26,8 +26,8 @@ router.post('/', async (req, res) => {
 
     // Crear nuevo usuario
     const newUser = await pool.query(
-      'INSERT INTO users (nombre, apellido, correo, numero_empleado, cargo, password) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, nombre, apellido, correo, numero_empleado, cargo, created_at',
-      [nombre, apellido, correo, numero_empleado, cargo, hashedPassword]
+      'INSERT INTO users (first_name, last_name, email, employee_number, role, password) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, first_name, last_name, email, employee_number, role, created_at',
+      [first_name, last_name, email, employee_number, role, hashedPassword]
     );
 
     res.status(201).json(newUser.rows[0]);
@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const usuarios = await pool.query(
-      'SELECT id, nombre, apellido, correo, numero_empleado, cargo, created_at FROM users ORDER BY created_at DESC'
+      'SELECT id, first_name, last_name, email, employee_number, role, created_at FROM users ORDER BY created_at DESC'
     );
     res.json(usuarios.rows);
   } catch (error) {
@@ -60,7 +60,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const usuario = await pool.query(
-      'SELECT id, nombre, apellido, correo, numero_empleado, cargo, created_at FROM users WHERE id = $1',
+      'SELECT id, first_name, last_name, email, employee_number, role, created_at FROM users WHERE id = $1',
       [id]
     );
 
@@ -81,7 +81,7 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, apellido, correo, numero_empleado, cargo } = req.body;
+    const { first_name, last_name, email, employee_number, role } = req.body;
 
     // Verificar si el usuario existe
     const usuarioExiste = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
@@ -92,8 +92,8 @@ router.put('/:id', async (req, res) => {
 
     // Verificar si el correo o número de empleado ya existe en otro usuario
     const duplicado = await pool.query(
-      'SELECT * FROM users WHERE (correo = $1 OR numero_empleado = $2) AND id != $3',
-      [correo, numero_empleado, id]
+      'SELECT * FROM users WHERE (email = $1 OR employee_number = $2) AND id != $3',
+      [email, employee_number, id]
     );
 
     if (duplicado.rows.length > 0) {
@@ -103,8 +103,8 @@ router.put('/:id', async (req, res) => {
     }
 
     const usuario = await pool.query(
-      'UPDATE users SET nombre = $1, apellido = $2, correo = $3, numero_empleado = $4, cargo = $5 WHERE id = $6 RETURNING id, nombre, apellido, correo, numero_empleado, cargo, created_at',
-      [nombre, apellido, correo, numero_empleado, cargo, id]
+      'UPDATE users SET first_name = $1, last_name = $2, email = $3, employee_number = $4, role = $5 WHERE id = $6 RETURNING id, first_name, last_name, email, employee_number, role, created_at',
+      [first_name, last_name, email, employee_number, role, id]
     );
 
     res.json(usuario.rows[0]);

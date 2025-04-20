@@ -1,12 +1,13 @@
 -- Script de inicialización de la base de datos Wel_SaaS
 
+DROP DATABASE IF EXISTS wel_local;
+CREATE DATABASE wel_local;
+\c wel_local;
+
 CREATE TYPE format_type AS ENUM ('fijo', 'variable');
 CREATE TYPE role_type AS ENUM ('compra', 'encargado', 'operario', 'admin');
 CREATE TYPE reception_status AS ENUM ('descargando', 'finalizado', 'en camino');
 
-DROP DATABASE IF EXISTS wel_local;
-CREATE DATABASE wel_local;
-\c wel_local;
 
 -- Tabla de categorías de unidades de medida
 CREATE TABLE IF NOT EXISTS uom_categories (
@@ -35,7 +36,7 @@ CREATE TABLE IF NOT EXISTS warehouses (
     warehouse_name VARCHAR(100) NOT NULL,
     warehouse_number INTEGER NOT NULL CHECK (warehouse_number >= 0 AND warehouse_number <= 9) UNIQUE,
     is_active BOOLEAN DEFAULT true,
-    description TEXT NOT NULL,
+    description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
@@ -185,58 +186,3 @@ CREATE TRIGGER update_receptions_modtime
     BEFORE UPDATE ON receptions
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
-
-
-    -- Insertar categorías de UOM
-INSERT INTO uom_categories (name, description) VALUES
-('Peso', 'Unidades de medida de peso'),
-('Volumen', 'Unidades de medida de volumen'),
-('Longitud', 'Unidades de medida de longitud');
-
--- Insertar unidades de medida
-INSERT INTO uom_master (code, name, category_id) VALUES
-('KG', 'Kilogramo', 1),
-('LT', 'Litro', 2),
-('MT', 'Metro', 3);
-
--- Insertar almacenes
-INSERT INTO warehouses (warehouse_name, warehouse_number, description) VALUES
-('Almacén Principal', 1, 'Almacén central de productos'),
-('Almacén Secundario', 2, 'Almacén de respaldo'),
-('Almacén Temporal', 3, 'Almacén para productos en tránsito');
-
--- Insertar proveedores
-INSERT INTO suppliers (supplier_name, contact_name, contact_email, contact_phone, description) VALUES
-('Proveedor 1', 'Contacto 1', 'contacto1@proveedor.com', '123-456-7890', 'Proveedor de productos A y C'), -- Proveedor de productos A y C
-('Proveedor 2', 'Contacto 2', 'contacto2@proveedor.com', '987-654-3210', 'Proveedor del producto B'); -- Proveedor del producto B
-
--- Insertar productos
-INSERT INTO products (code, product_name, uom_id, format, supplier_id, weight, description) VALUES
-('PROD001', 'Producto A', 1, 'fijo', 1, 10.5, 'Descripción producto A'), -- Producto A del Proveedor 1
-('PROD002', 'Producto B', 2, 'variable', 2, 5.2, 'Descripción producto B'), -- Producto B del Proveedor 2
-('PROD003', 'Producto C', 1, 'fijo', 1, 15.7, 'Descripción producto C'); -- Producto C del Proveedor 1
-
--- Insertar usuarios
-INSERT INTO users (first_name, last_name, email, employee_number, role, password) VALUES
-('Juan', 'Pérez', 'juan@ejemplo.com', 'EMP001', 'admin', 'hashed_password_1'), -- Contraseña hasheada
-('María', 'García', 'maria@ejemplo.com', 'EMP002', 'operario', 'hashed_password_2'), -- Contraseña hasheada
-('Carlos', 'López', 'carlos@ejemplo.com', 'EMP003', 'encargado', 'hashed_password_3'); -- Contraseña hasheada
--- NOTA: En un entorno de producción, las contraseñas deben ser hasheadas con un algoritmo seguro como bcrypt.
-
--- Insertar recepciones
-INSERT INTO receptions (vehicle, items, purchase_order, status, notes, created_by) VALUES
-('Camión 001', 10, 'PO001', 'finalizado', 'Entrega completa', 1),
-('Camión 002', 5, 'PO002', 'en camino', 'En ruta', 2),
-('Camión 003', 8, 'PO003', 'descargando', 'Descarga en proceso', 3);
-
--- Insertar etiquetas
-INSERT INTO labels (barcode, product_id, warehouse_id, quantity, weight, created_by) VALUES
-('BAR001', 1, 1, 100, 1000.5, 1), -- Etiqueta para el Producto A en el Almacén Principal
-('BAR002', 2, 2, 50, 260.0, 2), -- Etiqueta para el Producto B en el Almacén Secundario
-('BAR003', 3, 3, 75, 1177.5, 3); -- Etiqueta para el Producto C en el Almacén Temporal
-
--- Insertar contadores de códigos de barras
-INSERT INTO barcode_counters (barcode_base, counter) VALUES
-('BASE001', 1), -- Contador para códigos de barras BASE001
-('BASE002', 1), -- Contador para códigos de barras BASE002
-('BASE003', 1); -- Contador para códigos de barras BASE003

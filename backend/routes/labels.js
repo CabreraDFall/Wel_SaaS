@@ -38,27 +38,11 @@ router.get('/:id', async (req, res) => {
 // Create a label
 router.post('/', async (req, res) => {
     try {
-        const { warehouse_number, product_code, product_name, udm, format } = req.body;
-        
-        // Validate inputs for barcode generation
-        if (typeof warehouse_number !== 'number' || typeof product_code !== 'number') {
-            return res.status(400).json('Warehouse number and product code must be numbers');
-        }
-
-        // Validate format value
-        if (!['fijo', 'variable'].includes(format)) {
-            return res.status(400).json('Format must be either "fijo" or "variable"');
-        }
-
-        // Determine separator_digit based on URL path
-        const separator_digit = req.path.includes('reception') ? 1 : 8;
-
-        // Generate barcode using the utility
-        const barcode = await generateBarcode(warehouse_number, product_code, separator_digit, format);
+        const { barcode, product_id, warehouse_id, quantity, created_by } = req.body;
 
         const newLabel = await pool.query(
-            'INSERT INTO labels (barcode, product_code, product_name, udm, format) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [barcode, product_code, product_name, udm, format]
+            'INSERT INTO labels (barcode, product_id, warehouse_id, quantity, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [barcode, product_id, warehouse_id, quantity, created_by]
         );
 
         res.json(newLabel.rows[0]);

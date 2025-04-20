@@ -41,12 +41,12 @@ router.get('/date/:date', async (req, res) => {
 
 // POST - Crear una nueva recepción
 router.post('/', async (req, res) => {
-  const { vehicle, items, purchase_order, status = 'en camino', reception_date = new Date() } = req.body;
+  const { vehicle, items, purchase_order, status = 'en camino', reception_date = new Date(), notes, created_by } = req.body;
   
   try {
     const result = await pool.query(
-      'INSERT INTO receptions (reception_date, vehicle, items, purchase_order, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [reception_date, vehicle, items, purchase_order, status]
+      'INSERT INTO receptions (reception_date, vehicle, items, purchase_order, status, notes, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [reception_date, vehicle, items, purchase_order, status, notes, created_by]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
