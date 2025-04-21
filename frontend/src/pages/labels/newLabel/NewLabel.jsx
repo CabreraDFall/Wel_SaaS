@@ -123,11 +123,12 @@ const NewLabel = () => {
               </div>
                 {selectedProduct ? (
                     <div className="selected-product-container">
-                        <GenerateLabels 
+                        <GenerateLabels
                             productName={selectedProduct.product_name}
                             productCode={selectedProduct.code}
                             udm={selectedProduct.udm}
                             format={selectedProduct.format}
+                            productId={selectedProduct.id}
                         />
                     </div>
                 ) : (

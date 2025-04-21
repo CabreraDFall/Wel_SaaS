@@ -2,6 +2,28 @@ const router = require('express').Router();
 const pool = require('../config/db');
 const { generateBarcode } = require('../utils/barcodeGenerator');
 
+// Generate barcode
+router.post('/generate', async (req, res) => {
+    try {
+        const { warehouse_id, product_id, format } = req.body;
+
+        // Validate warehouse_id and product_id are numbers
+        if (typeof warehouse_id !== 'number' || isNaN(warehouse_id)) {
+            return res.status(400).json('Warehouse ID must be a number');
+        }
+
+        if (typeof product_id !== 'number' || isNaN(product_id)) {
+            return res.status(400).json('Product ID must be a number');
+        }
+
+        const barcode = await generateBarcode(warehouse_id, product_id, 1, format);
+        res.json({ barcode });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error');
+    }
+});
+
 // Get all labels
 router.get('/', async (req, res) => {
     try {
@@ -110,6 +132,38 @@ router.delete('/:id', async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error');
+    }
+});
+
+// Create a new label
+router.post('/generate', async (req, res) => {
+    try {
+        const { product_id, warehouse_id, quantity, created_by } = req.body;
+
+        // Check if warehouse exists
+        const warehouse = await pool.query('SELECT * FROM warehouses WHERE warehouse_number = $1', [warehouse_id]);
+        if (warehouse.rows.length === 0) {
+            return res.status(400).json('Warehouse not found');
+        }
+
+        const warehouse_id_uuid = warehouse.rows[0].id;
+
+        // Generate a unique barcode
+        const barcode = await generateBarcode();
+
+        const newLabel = await pool.query(
+            'INSERT INTO labels (barcode, product_id, warehouse_id, quantity, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [barcode, product_id, warehouse_id_uuid, quantity, created_by]
+        );
+
+       res.json(newLabel.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        if (err.code === '23505') { // Unique violation
+            res.status(400).json('Barcode already exists');
+        } else {
+            res.status(500).json('Server error');
+        }
     }
 });
 

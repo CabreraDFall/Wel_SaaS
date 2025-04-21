@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "./generateLabels.css"
 
-const GenerateLabels = ({ productName, productCode, udm, format }) => {
+const GenerateLabels = ({ productName, productCode, udm, format, productId }) => {
   const [formData, setFormData] = useState({
-    storage: '',
+    warehouse: '',
     quantity: ''
   });
+  const [warehouses, setWarehouses] = useState([]);
+
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/warehouses'); // Assuming your backend API endpoint is /api/warehouses
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setWarehouses(data);
+      } catch (error) {
+        console.error("Could not fetch warehouses:", error);
+      }
+    };
+
+    fetchWarehouses();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,41 +33,78 @@ const GenerateLabels = ({ productName, productCode, udm, format }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you can add the logic to handle the label generation
-    console.log('Form data:', {
-      ...formData,
-      productName,
-      productCode,
-      udm,
-      format
-    });
+    try {
+      // Find the selected warehouse
+      const selectedWarehouse = warehouses.find(warehouse => warehouse.id === formData.warehouse);
+      if (!selectedWarehouse) {
+        alert('Please select a warehouse.');
+        return;
+      }
+
+      // Validate warehouse number is a number
+      if (typeof selectedWarehouse.warehouse_number !== 'number') {
+        alert('Warehouse number must be a number.');
+        return;
+      }
+
+      const response = await fetch('http://localhost:3000/api/labels', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          barcode: "aaaxab",
+          product_id: productId,
+          warehouse_id: selectedWarehouse.id,
+          quantity: parseInt(formData.quantity),
+          active: true,
+          created_by: 'c8340afa-1c17-4333-848d-b17f420dbd2c',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Label generated:', data);
+      alert('Label generated successfully!');
+    } catch (error) {
+      console.error("Could not generate label:", error);
+      alert('Could not generate label. Please check the console for errors.');
+    }
   };
 
- 
+
+
   return (
     <div className="genarateLabel-contaniner max-w-md mx-auto mt-8 p-6 bg-white justify-center rounded-lg shadow-md flex">
     
       <form onSubmit={handleSubmit} className='flex flex-col gap-4  items-center'> 
         <h2>{productName}</h2>
         <div className="space-y-2 flex gap-2 items-center">
-          <label htmlFor="storage" className="block text-sm font-medium text-gray-700">
-            Almacen
+          <label htmlFor="warehouse" className="block text-sm font-medium text-gray-700">
+            Almacén
           </label>
-          <input
-            type="number"
-            id="storage"
-            name="storage"
-            value={formData.storage}
+          <select
+            id="warehouse"
+            name="warehouse"
+            value={formData.warehouse}
             onChange={handleChange}
             className="storage p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-
-
+          >
+            <option value="">Selecciona un almacén</option>
+            {warehouses.map(warehouse => (
+              <option key={warehouse.id} value={warehouse.id}>
+                {warehouse.warehouse_number} - {warehouse.warehouse_name}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="space-y-2 flex gap-2 items-center ">
-          <label htmlFor="quantity" className=" block text-sm font-medium text-gray-700">
+        <div className="space-y-2 flex gap-2 items-center">
+          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
             Cantidad
           </label>
           <input
