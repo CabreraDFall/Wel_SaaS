@@ -116,8 +116,26 @@ CREATE TABLE IF NOT EXISTS labels (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP,
-    purchase_order VARCHAR(255) NULL
-); 
+    purchase_order VARCHAR(255) NULL,
+    is_printed BOOLEAN DEFAULT FALSE
+);
+
+-- Tabla de gestión de impresiones de etiquetas
+CREATE TABLE IF NOT EXISTS label_prints (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    label_id UUID NOT NULL REFERENCES labels(id) ON DELETE RESTRICT,
+    printed_by UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    printed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (label_id) REFERENCES labels(id),
+    FOREIGN KEY (printed_by) REFERENCES users(id),
+    first_printed_at TIMESTAMP
+);
+
+-- Indice para optimizar el rendimiento
+CREATE INDEX idx_label_prints_label_id ON label_prints(label_id);
+CREATE INDEX idx_label_prints_printed_by ON label_prints(printed_by);
 
 -- Tabla de contadores de códigos de barras
 CREATE TABLE IF NOT EXISTS barcode_counters (

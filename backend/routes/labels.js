@@ -151,4 +151,43 @@ router.delete('/:id', async (req, res) => {
 });
 
 
+// Get label print history
+router.get('/:id/prints', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const labelPrints = await pool.query(
+            'SELECT * FROM label_prints WHERE label_id = $1 ORDER BY printed_at DESC',
+            [id]
+        );
+        res.json(labelPrints.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error: ' + err.message);
+    }
+});
+
+// Create label print
+router.post('/:id/prints', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { printed_by, quantity } = req.body;
+
+        const newLabelPrint = await pool.query(
+            'INSERT INTO label_prints (label_id, printed_by, quantity) VALUES ($1, $2, $3) RETURNING *',
+            [id, printed_by, quantity]
+        );
+
+        // Update label to is_printed = true
+        await pool.query(
+            'UPDATE labels SET is_printed = TRUE WHERE id = $1',
+            [id]
+        );
+
+        res.json(newLabelPrint.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json('Server error: ' + err.message);
+    }
+});
+
 module.exports = router;
