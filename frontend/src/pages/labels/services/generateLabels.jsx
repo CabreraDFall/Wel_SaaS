@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import "./generateLabels.css"
 
 const GenerateLabels = ({ productName, productCode, udm, format, productId,purchase_order }) => {
-  console.log("Props recibidas en GenerateLabels:", { productName, productCode, udm, format, productId, purchase_order });
   const [formData, setFormData] = useState({
     warehouse: '',
     quantity: ''
@@ -28,7 +27,6 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId,purch
 
  const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("handleChange - name:", name, "value:", value);
     setFormData(prevState => ({
       ...prevState,
       [name]: value
@@ -86,7 +84,6 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId,purch
       }
 
       const data = await response.json();
-      console.log('Label generated:', data);
       alert('Label generated successfully!');
     } catch (error) {
       console.error("Could not generate label:", error);

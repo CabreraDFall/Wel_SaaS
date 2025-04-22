@@ -49,7 +49,6 @@ const NewLabel = () => {
 
   // Filter products based on search query
  useEffect(() => {
-    console.log("useEffect - Filtrando productos:", searchQuery);
     if (searchQuery.trim() === '') {
       setFilteredProducts([]);
       return;
@@ -68,7 +67,6 @@ const NewLabel = () => {
   };
 
  const handleSelectProduct = (product) => {
-    console.log("Producto seleccionado:", product);
     setSelectedProduct(product);
     setSearchQuery('');
     setFilteredProducts([]);

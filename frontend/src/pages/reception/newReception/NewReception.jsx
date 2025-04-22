@@ -23,7 +23,6 @@ const NewReception = () => {
   useEffect(() => {
     // Here you would typically fetch the reception details using the purchase_order
     // For now we'll just log it
-    console.log('Purchase Order:', purchase_order)
     // TODO: Fetch reception details based on purchase_order
   }, [purchase_order])
 
