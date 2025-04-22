@@ -1,0 +1,24 @@
+.label-page {
+  width: 315px;
+  height: 212px;
+  border: 1px solid black;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media print {
+  @page {
+    size: 315px 212px;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .label-page {
+    margin: 0;
+    border: none;
+  }
+}

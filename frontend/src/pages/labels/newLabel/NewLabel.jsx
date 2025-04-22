@@ -36,17 +36,6 @@ const NewLabel = () => {
     fetchProducts();
   }, []);
 
-  const handlePrint = () => {
-    // Add printing logic here
-    console.log('Printing label for:', {
-      ...formData,
-      productName,
-      productCode,
-      udm,
-      format
-    });
-  };
-
   // Filter products based on search query
  useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -118,8 +107,6 @@ const NewLabel = () => {
                 <h6>{purchase_order && `Orden de compra: ${purchase_order}`}</h6>
 
                 </div>
-
-                <button className='btn-primary' onClick={handlePrint}>Imprimir</button>
               </div>
                 {selectedProduct ? (
                     <div className="selected-product-container">
