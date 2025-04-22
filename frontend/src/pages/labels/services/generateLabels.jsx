@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import "./generateLabels.css"
 
 const GenerateLabels = ({ productName, productCode, udm, format, productId }) => {
+  console.log("Props recibidas en GenerateLabels:", { productName, productCode, udm, format, productId });
   const [formData, setFormData] = useState({
     warehouse: '',
     quantity: ''
@@ -25,8 +26,9 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId }) =>
     fetchWarehouses();
   }, []);
 
-  const handleChange = (e) => {
+ const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log("handleChange - name:", name, "value:", value);
     setFormData(prevState => ({
       ...prevState,
       [name]: value
@@ -35,32 +37,45 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId }) =>
 
     const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Datos enviados al generar la etiqueta:", {
+      product_id: productId,
+      warehouse_id: warehouses.find(warehouse => warehouse.id === formData.warehouse)?.id,
+      quantity: parseInt(formData.quantity),
+      active: true,
+      created_by: "c8340afa-1c17-4333-848d-b17f420dbd2c",
+      warehouseNumber: warehouses.find(warehouse => warehouse.id === formData.warehouse)?.warehouse_number,
+      productCode: productCode,
+      separatorDigit: 1,
+      format: format,
+    });
     try {
       // Find the selected warehouse
       const selectedWarehouse = warehouses.find(warehouse => warehouse.id === formData.warehouse);
       if (!selectedWarehouse) {
-        alert('Please select a warehouse.');
+        alert('Por favor, selecciona un almacén.');
         return;
       }
 
-      // Validate warehouse number is a number
-      if (typeof selectedWarehouse.warehouse_number !== 'number') {
-        alert('Warehouse number must be a number.');
+      if (!formData.quantity || isNaN(formData.quantity) || parseInt(formData.quantity) <= 0) {
+        alert('Please enter a valid positive quantity.');
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/labels', {
+      const response = await fetch('http://localhost:3000/api/labels/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          barcode: "aaaxab",
           product_id: productId,
-          warehouse_id: selectedWarehouse.id,
+          warehouse_id: warehouses.find(warehouse => warehouse.id === formData.warehouse)?.id,
           quantity: parseInt(formData.quantity),
           active: true,
-          created_by: 'c8340afa-1c17-4333-848d-b17f420dbd2c',
+          created_by: "c8340afa-1c17-4333-848d-b17f420dbd2c",
+          warehouseNumber: warehouses.find(warehouse => warehouse.id === formData.warehouse)?.warehouse_number,
+          productCode: productCode,
+          separatorDigit: 1,
+          format: format,
         }),
       });
 
@@ -73,7 +88,11 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId }) =>
       alert('Label generated successfully!');
     } catch (error) {
       console.error("Could not generate label:", error);
-      alert('Could not generate label. Please check the console for errors.');
+      if (error.message === 'Failed to fetch') {
+        alert('Could not connect to the server. Please check your network connection.');
+      } else {
+        alert(`Could not generate label: ${error.message}`);
+      }
     }
   };
 
