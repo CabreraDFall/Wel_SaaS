@@ -131,6 +131,7 @@ const NewLabel = () => {
                             udm={selectedProduct.udm}
                             format={selectedProduct.format}
                             productId={selectedProduct.id}
+                            purchase_order={purchase_order}
                         />
                     </div>
                 ) : (

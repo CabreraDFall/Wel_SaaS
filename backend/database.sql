@@ -115,7 +115,8 @@ CREATE TABLE IF NOT EXISTS labels (
     created_by UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    deleted_at TIMESTAMP,
+    purchase_order VARCHAR(255) NULL
 ); 
 
 -- Tabla de contadores de códigos de barras

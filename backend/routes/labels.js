@@ -6,7 +6,7 @@ const { generateBarcode } = require('../utils/barcodeGenerator');
 router.post('/generate', async (req, res) => {
     console.log("creando barcode");
     try {
-        const { product_id, warehouse_id, quantity, active, created_by, warehouseNumber, productCode, separatorDigit = 1, format } = req.body;
+        const { product_id, warehouse_id, quantity, active, created_by, warehouseNumber, productCode, separatorDigit = 1, format, purchase_order } = req.body;
 
         // Ensure warehouseNumber and productCode are numbers
         const warehouseNumberNum = Number(warehouseNumber);
@@ -21,13 +21,14 @@ router.post('/generate', async (req, res) => {
             product_id: product_id,
             warehouse_id: warehouse_id,
             quantity: quantity,
-            created_by: created_by
+            created_by: created_by,
+            purchase_order: purchase_order
         };
 
         // Save label to database
         const newLabel = await pool.query(
-            'INSERT INTO labels (barcode, product_id, warehouse_id, quantity, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [labelData.barcode, labelData.product_id, labelData.warehouse_id, labelData.quantity, labelData.created_by]
+            'INSERT INTO labels (barcode, product_id, warehouse_id, quantity, created_by, purchase_order) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [labelData.barcode, labelData.product_id, labelData.warehouse_id, labelData.quantity, labelData.created_by, purchase_order]
         );
 
         res.json(newLabel.rows[0]);

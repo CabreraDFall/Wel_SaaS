@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import "./generateLabels.css"
 
-const GenerateLabels = ({ productName, productCode, udm, format, productId }) => {
-  console.log("Props recibidas en GenerateLabels:", { productName, productCode, udm, format, productId });
+const GenerateLabels = ({ productName, productCode, udm, format, productId,purchase_order }) => {
+  console.log("Props recibidas en GenerateLabels:", { productName, productCode, udm, format, productId, purchase_order });
   const [formData, setFormData] = useState({
     warehouse: '',
     quantity: ''
@@ -47,6 +47,7 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId }) =>
       productCode: productCode,
       separatorDigit: 1,
       format: format,
+      purchase_order: purchase_order
     });
     try {
       // Find the selected warehouse
@@ -76,6 +77,7 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId }) =>
           productCode: productCode,
           separatorDigit: 1,
           format: format,
+          purchase_order: purchase_order
         }),
       });
 
