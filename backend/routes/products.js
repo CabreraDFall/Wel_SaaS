@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
       LEFT JOIN uom_master m ON p.uom_id = m.id
       ORDER BY p.created_at DESC
     `);
+    console.log('Products with UOM:', result.rows.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.udm_name })));
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
@@ -35,6 +36,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
     
+    console.log('Product by ID with UOM:', result.rows.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.udm_name })));
     res.json(result.rows[0]);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
@@ -47,20 +49,26 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     console.log('Received request body:', req.body);
-    const { code, product_name, udm, format, supplier_id, description } = req.body;
+    const { code, product_name, uom_id, udm, format, supplier_id, description } = req.body;
 
     // Basic validation
-    if (!code || !product_name || !format || !supplier_id || !description) {
+    if (!code || !product_name || (!uom_id && !udm) || (typeof udm === 'string' && udm.toUpperCase() === 'N/A') || !format || !supplier_id || !description) {
       console.log('Missing fields:', {
         code: !code,
         product_name: !product_name,
+        uom_id: !uom_id,
+        udm: !udm,
         format: !format,
         supplier_id: !supplier_id,
         description: !description
       });
+      let requiredFields = ['code', 'product_name', 'format', 'supplier_id', 'description'];
+      if (!uom_id && !udm) {
+        requiredFields.push('uom_id or udm');
+      }
       return res.status(400).json({ 
         message: 'All fields are required',
-        required: ['code', 'product_name', 'format', 'supplier_id', 'description'],
+        required: requiredFields,
         received: req.body
       });
     }
@@ -74,24 +82,28 @@ router.post('/', async (req, res) => {
     }
 
     // Find or create UOM
-    let uom_id = null;
-    if (udm) {
-      // Check if udm is numeric (direct ID) or a string (code)
-      if (!isNaN(parseInt(udm))) {
-        uom_id = parseInt(udm);
+    let finalUomId = null;
+    if (uom_id) {
+      finalUomId = uom_id;
+    } else if (udm) {
+      // Try to find by id
+      console.log('Attempting to find UOM by id:', udm);
+      const uomResult = await pool.query('SELECT id FROM uom_master WHERE id = $1', [udm]);
+      console.log('UOM result:', uomResult.rows);
+      if (uomResult.rows.length > 0) {
+        finalUomId = uomResult.rows[0].id;
       } else {
-        // Try to find by code
-        const uomResult = await pool.query('SELECT id FROM uom_master WHERE code = $1', [udm]);
-        if (uomResult.rows.length > 0) {
-          uom_id = uomResult.rows[0].id;
-        }
+        console.log('UOM not found with id:', udm);
       }
+    } else {
+      console.log('UDM is null or undefined');
     }
 
-    console.log('Attempting to insert product:', { code, product_name, uom_id, format, supplier_id });
+    console.log('UOM ID after processing:', finalUomId);
+    console.log('Attempting to insert product:', { code, product_name, uom_id: finalUomId, format, supplier_id });
     const result = await pool.query(
       'INSERT INTO products (code, product_name, uom_id, format, supplier_id, description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [code, product_name, uom_id, format, supplier_id, description]
+      [code, product_name, finalUomId, format, supplier_id, description]
     );
 
     // Fetch the complete product with UDM name
@@ -168,8 +180,12 @@ router.put('/:id', async (req, res) => {
         const uomResult = await pool.query('SELECT id FROM uom_master WHERE code = $1', [udm]);
         if (uomResult.rows.length > 0) {
           uom_id = uomResult.rows[0].id;
+        } else {
+          console.log('UOM not found with code:', udm);
         }
       }
+    } else {
+      console.log('UDM is null or undefined');
     }
 
     const result = await pool.query(

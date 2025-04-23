@@ -42,9 +42,28 @@ router.post('/generate', async (req, res) => {
 // Get all labels
 router.get('/', async (req, res) => {
     try {
-        const allLabels = await pool.query(
-            'SELECT * FROM labels ORDER BY created_at DESC'
-        );
+        const { purchase_order } = req.query;
+        let query = `
+            SELECT 
+                labels.*,
+                products.product_name,
+                products.code,
+                COALESCE(uom_master.name, 'N/A') AS udm,
+                products.format
+            FROM labels
+            JOIN products ON labels.product_id = products.id
+            LEFT JOIN uom_master ON products.uom_id = uom_master.id
+        `;
+
+        let params = [];
+        if (purchase_order) {
+            query += ` WHERE labels.purchase_order = $1`;
+            params = [purchase_order];
+        }
+
+        query += ` ORDER BY labels.created_at DESC`;
+
+        const allLabels = await pool.query(query, params);
         res.json(allLabels.rows);
     } catch (err) {
         console.error(err.message);

@@ -10,22 +10,35 @@ const NewReception = () => {
   const { purchase_order } = useParams()
 
   // All products data
-  const [allReceptions, setAllReceptions] = useState([
-    {
-      fecha: '2025-01-01',
-      barcode: '01-123456789012',
-      codigo:"102500100",
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-    },
-  ])
+  const [allReceptions, setAllReceptions] = useState([])
 
   useEffect(() => {
-    // Here you would typically fetch the reception details using the purchase_order
-    // For now we'll just log it
-    // TODO: Fetch reception details based on purchase_order
-  }, [purchase_order])
+    const fetchReceptions = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/labels?purchase_order=${purchase_order}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        // Transformar los datos para que coincidan con la estructura esperada
+       const transformedData = data.map(item => ({
+          fecha: item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A',
+          barcode: item.barcode || 'N/A',
+          codigo: item.code || 'N/A',
+          producto: item.product_name || 'N/A',
+          udm: item.udm || 'N/A',
+          formato: item.format || 'N/A',
+        }));
+        setAllReceptions(transformedData);
+      } catch (error) {
+        console.error("Error fetching receptions:", error);
+      }
+    };
+
+    if (purchase_order) {
+      fetchReceptions();
+    }
+  }, [purchase_order]);
 
   // State declarations
   const [searchQuery, setSearchQuery] = useState('')
