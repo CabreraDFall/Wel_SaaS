@@ -63,9 +63,9 @@ CREATE TABLE IF NOT EXISTS products (
     uom_id UUID REFERENCES uom_master(id) ON DELETE RESTRICT,
     format format_type NOT NULL,
     supplier_id UUID REFERENCES suppliers(id) ON DELETE RESTRICT,
-    weight DECIMAL(10,2),
+    weight DECIMAL(10,2) NULL,
     is_active BOOLEAN DEFAULT true,
-    description TEXT NOT NULL,
+    description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP

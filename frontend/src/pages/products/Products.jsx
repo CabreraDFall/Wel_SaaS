@@ -10,6 +10,7 @@ const Products = () => {
   // State declarations
   const [allProducts, setAllProducts] = useState([]);
   const [uomOptions, setUomOptions] = useState([]);
+  const [supplierOptions, setSupplierOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,9 +38,19 @@ const Products = () => {
   };
 
   // Load products and UOM options on component mount
+  const fetchSupplierOptions = async () => {
+    try {
+      const data = await httpService.get('/suppliers');
+      setSupplierOptions(data);
+    } catch (err) {
+      console.error("Error fetching supplier options:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchUomOptions();
+    fetchSupplierOptions();
   }, []);
 
   // All products data
@@ -88,7 +99,7 @@ const Products = () => {
   }
 
   const handleNewProduct = () => {
-    setNewProduct({ code: '', product_name: '', udm: '', format: '', supplier: '' });
+    setNewProduct({ code: '', product_name: '', udm: '', format: '', supplier: '', supplier_id: '' });
   };
 
   const handleInputChange = (e, field) => {
@@ -97,16 +108,20 @@ const Products = () => {
 
   const handleSave = async () => {
     // Validar que todos los campos requeridos estén presentes y no vacíos
-    const requiredFields = ['code', 'product_name', 'format', 'supplier'];
+    const requiredFields = ['code', 'product_name', 'format', 'supplier_id'];
     const missingFields = requiredFields.filter(field => !newProduct[field]?.trim());
-    
+
     if (missingFields.length > 0) {
       setError(`Campos requeridos faltantes: ${missingFields.join(', ')}`);
       return;
     }
 
     try {
-      const savedProduct = await productService.create(newProduct);
+      const productToCreate = {
+        ...newProduct,
+        supplier_id: newProduct.supplier_id
+      };
+      const savedProduct = await productService.create(productToCreate);
       setAllProducts([savedProduct, ...allProducts]);
       setNewProduct(null);
       setError(null);
@@ -210,12 +225,19 @@ const Products = () => {
                             <option value="variable">Variable</option>
                           </select>
                         </td>
-                        <td><input type="text" value={newProduct.supplier} onChange={(e) => handleInputChange(e, 'supplier')} placeholder="Proveedor" /></td>
+                        <td>
+                          <select value={newProduct.supplier_id} onChange={(e) => handleInputChange(e, 'supplier_id')}>
+                            <option value="">Seleccionar proveedor...</option>
+                            {supplierOptions.map(supplier => (
+                              <option key={supplier.id} value={supplier.id}>{supplier.supplier_name}</option>
+                            ))}
+                          </select>
+                        </td>
                         <td>-</td>
                         <td>
-                          {newProduct.code?.trim() && newProduct.product_name?.trim() && newProduct.format?.trim() && (
-                            <button 
-                              onClick={handleSave} 
+                          {newProduct.code?.trim() && newProduct.product_name?.trim() && newProduct.format?.trim() && newProduct.supplier_id?.trim() && (
+                            <button
+                              onClick={handleSave}
                               className="save-btn"
                             >
                               Guardar
@@ -231,7 +253,7 @@ const Products = () => {
                         <td>{product.product_name}</td>
                         <td>{product.udm_name || product.udm || 'N/A'}</td>
                         <td>{product.format}</td>
-                        <td>{product.supplier}</td>
+                        <td>{product.supplier_name || 'N/A'}</td>
                         <td>{new Date(product.created_at).toLocaleDateString()}</td>
                         <td>
                           <button onClick={() => handleDelete(product.id)} className="delete-btn">

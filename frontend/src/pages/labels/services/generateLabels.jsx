@@ -38,6 +38,7 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       let data = await response.json();
+      console.log("Número de etiquetas obtenidas:", data.length);
 
       data = await Promise.all(data.map(async (label) => {
         try {
@@ -53,6 +54,7 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
         }
       }));
 
+      console.log("Número de etiquetas antes de PrintLabels:", data.length);
       setLabels(data);
     } catch (error) {
       console.error("Could not fetch labels:", error);

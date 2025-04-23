@@ -8,9 +8,10 @@ const pool = require('../config/db');
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT p.*, m.name as udm_name 
+      SELECT p.*, m.name as udm_name, s.supplier_name as supplier_name
       FROM products p
       LEFT JOIN uom_master m ON p.uom_id = m.id
+      LEFT JOIN suppliers s ON p.supplier_id = s.id
       ORDER BY p.created_at DESC
     `);
     console.log('Products with UOM:', result.rows.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.udm_name })));
@@ -26,16 +27,17 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT p.*, m.name as udm_name 
+      SELECT p.*, m.name as udm_name, s.supplier_name as supplier_name
       FROM products p
       LEFT JOIN uom_master m ON p.uom_id = m.id
+      LEFT JOIN suppliers s ON p.supplier_id = s.id
       WHERE p.id = $1
     `, [req.params.id]);
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Product not found' });
     }
-    
+
     console.log('Product by ID with UOM:', result.rows.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.udm_name })));
     res.json(result.rows[0]);
   } catch (error) {
@@ -52,22 +54,20 @@ router.post('/', async (req, res) => {
     const { code, product_name, uom_id, udm, format, supplier_id, weight, description } = req.body;
 
     // Basic validation
-    if (!code || !product_name || (!uom_id && !udm) || (typeof udm === 'string' && udm.toUpperCase() === 'N/A') || !format || !supplier_id || !description) {
+    if (!code || !product_name || (!uom_id && !udm) || (typeof udm === 'string' && udm.toUpperCase() === 'N/A') || !format || !supplier_id) {
       console.log('Missing fields:', {
         code: !code,
         product_name: !product_name,
         uom_id: !uom_id,
         udm: !udm,
         format: !format,
-        supplier_id: !supplier_id,
-        description: !description,
-        weight: !weight
+        supplier_id: !supplier_id
       });
-      let requiredFields = ['code', 'product_name', 'format', 'supplier_id', 'description'];
+      let requiredFields = ['code', 'product_name', 'format', 'supplier_id'];
       if (!uom_id && !udm) {
         requiredFields.push('uom_id or udm');
       }
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'All fields are required',
         required: requiredFields,
         received: req.body
@@ -143,17 +143,16 @@ router.put('/:id', async (req, res) => {
     const product = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
 
     // Basic validation
-    if (!code || !product_name || !format || !supplier_id || !description) {
+    if (!code || !product_name || !format || !supplier_id) {
       console.log('Missing fields:', {
         code: !code,
         product_name: !product_name,
         format: !format,
-        supplier_id: !supplier_id,
-        description: !description
+        supplier_id: !supplier_id
       });
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'All fields are required',
-        required: ['code', 'product_name', 'format', 'supplier_id', 'description'],
+        required: ['code', 'product_name', 'format', 'supplier_id'],
         received: req.body
       });
     }
