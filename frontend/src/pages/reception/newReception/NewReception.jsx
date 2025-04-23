@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import './newReception.css'
-import Sidebar from '../../../components/sidebar/Sidebar'  
-import Navbar from '../../../components/navBar/Navbar'  
+import Sidebar from '../../../components/sidebar/Sidebar'
+import Navbar from '../../../components/navBar/Navbar'
 import SearchIcon from '../../../components/icons/SearchIcon'
 import { Link, useParams } from 'react-router-dom'
+import * as XLSX from 'xlsx';
 
 const NewReception = () => {
   const { purchase_order } = useParams()
@@ -62,12 +63,16 @@ const NewReception = () => {
     setCurrentPage(1) // Reset to first page when changing date
   }
 
-  const toggleDatePicker = () => {
-    setShowDatePicker(!showDatePicker)
-  }
-
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber)
+  }
+
+  const handleExport = () => {
+    const wb = XLSX.utils.book_new();
+    const wsData = filteredReceptions.map(reception => [reception.fecha, reception.barcode, reception.codigo, reception.producto, reception.udm, reception.formato]);
+    const ws = XLSX.utils.aoa_to_sheet([["Fecha", "Barcode", "Codigo", "Producto", "UDM", "Formato"], ...wsData]);
+    XLSX.utils.book_append_sheet(wb, ws, "Receptions");
+    XLSX.writeFile(wb, "Receptions.xlsx");
   }
 
   return (
@@ -93,20 +98,11 @@ const NewReception = () => {
                   />
                 </div>
               </div>
-              <div className="calendar-container">
-                <button className="calendar-btn" onClick={toggleDatePicker}>
-                  <span>{selectedDate || 'Calendario'}</span>
+              <div className="Exportar">
+                <button className="" onClick={handleExport}>
+                  <span>Exportar</span>
                 </button>
-                {showDatePicker && (
-                  <div className="date-picker-dropdown">
-                    <input
-                      type="date"
-                      value={selectedDate}
-                      onChange={handleDateSelect}
-                      className="date-input"
-                    />
-                  </div>
-                )}
+
               </div>
             </div>
             <div className='products-body'>
