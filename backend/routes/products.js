@@ -49,7 +49,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     console.log('Received request body:', req.body);
-    const { code, product_name, uom_id, udm, format, supplier_id, description } = req.body;
+    const { code, product_name, uom_id, udm, format, supplier_id, weight, description } = req.body;
 
     // Basic validation
     if (!code || !product_name || (!uom_id && !udm) || (typeof udm === 'string' && udm.toUpperCase() === 'N/A') || !format || !supplier_id || !description) {
@@ -60,7 +60,8 @@ router.post('/', async (req, res) => {
         udm: !udm,
         format: !format,
         supplier_id: !supplier_id,
-        description: !description
+        description: !description,
+        weight: !weight
       });
       let requiredFields = ['code', 'product_name', 'format', 'supplier_id', 'description'];
       if (!uom_id && !udm) {
@@ -100,10 +101,10 @@ router.post('/', async (req, res) => {
     }
 
     console.log('UOM ID after processing:', finalUomId);
-    console.log('Attempting to insert product:', { code, product_name, uom_id: finalUomId, format, supplier_id });
+    console.log('Attempting to insert product:', { code, product_name, uom_id: finalUomId, format, supplier_id, weight });
     const result = await pool.query(
-      'INSERT INTO products (code, product_name, uom_id, format, supplier_id, description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [code, product_name, finalUomId, format, supplier_id, description]
+      'INSERT INTO products (code, product_name, uom_id, format, supplier_id, weight, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [code, product_name, finalUomId, format, supplier_id, weight, description]
     );
 
     // Fetch the complete product with UDM name
@@ -136,7 +137,7 @@ router.post('/', async (req, res) => {
 // @access  Private
 router.put('/:id', async (req, res) => {
   try {
-    const { code, product_name, udm, format, supplier_id, description } = req.body;
+    const { code, product_name, udm, format, supplier_id, description, weight } = req.body;
 
     // Check if product exists
     const product = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
@@ -189,8 +190,8 @@ router.put('/:id', async (req, res) => {
     }
 
     const result = await pool.query(
-      'UPDATE products SET code = COALESCE($1, code), product_name = COALESCE($2, product_name), uom_id = COALESCE($3, uom_id), format = COALESCE($4, format), supplier_id = COALESCE($5, supplier_id), description = COALESCE($6, description) WHERE id = $7 RETURNING *',
-      [code, product_name, uom_id, format, supplier_id, description, req.params.id]
+      'UPDATE products SET code = COALESCE($1, code), product_name = COALESCE($2, product_name), uom_id = COALESCE($3, uom_id), format = COALESCE($4, format), supplier_id = COALESCE($5, supplier_id), weight = COALESCE($6, weight), description = COALESCE($7, description) WHERE id = $8 RETURNING *',
+      [code, product_name, uom_id, format, supplier_id, weight, description, req.params.id]
     );
 
     // Fetch the complete product with UDM name
