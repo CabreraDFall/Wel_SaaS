@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS receptions (
     items INTEGER NOT NULL CHECK (items >= 0),
     purchase_order VARCHAR(100) NOT NULL,
     status reception_status NOT NULL,
-    notes TEXT NOT NULL,
+    notes TEXT,
     created_by UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
