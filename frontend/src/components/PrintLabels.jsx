@@ -2,8 +2,6 @@ import React, { useState, useRef } from 'react';
 import './PrintLabels.css';
 
 const PrintLabels = ({ labels }) => {
-  console.log("PrintLabels props:", { labels });
-  console.log("Labels array:", labels);
   const [loading, setLoading] = useState(false);
   const componentRef = useRef();
   const labelsToPrint = labels.filter(label => label.active && !label.is_printed);

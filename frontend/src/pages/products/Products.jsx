@@ -80,14 +80,15 @@ const Products = () => {
     setNewProduct({ code: '', product_name: '', supplier_id: '' });
   };
 
-  const handleInputChange = (e, field) => {
-    setNewProduct({ ...newProduct, [field]: e.target.value });
+ const handleInputChange = (e, field) => {
+    setNewProduct(prevProduct => ({ ...prevProduct, [field]: e.target.value }));
   };
 
   const handleSave = async () => {
     // Validar que todos los campos requeridos estén presentes y no vacíos
     const requiredFields = ['code', 'product_name', 'supplier_id'];
     const missingFields = requiredFields.filter(field => !newProduct[field]?.trim());
+
 
     if (missingFields.length > 0) {
       setError(`Campos requeridos faltantes: ${missingFields.join(', ')}`);
@@ -99,6 +100,8 @@ const Products = () => {
         ...newProduct,
         supplier_id: newProduct.supplier_id
       };
+
+
       const savedProduct = await productService.create(productToCreate);
       setAllProducts([savedProduct, ...allProducts]);
       setNewProduct(null);
@@ -190,11 +193,11 @@ const Products = () => {
                   handleSave={handleSave}
                   handleCancel={handleCancel}
                   newFormInputs={newProduct ? [
-                    { name: 'code', type: 'text', value: newProduct.code },
-                    { name: 'product_name', type: 'text', value: newProduct.product_name },
-                    { name: 'udm', type: 'dropdown', endpoint: '/uom_master', value: newProduct.udm, displayValue:"name" },
-                    { name: 'format', type: 'dropdown', endpoint: '/uom_master', value: newProduct.udm },
-                    { name: 'supplier_id', type: 'dropdown', endpoint: '/suppliers', value: newProduct.supplier_id }
+                    { name: 'code', type: 'text', value: newProduct.code, onChange: handleInputChange },
+                    { name: 'product_name', type: 'text', value: newProduct.product_name, onChange: handleInputChange },
+                    { name: 'udm', type: 'dropdown', endpoint: '/uom_master', value: newProduct.udm, displayValue:"name", onChange: handleInputChange },
+                    { name: 'format', type: 'select', options: [{ id: 'fijo', name: 'fijo' }, { id: 'variable', name: 'variable' }], value: newProduct.format, onChange: handleInputChange },
+                    { name: 'supplier_id', type: 'dropdown', endpoint: '/suppliers', value: newProduct.supplier_id, onChange: handleInputChange }
                   ] : null}
                 />
               </div>

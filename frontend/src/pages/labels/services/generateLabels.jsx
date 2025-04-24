@@ -38,7 +38,6 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       let data = await response.json();
-      console.log("Número de etiquetas obtenidas:", data.length);
 
       data = await Promise.all(data.map(async (label) => {
         try {
@@ -54,7 +53,6 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
         }
       }));
 
-      console.log("Número de etiquetas antes de PrintLabels:", data.length);
       setLabels(data);
     } catch (error) {
       console.error("Could not fetch labels:", error);
@@ -79,18 +77,6 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos enviados al generar la etiqueta:", {
-      product_id: productId,
-      warehouse_id: warehouses.find(warehouse => warehouse.id === formData.warehouse)?.id,
-      quantity: parseInt(formData.quantity),
-      active: true,
-      created_by: "c8340afa-1c17-4333-848d-b17f420dbd2c",
-      warehouseNumber: warehouses.find(warehouse => warehouse.id === formData.warehouse)?.warehouse_number,
-      productCode: productCode,
-      separatorDigit: 1,
-      format: format,
-      purchase_order: purchase_order
-    });
     try {
       const selectedWarehouse = warehouses.find(warehouse => warehouse.id === formData.warehouse);
       if (!selectedWarehouse) {

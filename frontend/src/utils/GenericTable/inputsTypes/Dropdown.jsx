@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { httpService } from '../../../services/api/httpService';
 
-const Dropdown = ({ endpoint, displayValue }) => {
+const Dropdown = ({ endpoint, displayValue, onChange, value }) => {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,13 +31,14 @@ const Dropdown = ({ endpoint, displayValue }) => {
   }
 
   return (
-    <>
+    <select onChange={onChange} value={value}>
+      <option value="">Seleccione una opción</option>
       {options.map((option) => (
         <option key={option.id} value={option.id}>
-          {option.name || option.supplier_name || option.code}
+          {option[displayValue] || option.supplier_name || option.code}
         </option>
       ))}
-    </>
+    </select>
   );
 };
 

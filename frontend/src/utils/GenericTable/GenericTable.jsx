@@ -19,14 +19,26 @@ const GenericTable = ({ elements, columnTitles, currentPage, totalPages, handleP
               {newFormInputs.map((input, index) => (
                 <td key={index}>
                   {input.type === 'dropdown' ? (
-                    <select onChange={(e) => handleInputChange(e, input.name)}>
-                      <Dropdown endpoint={input.endpoint} displayValue={input.displayValue } />
+                    <Dropdown
+                      endpoint={input.endpoint}
+                      displayValue={input.displayValue}
+                      onChange={(e) => input.onChange(e, input.name)}
+                      value={input.value}
+                    />
+                  ) : input.type === 'select' ? (
+                    <select value={input.value} onChange={(e) => input.onChange(e, input.name)}>
+                      <option value="">Seleccione una opción</option>
+                      {input.options.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.name}
+                        </option>
+                      ))}
                     </select>
                   ) : (
                     <input
                       type={input.type}
                       value={input.value}
-                      onChange={(e) => handleInputChange(e, input.name)}
+                      onChange={(e) => input.onChange(e, input.name)}
                     />
                   )}
                 </td>
