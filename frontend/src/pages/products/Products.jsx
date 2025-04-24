@@ -5,6 +5,7 @@ import Navbar from '../../components/navBar/Navbar'
 import SearchIcon from '../../components/icons/SearchIcon'
 import { productService } from '../../services/api/productService'
 import { httpService } from '../../services/api/httpService'
+import GenericTable from '../../utils/GenericTable/GenericTable';
 
 const Products = () => {
   // State declarations
@@ -58,7 +59,7 @@ const Products = () => {
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 3
+  const itemsPerPage = 5
   const [newProduct, setNewProduct] = useState(null)
 
   // Filter products based on search query and date
@@ -193,107 +194,21 @@ const Products = () => {
             </div>
             <div className='products-body'>
               <div className='products-table'>
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th>Codigo</th>
-                      <th>Productos</th>
-                      <th>UDM</th>
-                      <th>Formato</th>
-                      <th>Proveedor</th>
-                      <th>Fecha</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {newProduct && (
-                      <tr>
-                        <td><input type="text" value={newProduct.code} onChange={(e) => handleInputChange(e, 'code')} placeholder="Código" /></td>
-                        <td><input type="text" value={newProduct.product_name} onChange={(e) => handleInputChange(e, 'product_name')} placeholder="Nombre del producto" /></td>
-                        <td>
-                          <select value={newProduct.udm} onChange={(e) => handleInputChange(e, 'udm')}>
-                            <option value="">Seleccionar UDM...</option>
-                            {uomOptions.map(uom => (
-                              <option key={uom.id} value={uom.id}>{uom.name} ({uom.code})</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td>
-                          <select value={newProduct.format} onChange={(e) => handleInputChange(e, 'format')}>
-                            <option value="">Seleccionar formato...</option>
-                            <option value="fijo">Fijo</option>
-                            <option value="variable">Variable</option>
-                          </select>
-                        </td>
-                        <td>
-                          <select value={newProduct.supplier_id} onChange={(e) => handleInputChange(e, 'supplier_id')}>
-                            <option value="">Seleccionar proveedor...</option>
-                            {supplierOptions.map(supplier => (
-                              <option key={supplier.id} value={supplier.id}>{supplier.supplier_name}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td>-</td>
-                        <td>
-                          {newProduct.code?.trim() && newProduct.product_name?.trim() && newProduct.format?.trim() && newProduct.supplier_id?.trim() && (
-                            <button
-                              onClick={handleSave}
-                              className="save-btn"
-                            >
-                              Guardar
-                            </button>
-                          )}
-                          <button onClick={handleCancel} className="cancel-btn">Cancelar</button>
-                        </td>
-                      </tr>
-                    )}
-                    {paginatedProducts.map((product) => (
-                      <tr key={product.id}>
-                        <td>{product.code}</td>
-                        <td>{product.product_name}</td>
-                        <td>{product.udm_name || product.udm || 'N/A'}</td>
-                        <td>{product.format}</td>
-                        <td>{product.supplier_name || 'N/A'}</td>
-                        <td>{new Date(product.created_at).toLocaleDateString()}</td>
-                        <td>
-                          <button onClick={() => handleDelete(product.id)} className="delete-btn">
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="pagination-container flex justify-between items-center">
-                  <div className="pagination-info">
-                    Página {currentPage} - {totalPages}
-                  </div>
-                  <div className="pagination-controls flex gap-4">
-                    <button 
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="pagination-btn"
-                    >
-                      Anterior
-                    </button>
-                    {[...Array(totalPages)].map((_, index) => (
-                      <button
-                        key={index + 1}
-                        onClick={() => handlePageChange(index + 1)}
-                        className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="pagination-btn"
-                    >
-                      Siguiente
-                    </button>
-                  </div>
-                </div>
+                <GenericTable 
+                  columnTitles={["Codigo", "Productos", "UDM", "Formato", "Proveedor", "Fecha", "Acciones"]}
+                  elements={paginatedProducts.map(product => ({
+                    codigo: product.code,
+                    productos: product.product_name,
+                    udm: product.udm_name || product.udm || 'N/A',
+                    formato: product.format,
+                    proveedor: product.supplier_name || 'N/A',
+                    fecha: new Date(product.created_at).toLocaleDateString(),
+                    acciones: <button onClick={() => handleDelete(product.id)} className="delete-btn">Eliminar</button>
+                  }))}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  handlePageChange={handlePageChange}
+                />
               </div>
             </div>
           </div>
