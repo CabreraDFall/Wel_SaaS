@@ -106,6 +106,7 @@ const Products = () => {
       setAllProducts([savedProduct, ...allProducts]);
       setNewProduct(null);
       setError(null);
+      fetchProducts();
     } catch (err) {
       setError(err.message);
     }
