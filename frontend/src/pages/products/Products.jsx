@@ -6,12 +6,11 @@ import SearchIcon from '../../components/icons/SearchIcon'
 import { productService } from '../../services/api/productService'
 import { httpService } from '../../services/api/httpService'
 import GenericTable from '../../utils/GenericTable/GenericTable';
+import Dropdown from '../../utils/genericTable/inputsTypes/Dropdown';
 
 const Products = () => {
   // State declarations
   const [allProducts, setAllProducts] = useState([]);
-  const [uomOptions, setUomOptions] = useState([]);
-  const [supplierOptions, setSupplierOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -28,30 +27,8 @@ const Products = () => {
     }
   };
 
-  // Fetch UOM options
-  const fetchUomOptions = async () => {
-    try {
-      const data = await httpService.get('/uom_master');
-      setUomOptions(data);
-    } catch (err) {
-      console.error("Error fetching UOM options:", err);
-    }
-  };
-
-  // Load products and UOM options on component mount
-  const fetchSupplierOptions = async () => {
-    try {
-      const data = await httpService.get('/suppliers');
-      setSupplierOptions(data);
-    } catch (err) {
-      console.error("Error fetching supplier options:", err);
-    }
-  };
-
   useEffect(() => {
     fetchProducts();
-    fetchUomOptions();
-    fetchSupplierOptions();
   }, []);
 
   // All products data
@@ -100,7 +77,7 @@ const Products = () => {
   }
 
   const handleNewProduct = () => {
-    setNewProduct({ code: '', product_name: '', udm: '', format: '', supplier: '', supplier_id: '' });
+    setNewProduct({ code: '', product_name: '', supplier_id: '' });
   };
 
   const handleInputChange = (e, field) => {
@@ -109,7 +86,7 @@ const Products = () => {
 
   const handleSave = async () => {
     // Validar que todos los campos requeridos estén presentes y no vacíos
-    const requiredFields = ['code', 'product_name', 'format', 'supplier_id'];
+    const requiredFields = ['code', 'product_name', 'supplier_id'];
     const missingFields = requiredFields.filter(field => !newProduct[field]?.trim());
 
     if (missingFields.length > 0) {
@@ -194,12 +171,12 @@ const Products = () => {
             </div>
             <div className='products-body'>
               <div className='products-table'>
-                <GenericTable 
+                <GenericTable
                   columnTitles={["Codigo", "Productos", "UDM", "Formato", "Proveedor", "Fecha", "Acciones"]}
                   elements={paginatedProducts.map(product => ({
                     codigo: product.code,
                     productos: product.product_name,
-                    udm: product.udm_name || product.udm || 'N/A',
+                    udm: product.udm_name || 'N/A',
                     formato: product.format,
                     proveedor: product.supplier_name || 'N/A',
                     fecha: new Date(product.created_at).toLocaleDateString(),
@@ -208,12 +185,23 @@ const Products = () => {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   handlePageChange={handlePageChange}
+                  newForm={newProduct}
+                  handleInputChange={handleInputChange}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  newFormInputs={newProduct ? [
+                    { name: 'code', type: 'text', value: newProduct.code },
+                    { name: 'product_name', type: 'text', value: newProduct.product_name },
+                    { name: 'udm', type: 'dropdown', endpoint: '/uom_master', value: newProduct.udm, displayValue:"name" },
+                    { name: 'format', type: 'dropdown', endpoint: '/uom_master', value: newProduct.udm },
+                    { name: 'supplier_id', type: 'dropdown', endpoint: '/suppliers', value: newProduct.supplier_id }
+                  ] : null}
                 />
               </div>
             </div>
           </div>
         </div>
-    </div>
+    </div >
   )
 }
 
