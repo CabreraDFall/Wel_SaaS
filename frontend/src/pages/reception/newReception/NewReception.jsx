@@ -11,6 +11,7 @@ const NewReception = () => {
 
   // All products data
   const [allReceptions, setAllReceptions] = useState([])
+  const [selectedReceptions, setSelectedReceptions] = useState([]);
 
   useEffect(() => {
     const fetchReceptions = async () => {
@@ -45,7 +46,7 @@ const NewReception = () => {
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 3
+  const itemsPerPage = 25
 
   // Filter products based on search query and date
   const filteredReceptions = allReceptions.filter(reception => {
@@ -80,9 +81,23 @@ const NewReception = () => {
     setCurrentPage(pageNumber)
   }
 
+  const handleCheckboxChange = (barcode) => {
+    setSelectedReceptions(prevSelected => {
+      if (prevSelected.includes(barcode)) {
+        return prevSelected.filter(item => item !== barcode);
+      } else {
+        return [...prevSelected, barcode];
+      }
+    });
+  };
+
   const handleExport = () => {
     const wb = XLSX.utils.book_new();
-    const wsData = filteredReceptions.map(reception => [reception.fecha, reception.barcode, reception.codigo, reception.producto, reception.udm, reception.formato]);
+    let dataToExport = filteredReceptions;
+    if (selectedReceptions.length > 0) {
+      dataToExport = filteredReceptions.filter(reception => selectedReceptions.includes(reception.barcode));
+    }
+    const wsData = dataToExport.map(reception => [reception.fecha, reception.barcode, reception.codigo, reception.producto, reception.udm, reception.formato]);
     const ws = XLSX.utils.aoa_to_sheet([["Fecha", "Barcode", "Codigo", "Producto", "UDM", "Formato"], ...wsData]);
     XLSX.utils.book_append_sheet(wb, ws, "Receptions");
     XLSX.writeFile(wb, "Receptions.xlsx");
@@ -123,6 +138,7 @@ const NewReception = () => {
                 <table className="w-full">
                   <thead>
                     <tr>
+                      <th></th>
                       <th>Fecha</th>
                       <th>Barcode</th>
                       <th>Codigo</th>
@@ -135,6 +151,13 @@ const NewReception = () => {
                   <tbody>
                     {paginatedReceptions.map((reception, index) => (
                       <tr key={index}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={selectedReceptions.includes(reception.barcode)}
+                            onChange={() => handleCheckboxChange(reception.barcode)}
+                          />
+                        </td>
                         <td>{reception.fecha}</td>  
                         <td>{reception.barcode}</td>
                         <td>{reception.codigo}</td>
