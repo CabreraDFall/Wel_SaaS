@@ -107,6 +107,7 @@ const NewLabel = () => {
                 <h6>{purchase_order && `Orden de compra: ${purchase_order}`}</h6>
 
                 </div>
+                
               </div>
                 {selectedProduct ? (
                     <div className="selected-product-container">

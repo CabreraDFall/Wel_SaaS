@@ -9,9 +9,22 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
   });
   const [warehouses, setWarehouses] = useState([]);
   const [labels, setLabels] = useState([]);
-  const memoizedLabels = useMemo(() => labels, [labels]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const handleLabelsPrinted = (printedLabels) => { // Status: Se agregó la función handleLabelsPrinted
+    setLabels(prevLabels => {
+      return prevLabels.map(label => {
+        const printedLabel = printedLabels.find(printedLabel => printedLabel.id === label.id);
+        if (printedLabel) {
+          return { ...label, is_printed: true }; // Status: Se marca la etiqueta como impresa
+        }
+        return label;
+      });
+    });
+  };
+
+  const memoizedLabels = useMemo(() => labels, [labels]);
 
   const fetchWarehouses = useCallback(async () => {
     try {
@@ -171,7 +184,7 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
             cancelar
           </button>
         </div>
-        <PrintLabels labels={memoizedLabels} />
+        <PrintLabels labels={memoizedLabels} onLabelsPrinted={handleLabelsPrinted} /> {/* Status: Se pasó la función handleLabelsPrinted como prop */}
       </form>
     </div>
   );
