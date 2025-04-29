@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/db');
+const pool = require('../index');
 
 // Rutas para las categorías de unidades de medida (UOM)
 

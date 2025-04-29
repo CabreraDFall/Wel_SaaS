@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS uom_categories (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
 );
+--Status: Agregado campo refresh_token a la tabla users
 
 -- Tabla maestra de unidades de medida
 CREATE TABLE IF NOT EXISTS uom_master (
@@ -82,10 +83,11 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(100) NOT NULL,
     is_active BOOLEAN DEFAULT true,
     last_login TIMESTAMP,
+    refresh_token VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
-); 
+);
 
 -- Tabla de recepciones
 CREATE TABLE IF NOT EXISTS receptions (

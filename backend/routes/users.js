@@ -1,44 +1,45 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const pool = require('../config/db');
+const pool = require('../index');
 
 // Crear usuario
-router.post('/', async (req, res) => {
-  try {
-    const { first_name, last_name, email, employee_number, role, password } = req.body;
+// Status: Deshabilitada la creación de usuarios desde este endpoint.  La creación de usuarios ahora se maneja a través de /register en auth.js
+// router.post('/', async (req, res) => {
+//   try {
+//     const { first_name, last_name, email, employee_number, role, password } = req.body;
 
-    // Verificar si el usuario ya existe
-    const userExists = await pool.query(
-      'SELECT * FROM users WHERE email = $1 OR employee_number = $2',
-      [email, employee_number]
-    );
+//     // Verificar si el usuario ya existe
+//     const userExists = await pool.query(
+//       'SELECT * FROM users WHERE email = $1 OR employee_number = $2',
+//       [email, employee_number]
+//     );
 
-    if (userExists.rows.length > 0) {
-      return res.status(400).json({
-        mensaje: 'El correo o número de empleado ya está registrado'
-      });
-    }
+//     if (userExists.rows.length > 0) {
+//       return res.status(400).json({
+//         mensaje: 'El correo o número de empleado ya está registrado'
+//       });
+//     }
 
-    // Encriptar contraseña
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+//     // Encriptar contraseña
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Crear nuevo usuario
-    const newUser = await pool.query(
-      'INSERT INTO users (first_name, last_name, email, employee_number, role, password) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, first_name, last_name, email, employee_number, role, created_at',
-      [first_name, last_name, email, employee_number, role, hashedPassword]
-    );
+//     // Crear nuevo usuario
+//     const newUser = await pool.query(
+//       'INSERT INTO users (first_name, last_name, email, employee_number, role, password) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, first_name, last_name, email, employee_number, role, created_at',
+//       [first_name, last_name, email, employee_number, role, hashedPassword]
+//     );
 
-    res.status(201).json(newUser.rows[0]);
-  } catch (error) {
-    console.error('Error al crear usuario:', error);
-    res.status(500).json({
-      mensaje: 'Error al crear el usuario',
-      error: error.message
-    });
-  }
-});
+//     res.status(201).json(newUser.rows[0]);
+//   } catch (error) {
+//     console.error('Error al crear usuario:', error);
+//     res.status(500).json({
+//       mensaje: 'Error al crear el usuario',
+//       error: error.message
+//     });
+//   }
+// });
 
 // Obtener todos los usuarios
 router.get('/', async (req, res) => {
@@ -135,4 +136,5 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Status: Se verificó que la creación de usuarios es posible desde este endpoint.
 module.exports = router;

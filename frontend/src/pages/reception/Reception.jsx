@@ -114,7 +114,7 @@ const Reception = () => {
     try {
       setLoading(true)
       // Simulating the user ID. Replace with actual user ID retrieval logic.
-      const userId = "c8340afa-1c17-4333-848d-b17f420dbd2c"; 
+      const userId = "50ce4f37-91cc-43ee-814e-0850c783b67d"; 
       await receptionService.createReception({...newTrip, created_by: userId})
       setNewTrip(null)
       await fetchReceptions() // Refresh the list

@@ -24,11 +24,12 @@ const Users = () => {
   ]
 
   // State declarations
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showDatePicker, setShowDatePicker] = useState(false)
-  const [selectedDate, setSelectedDate] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 3
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
 
   // Filter products based on search query and date
   const filteredUsers = allUsers.filter(user => {
