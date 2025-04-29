@@ -23,10 +23,7 @@ const Dashboard = () => {
                 <Navbar />
                 <div className='dashboard-container'>
                     <h1>Dashboard</h1>
-                    <button onClick={handlePrint}>Imprimir Etiquetas</button> {/* Status: Se agregó el botón para imprimir */}
-                    <div ref={componentRef}> {/* Status: Se agregó la referencia al componente */}
-                        <LabelsToPrint /> {/* Status: Se agregó el componente LabelsToPrint */}
-                    </div>
+                    
                 </div>
             </div>
         </div>
