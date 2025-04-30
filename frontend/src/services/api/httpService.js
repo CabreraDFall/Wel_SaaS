@@ -3,7 +3,14 @@ const BASE_URL = 'http://localhost:3000/api';
 class HttpService {
     async get(endpoint) {
         try {
-            const response = await fetch(`${BASE_URL}${endpoint}`);
+            const token = localStorage.getItem('token');
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            };
+            const response = await fetch(`${BASE_URL}${endpoint}`, {
+                headers: headers
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -15,11 +22,12 @@ class HttpService {
 
     async post(endpoint, data) {
         try {
-                     
+            const token = localStorage.getItem('token');
             const response = await fetch(`${BASE_URL}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(data),
             });
@@ -37,10 +45,12 @@ class HttpService {
 
     async put(endpoint, data) {
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${BASE_URL}${endpoint}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(data),
             });
@@ -55,8 +65,14 @@ class HttpService {
 
     async delete(endpoint) {
         try {
+            const token = localStorage.getItem('token');
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            };
             const response = await fetch(`${BASE_URL}${endpoint}`, {
                 method: 'DELETE',
+                headers: headers
             });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -74,4 +90,4 @@ class HttpService {
     }
 }
 
-export const httpService = new HttpService(); 
+export const httpService = new HttpService();

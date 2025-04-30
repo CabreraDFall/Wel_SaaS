@@ -7,12 +7,13 @@ const pool = require('../index');
 
 //Status: Agregado middleware para verificar el token JWT
 const verifyJWT = (req, res, next) => {
-  //Status: Agregado middleware para verificar el token JWT
-  const token = req.cookies.jwt;
+  const authHeader = req.headers.authorization || req.headers.Authorization;
 
-  if (!token) {
+  if (!authHeader?.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No token provided' });
   }
+
+  const token = authHeader.split(' ')[1];
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {

@@ -1,20 +1,21 @@
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const { verifyJWT } = require('./controllers/authController');
 const { Pool } = require('pg');
 const dbConfig = require('./config/db');
 
 const pool = new Pool(dbConfig); // Status: Inicialización de la conexión a la base de datos
 
-const app = express();
-
 module.exports = pool;
+
+const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const { verifyJWT } = require('./controllers/authController');
+
+const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5174',
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
@@ -23,14 +24,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // Routes
-app.use('/api/products', require('./routes/products'));
-app.use('/api/receptions', require('./routes/receptions'));
-app.use('/api/labels', require('./routes/labels'));
-app.use('/api/warehouses', require('./routes/warehouses'));
-app.use('/api/uom_master', require('./routes/uom'));
-app.use('/api/suppliers', require('./routes/suppliers'));
-app.use('/api/uom_categories', require('./routes/uom_categories'));
-app.use('/api/users', require('./routes/users')); // Agregar la ruta de usuarios
+app.use('/api/products', verifyJWT, require('./routes/products'));
+app.use('/api/receptions', verifyJWT, require('./routes/receptions'));
+app.use('/api/labels', verifyJWT, require('./routes/labels'));
+app.use('/api/warehouses', verifyJWT, require('./routes/warehouses'));
+app.use('/api/uom_master', verifyJWT, require('./routes/uom'));
+app.use('/api/suppliers', verifyJWT, require('./routes/suppliers'));
+app.use('/api/uom_categories', verifyJWT, require('./routes/uom_categories'));
+app.use('/api/users', verifyJWT, require('./routes/users')); // Agregar la ruta de usuarios
 app.use('/api/auth', require('./routes/auth'));
 
 //Status: Agregada ruta de prueba para verificar el token JWT

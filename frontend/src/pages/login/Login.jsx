@@ -1,10 +1,42 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "./login.css";
 import Nav from "../../components/Nav";
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {
   const [showPassword, setShowPassword] = useState(false);
-  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Login successful:", data);
+        localStorage.setItem("token", data.accessToken);
+        navigate("/");
+        // Aquí se puede redirigir al usuario a la página principal
+      } else {
+        console.error("Login failed:", response.status);
+        // Aquí se puede mostrar un mensaje de error al usuario
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      // Aquí se puede mostrar un mensaje de error al usuario
+    }
+  };
+
   return (
     <div className="flex h-screen">
       {/* Left side - Dark blue section with background effect */}
@@ -44,7 +76,7 @@ const Login = () => {
       <div className="flex-1 paddingLeft">  
         <div className="w-full max-w-md mx-auto">
           <h1 className="text-3xl font-bold text-[#14154F] paddingBottom">Iniciar sesion</h1>
-          <form className="space-y-6 flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="space-y-6 flex flex-col gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Nombre de usuario
@@ -53,6 +85,8 @@ const Login = () => {
                 type="text"
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="AbrahamC"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
             
@@ -65,6 +99,8 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="••••••••••••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   />
                 <button
                   type="button"
@@ -90,6 +126,12 @@ const Login = () => {
               </a>
             </div>
           </form>
+           <button
+              onClick={() => setIsLoggedIn(true)}
+              className="w-full bg-[#4763E4] text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Log In
+            </button>
         </div>
       </div>
       </div>
