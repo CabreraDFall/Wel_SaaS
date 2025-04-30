@@ -25,6 +25,7 @@ const Login = ({ setIsLoggedIn }) => {
         const data = await response.json();
         console.log("Login successful:", data);
         localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("isLoggedIn", "true");
         navigate("/");
         // Aquí se puede redirigir al usuario a la página principal
       } else {
@@ -126,12 +127,7 @@ const Login = ({ setIsLoggedIn }) => {
               </a>
             </div>
           </form>
-           <button
-              onClick={() => setIsLoggedIn(true)}
-              className="w-full bg-[#4763E4] text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Log In
-            </button>
+          
         </div>
       </div>
       </div>

@@ -6,24 +6,20 @@ import Reception from './pages/reception/Reception';
 import Labels from './pages/labels/Labels';
 import Users from './pages/users/Users';
 import Dashboard from './pages/dashboard/dashboard';
+import { useEffect, useState } from 'react';
 import NewReception from './pages/reception/newReception/NewReception';
 import NewLabel from './pages/labels/newLabel/NewLabel';
-import { useState, useEffect } from 'react';
+import Nav from './components/Nav';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    // Get the value from local storage if it exists
-    const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
-    return storedIsLoggedIn === 'true'; // Convert string to boolean
-  });
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
 
   useEffect(() => {
-    // Update local storage when isLoggedIn changes
-    localStorage.setItem('isLoggedIn', isLoggedIn.toString());
-  }, [isLoggedIn]);
+    localStorage.setItem('token', token || '');
+  }, [token]);
 
   const ProtectedRoute = ({ children }) => {
-    if (!isLoggedIn) {
+    if (!token) {
       return <Navigate to="/login" />;
     }
     return children;
@@ -31,8 +27,9 @@ function App() {
 
   return (
     <>
+    
       <Routes>
-        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+<Route path="/login" element={<Login />} />
         <Route
           path="/"
           element={

@@ -2,11 +2,13 @@ import React from 'react'
 import './sidebar.css'
 import { Link, NavLink } from 'react-router-dom'
 import Logo from '../../assets/Logo'
+import Nav from '../Nav'
 
 const Sidebar = () => {
   return (  
     <div className='sidebar gap-12 flex flex-col'>
       <div className='top'>
+     
         <Link to="/" style={{textDecoration: "none", color: "inherit"}}>
           <Logo color='black'/>
         </Link>

@@ -39,6 +39,10 @@ class HttpService {
             }
             return await response.json();
         } catch (error) {
+            if (error.message.includes('401') || error.message.includes('403')) {
+                window.location.href = '/login';
+                return;
+            }
             throw this.handleError(error);
         }
     }
@@ -55,10 +59,18 @@ class HttpService {
                 body: JSON.stringify(data),
             });
             if (!response.ok) {
+                 if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/login';
+                    return;
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return await response.json();
         } catch (error) {
+            if (error.message.includes('401') || error.message.includes('403')) {
+                window.location.href = '/login';
+                return;
+            }
             throw this.handleError(error);
         }
     }
@@ -75,10 +87,18 @@ class HttpService {
                 headers: headers
             });
             if (!response.ok) {
+                 if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/login';
+                    return;
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return true;
         } catch (error) {
+             if (error.message.includes('401') || error.message.includes('403')) {
+                window.location.href = '/login';
+                return;
+            }
             throw this.handleError(error);
         }
     }
@@ -87,6 +107,35 @@ class HttpService {
         // Aquí puedes personalizar el manejo de errores
         console.error('API Error:', error);
         return error;
+    }
+
+    async logout() {
+        try {
+            const response = await fetch(`${BASE_URL}/auth/logout`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                 if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            localStorage.removeItem('token');
+            localStorage.removeItem('isLoggedIn');
+            return true;
+        } catch (error) {
+             if (error.message.includes('401') || error.message.includes('403')) {
+                window.location.href = '/login';
+                return;
+            }
+            throw this.handleError(error);
+        }
     }
 }
 

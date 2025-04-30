@@ -95,6 +95,42 @@ const refresh = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  const cookies = req.cookies;
+
+  if (!cookies?.jwt) {
+    return res.sendStatus(204); // No content
+  }
+
+  const refreshToken = cookies.jwt;
+
+  try {
+    // Check if the user exists
+    const query = 'SELECT * FROM users WHERE refresh_token = $1';
+    const values = [refreshToken];
+
+    const result = await pool.query(query, values);
+    const user = result.rows[0];
+
+    if (!user) {
+      res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
+      return res.sendStatus(204); // No content
+    }
+
+    // Delete refresh token in database
+    const queryUpdate = 'UPDATE users SET refresh_token = $1 WHERE id = $2';
+    const valuesUpdate = [null, user.id];
+
+    await pool.query(queryUpdate, valuesUpdate);
+
+    res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
+    res.status(200).json({ message: 'Logout successful' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Logout failed' });
+  }
+};
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -154,6 +190,7 @@ module.exports = {
   register,
   login,
   refresh,
+  logout,
   verifyJWT,
 };
 
