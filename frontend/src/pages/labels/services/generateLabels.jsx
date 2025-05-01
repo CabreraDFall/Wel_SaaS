@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import "./generateLabels.css";
 import PrintLabels from '../../../components/PrintLabels';
+import { warehouseService } from '../../../services/api/warehouseService';
 
 const GenerateLabels = ({ productName, productCode, udm, format, productId, purchase_order }) => {
   const [formData, setFormData] = useState({
@@ -29,11 +30,7 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
   const fetchWarehouses = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/warehouses');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      const data = await warehouseService.getAll();
       setWarehouses(data);
     } catch (error) {
       console.error("Could not fetch warehouses:", error);
