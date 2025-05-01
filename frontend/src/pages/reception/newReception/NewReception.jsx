@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from 'react'
-import './newReception.css'
-import Sidebar from '../../../components/sidebar/Sidebar'
-import Navbar from '../../../components/navBar/Navbar'
-import SearchIcon from '../../../components/icons/SearchIcon'
-import { Link, useParams } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react';
+import './newReception.css';
+import Sidebar from '../../../components/sidebar/Sidebar';
+import Navbar from '../../../components/navBar/Navbar';
+import SearchIcon from '../../../components/icons/SearchIcon';
+import { Link, useParams } from 'react-router-dom';
 import * as XLSX from 'xlsx';
+import ReceptionCard from '../../../components/ReceptionCard';
 
 const NewReception = () => {
   const { purchase_order } = useParams();
   const [allReceptions, setAllReceptions] = useState([]);
   const [selectedReceptions, setSelectedReceptions] = useState([]);
+  const componentRef = useRef();
+  const pageSize = {
+    width: '100px',
+    height: '200px',
+  };
 
   useEffect(() => {
     const fetchReceptions = async () => {
@@ -49,44 +55,44 @@ const NewReception = () => {
   }, [purchase_order]);
 
   // State declarations
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showDatePicker, setShowDatePicker] = useState(false)
-  const [selectedDate, setSelectedDate] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 25
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 25;
 
   // Filter products based on search query and date
   const filteredReceptions = allReceptions.filter(reception => {
-    const searchLower = searchQuery.toLowerCase()
+    const searchLower = searchQuery.toLowerCase();
     const matchesSearch = 
       reception.barcode.toLowerCase().includes(searchLower) ||
-      reception.codigo.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? reception.fecha === selectedDate : true
-    return matchesSearch && matchesDate
-  })
+      reception.codigo.toLowerCase().includes(searchLower);
+    const matchesDate = selectedDate ? reception.fecha === selectedDate : true;
+    return matchesSearch && matchesDate;
+  });
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredReceptions.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredReceptions.length / itemsPerPage);
     const paginatedReceptions = filteredReceptions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
-  )
+  );
 
   // Event handlers
   const handleSearch = (e) => {
-    setSearchQuery(e.target.value)
-    setCurrentPage(1) // Reset to first page when searching
-  }
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
 
   const handleDateSelect = (e) => {
-    setSelectedDate(e.target.value)
-    setShowDatePicker(false)
-    setCurrentPage(1) // Reset to first page when changing date
-  }
+    setSelectedDate(e.target.value);
+    setShowDatePicker(false);
+    setCurrentPage(1); // Reset to first page when changing date
+  };
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
+    setCurrentPage(pageNumber);
+  };
 
   const handleCheckboxChange = (barcode) => {
     setSelectedReceptions(prevSelected => {
@@ -108,7 +114,18 @@ const NewReception = () => {
     const ws = XLSX.utils.aoa_to_sheet([["Fecha", "Barcode", "Codigo", "Producto", "UDM", "Formato"], ...wsData]);
     XLSX.utils.book_append_sheet(wb, ws, "Receptions");
     XLSX.writeFile(wb, "Receptions.xlsx");
-  }
+  };
+
+  const handlePrint = () => {
+    const printContents = document.getElementById('reception-cards').innerHTML;
+    const originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+
+    window.print();
+
+    document.body.innerHTML = originalContents;
+  };
 
   return (
     <div className='wrapper'>
@@ -137,7 +154,12 @@ const NewReception = () => {
                 <button className="" onClick={handleExport}>
                   <span>Exportar</span>
                 </button>
-
+                <button onClick={handlePrint}>Imprimir información</button>
+              </div>
+              <div id="reception-cards" style={{ display: 'none', width: pageSize.width, height: pageSize.height }}>
+                {paginatedReceptions.map((reception, index) => (
+                  <ReceptionCard key={index} reception={reception} pageSize={pageSize} />
+                ))}
               </div>
             </div>
             <div className='products-body'>
@@ -213,7 +235,7 @@ const NewReception = () => {
           </div>
         </div>
     </div>
-  )
-}
+  );
+};
 
-export default NewReception
+export default NewReception;
