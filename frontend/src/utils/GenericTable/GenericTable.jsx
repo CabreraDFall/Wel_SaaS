@@ -43,7 +43,6 @@ const GenericTable = ({ elements, columnTitles, currentPage, totalPages, handleP
                   )}
                 </td>
               ))}
-              <td></td>
               <td>
                 <button onClick={handleSave}>Guardar</button>
                 <button onClick={handleCancel}>Cancelar</button>

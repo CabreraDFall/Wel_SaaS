@@ -28,6 +28,7 @@ const verifyJWT = (req, res, next) => {
 
 const register = async (req, res) => {
   const { first_name, last_name, email, employee_number, role, password } = req.body;
+  console.log('Datos recibidos:', req.body);
 
   try {
     // Hash the password
