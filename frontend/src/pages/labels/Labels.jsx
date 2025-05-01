@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './labels.css'
 import Sidebar from '../../components/sidebar/Sidebar'  
 import Navbar from '../../components/navBar/Navbar'
@@ -6,35 +6,49 @@ import SearchIcon from '../../components/icons/SearchIcon'
 import CloseContenedorIcon from '../../components/icons/closeContenedor_icon'
 import PrintingIcon from '../../components/icons/printing_icon'
 import EyesIcon from '../../components/icons/eyes'
+import GenericTable from '../../utils/genericTable/GenericTable'
+import labelService from '../../services/api/labelService'
 
 const Labels = () => {
-  // All products data
-  const allLabels = [
-    {
-      fecha: '2025-01-01',
-      barcode: '01-123456789012',
-      codigo:"102500100",
-      producto: 'Pollo entero',
-      udm: 'libras',
-      formato: 'variable',
-     
-    },
-  ]
-
   // State declarations
+  const [labelsData, setLabelsData] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 3
 
+  const columnTitles = ["Fecha", "Barcode", "Codigo", "Producto", "UDM", "Formato"];
+
+  useEffect(() => {
+    async function fetchLabels() {
+      try {
+        const response = await labelService.getAll();
+        setLabelsData(response);
+      } catch (error) {
+        console.error('Error fetching labels:', error);
+      }
+    }
+
+    fetchLabels();
+  }, []);
+
+  const allLabels = labelsData.map(label => ({
+    Fecha: new Date(label.created_at).toLocaleDateString(),
+    Barcode: label.barcode,
+    Codigo: label.code,
+    Producto: label.product_name,
+    UDM: label.udm,
+    Formato: label.format
+  }));
+
   // Filter products based on search query and date
   const filteredLabels = allLabels.filter(label => {
     const searchLower = searchQuery.toLowerCase()
     const matchesSearch = 
-      label.producto.toLowerCase().includes(searchLower) ||
-      label.codigo.toLowerCase().includes(searchLower)
-    const matchesDate = selectedDate ? label.fecha === selectedDate : true
+      labelsData.find(l => l.code === label.Codigo)?.product_name?.toLowerCase().includes(searchLower) ||
+      labelsData.find(l => l.code === label.Codigo)?.code?.toLowerCase().includes(searchLower)
+    const matchesDate = selectedDate ? new Date(labelsData.find(l => l.created_at)).toLocaleDateString() === selectedDate : true
     return matchesSearch && matchesDate
   })
 
@@ -73,7 +87,7 @@ const Labels = () => {
           <div className='products-container flex flex-col gap-4'>
             <div className='products-header flex justify-between items-center'>
               <h4>Etiquetas</h4>
-            <button>Nuevo etiqueta</button>
+          
             </div>
             <div className='products-filters flex justify-between items-center'>
               <div className='search-container'>
@@ -106,64 +120,13 @@ const Labels = () => {
             </div>
             <div className='products-body'>
               <div className='products-table'>
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th>Fecha</th>
-                      <th>Barcode</th>
-                      <th>Codigo</th>
-                      <th>Producto</th>
-                      <th>UDM</th>
-                      <th>Formato</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedLabels.map((label, index) => (
-                      <tr key={index}>
-                        <td>{label.fecha}</td>  
-                        <td>{label.barcode}</td>
-                        <td>{label.codigo}</td>
-                        <td>{label.producto}</td>
-                        <td>{label.udm}</td>
-                        <td>{label.formato}</td>
-                        <td className='flex gap-4'>
-                        <button className="more-options">•••</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="pagination-container flex justify-between items-center">
-                  <div className="pagination-info">
-                    Página {currentPage} - {totalPages}
-                  </div>
-                  <div className="pagination-controls flex gap-4">
-                    <button 
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="pagination-btn"
-                    >
-                      Anterior
-                    </button>
-                    {[...Array(totalPages)].map((_, index) => (
-                      <button
-                        key={index + 1}
-                        onClick={() => handlePageChange(index + 1)}
-                        className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="pagination-btn"
-                    >
-                      Siguiente
-                    </button>
-                  </div>
-                </div>
+                <GenericTable
+                  elements={paginatedLabels}
+                  columnTitles={columnTitles}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  handlePageChange={handlePageChange}
+                />
               </div>
             </div>
           </div>

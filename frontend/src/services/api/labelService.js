@@ -1,8 +1,7 @@
 import { CrudService } from './crudService';
-import http from './httpService';
-import { apiUrl } from '../../config.json';
+import { httpService } from './httpService';
 
-const apiEndpoint = apiUrl + '/labels';
+const apiEndpoint = '/labels';
 
 class LabelService extends CrudService {
   constructor() {
@@ -11,7 +10,7 @@ class LabelService extends CrudService {
 
   async getLabelsByPurchaseOrderAndProduct(purchaseOrder, productId) {
     try {
-      const { data } = await http.get(`${apiEndpoint}?purchase_order=${purchaseOrder}&product_id=${productId}`);
+      const { data } = await httpService.get(`${apiEndpoint}?purchase_order=${purchaseOrder}&product_id=${productId}`);
       return data;
     } catch (error) {
       console.error('Error fetching labels:', error);
@@ -21,7 +20,7 @@ class LabelService extends CrudService {
 
   async generateLabels(purchaseOrder, productId) {
     try {
-      const { data } = await http.post(`${apiEndpoint}/generate`, { purchase_order: purchaseOrder, product_id: productId });
+      const { data } = await httpService.post(`${apiEndpoint}/generate`, { purchase_order: purchaseOrder, product_id: productId });
       return data;
     } catch (error) {
       console.error('Error generating labels:', error);
