@@ -5,12 +5,13 @@ const LabelsToPrint = ({ labels }) => {
     return (
         <div>
             {labels.map((label) => (
-                <div key={label.id}>
-                    <h1>{label.productName}</h1>
+                <div key={label.barcode}>
+                    <h1>{label.producto}</h1>
                     <img src="URL_DE_LA_IMAGEN" alt="Product Image" />
                     <Barcode value={label.barcode} />
-                    <p>PO: {label.purchase_order}</p>
-                    <p>Product ID: {label.productId}</p>
+                    <p>Codigo: {label.codigo}</p>
+                    <p>UDM: {label.udm}</p>
+                    <p>Formato: {label.formato}</p>
                 </div>
             ))}
         </div>

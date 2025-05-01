@@ -4,18 +4,18 @@ import Sidebar from '../../../components/sidebar/Sidebar';
 import Navbar from '../../../components/navBar/Navbar';
 import SearchIcon from '../../../components/icons/SearchIcon';
 import { Link, useParams } from 'react-router-dom';
-import * as XLSX from 'xlsx';
+//import * as XLSX from 'xlsx';
 import ReceptionCard from '../../../components/ReceptionCard';
+import MemoizedPrintLabels from '../../../components/PrintLabels';
+
+
 
 const NewReception = () => {
   const { purchase_order } = useParams();
   const [allReceptions, setAllReceptions] = useState([]);
   const [selectedReceptions, setSelectedReceptions] = useState([]);
   const componentRef = useRef();
-  const pageSize = {
-    width: '100px',
-    height: '200px',
-  };
+  const pageSize = {};
 
   useEffect(() => {
     const fetchReceptions = async () => {
@@ -123,13 +123,11 @@ const NewReception = () => {
     document.body.innerHTML = printContents;
 
     window.print();
-
-    document.body.innerHTML = originalContents;
   };
 
   return (
     <div className='wrapper'>
-        <Sidebar />        
+        <Sidebar />
         <div className='container'>
           <Navbar />
           <div className='reception-container flex flex-col gap-4'>
@@ -156,9 +154,9 @@ const NewReception = () => {
                 </button>
                 <button onClick={handlePrint}>Imprimir información</button>
               </div>
-              <div id="reception-cards" style={{ display: 'none', width: pageSize.width, height: pageSize.height }}>
+              <div id="reception-cards" style={{ display: 'none' }}>
                 {paginatedReceptions.map((reception, index) => (
-                  <ReceptionCard key={index} reception={reception} pageSize={pageSize} />
+                  <MemoizedPrintLabels key={index} labels={[reception]} pageSize={pageSize} />
                 ))}
               </div>
             </div>

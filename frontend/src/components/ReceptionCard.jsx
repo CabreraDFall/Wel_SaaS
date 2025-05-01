@@ -1,22 +1,19 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 
 const ReceptionCard = ({ reception, pageSize }) => {
-  const cardRef = useRef(null);
-
-  useEffect(() => {
-    if (cardRef.current) {
-      cardRef.current.style.width = pageSize.width;
-      cardRef.current.style.height = pageSize.height;
-      cardRef.current.style.border = '1px solid black';
-      cardRef.current.style.padding = '5px';
-      cardRef.current.style.margin = '5px';
-      cardRef.current.style.pageBreakAfter = 'always';
-      cardRef.current.style.boxSizing = 'border-box';
-    }
-  }, [reception, pageSize]);
+  const cardStyle = {
+    width: pageSize.width,
+    height: pageSize.height,
+    border: '1px solid black',
+    padding: '2px',
+    margin: '2px',
+    pageBreakAfter: 'always',
+    boxSizing: 'border-box',
+    fontSize: '0.7em',
+  };
 
   return (
-    <div ref={cardRef} style={{width: '100px', height: '200px'}}>
+    <div style={cardStyle}>
       <p>Fecha: {reception.fecha}</p>
       <p>Barcode: {reception.barcode}</p>
       <p>Codigo: {reception.codigo}</p>

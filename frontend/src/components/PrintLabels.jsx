@@ -4,13 +4,16 @@ import LabelsToPrint from './LabelsToPrint'; // Status: Se importó el component
 
 const PrintLabels = ({ labels, onLabelsPrinted }) => { // Status: Se agregó la prop onLabelsPrinted
   const [loading, setLoading] = useState(false);
-  const [showLabels, setShowLabels] = useState(false); // Status: Se agregó el estado para mostrar las etiquetas
+  const [showLabels, setShowLabels] = useState(false);
   const componentRef = useRef();
-  const labelsToPrint = labels.filter(label => label.active && !label.is_printed);
+  // Assuming labels is an array of reception objects
+  // We don't need to filter based on active and is_printed
+  // const labelsToPrint = labels.filter(label => label.active && !label.is_printed);
+  const labelsToPrint = labels;
 
   const handlePrint = async () => {
     setLoading(true);
-    setShowLabels(true); // Status: Se establece el estado para mostrar las etiquetas
+    setShowLabels(true);
     try {
       setTimeout(() => {
         const printContent = componentRef.current;
@@ -22,8 +25,8 @@ const PrintLabels = ({ labels, onLabelsPrinted }) => { // Status: Se agregó la 
         setLoading(false);
         setShowLabels(false);
 
-        if (onLabelsPrinted) { // Status: Se verifica si onLabelsPrinted existe
-          onLabelsPrinted(labelsToPrint); // Status: Se llama a onLabelsPrinted con las etiquetas impresas
+        if (onLabelsPrinted) {
+          onLabelsPrinted(labelsToPrint);
         }
       }, 500);
     } catch (error) {
@@ -38,8 +41,8 @@ const PrintLabels = ({ labels, onLabelsPrinted }) => { // Status: Se agregó la 
       <button onClick={handlePrint} disabled={loading}>
         {loading ? 'Generating Labels...' : 'Print Labels'}
       </button>
-      <div ref={componentRef}> {/* Status: Se agregó la referencia al componente */}
-        {showLabels && <LabelsToPrint labels={labelsToPrint} />} {/* Status: Se agregó el componente LabelsToPrint condicionalmente */}
+      <div ref={componentRef}>
+        {showLabels && <LabelsToPrint labels={labelsToPrint} />}
       </div>
     </div>
   );
