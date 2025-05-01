@@ -12,6 +12,14 @@ router.post('/generate', async (req, res) => {
         const warehouseNumberNum = Number(warehouseNumber);
         const productCodeNum = Number(productCode);
 
+        if (isNaN(warehouseNumberNum)) {
+            return res.status(400).json('Warehouse number must be a number');
+        }
+
+        if (isNaN(productCodeNum)) {
+            return res.status(400).json('Product code must be a number');
+        }
+
         // Generate barcode
         const barcode = await generateBarcode(warehouseNumberNum, productCodeNum, separatorDigit, format);
 

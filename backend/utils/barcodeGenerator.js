@@ -16,8 +16,16 @@ async function generateBarcode(warehouseNumber, productCode, separatorDigit = 1,
         throw new Error('Warehouse number must be a number');
     }
 
+    if (warehouseNumber <= 0 || !Number.isInteger(warehouseNumber)) {
+        throw new Error('Warehouse number must be a positive integer');
+    }
+
     if (typeof productCode !== 'number' || isNaN(productCode)) {
         throw new Error('Product code must be a number');
+    }
+
+    if (productCode <= 0 || !Number.isInteger(productCode)) {
+        throw new Error('Product code must be a positive integer');
     }
 
     // Validate separator digit

@@ -16,6 +16,7 @@ const NewLabel = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+ 
 
   // Fetch all products on component mount
   useEffect(() => {
@@ -114,7 +115,7 @@ const NewLabel = () => {
                         <GenerateLabels
                             productName={selectedProduct.product_name}
                             productCode={selectedProduct.code}
-                            udm={selectedProduct.udm}
+                            udm={selectedProduct.udm_name}
                             format={selectedProduct.format}
                             productId={selectedProduct.id}
                             purchase_order={purchase_order}
