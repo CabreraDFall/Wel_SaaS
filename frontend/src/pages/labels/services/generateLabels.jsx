@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import "./generateLabels.css";
 import { warehouseService } from '../../../services/api/warehouseService';
+import barcodeService from '../../../services/api/barcodeService';
+import labelService from '../../../services/api/labelService';
 
 const GenerateLabels = ({ productName, productCode, udm, format, productId, purchase_order }) => {
   const [warehouses, setWarehouses] = useState([]);
@@ -78,6 +80,25 @@ const GenerateLabels = ({ productName, productCode, udm, format, productId, purc
               console.log("purchase_order:", purchase_order);
               console.log("warehouseNumber:", warehouseNumber);
               console.log("quantity:", quantity);
+
+              barcodeService.generateBarcode(
+                warehouseNumber,
+                parseInt(productCode),
+                1,
+                format,
+                productId,
+                purchase_order,
+                quantity,
+                selectedWarehouse
+              )
+                .then(label => {
+                  console.log("Etiqueta creada:", label);
+                  alert("Etiqueta creada exitosamente!");
+                })
+                .catch(error => {
+                  console.error("Error al crear la etiqueta:", error);
+                  alert("Error al crear la etiqueta.");
+                });
             }}
           >
             Crear
