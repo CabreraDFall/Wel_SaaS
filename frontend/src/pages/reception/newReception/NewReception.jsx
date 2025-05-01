@@ -7,22 +7,29 @@ import { Link, useParams } from 'react-router-dom'
 import * as XLSX from 'xlsx';
 
 const NewReception = () => {
-  const { purchase_order } = useParams()
-
-  // All products data
-  const [allReceptions, setAllReceptions] = useState([])
+  const { purchase_order } = useParams();
+  const [allReceptions, setAllReceptions] = useState([]);
   const [selectedReceptions, setSelectedReceptions] = useState([]);
 
   useEffect(() => {
     const fetchReceptions = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+
       try {
-        const response = await fetch(`http://localhost:3000/api/labels?purchase_order=${purchase_order}`);
+        const response = await fetch(`http://localhost:3000/api/labels?purchase_order=${purchase_order}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        // Transformar los datos para que coincidan con la estructura esperada
-       const transformedData = data.map(item => ({
+        const transformedData = data.map(item => ({
           fecha: item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A',
           barcode: item.barcode || 'N/A',
           codigo: item.code || 'N/A',
