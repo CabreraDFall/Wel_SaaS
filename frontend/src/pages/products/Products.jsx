@@ -5,7 +5,7 @@ import Navbar from '../../components/navBar/Navbar'
 import SearchIcon from '../../components/icons/SearchIcon'
 import { productService } from '../../services/api/productService'
 import { httpService } from '../../services/api/httpService'
-import GenericTable from '../../utils/GenericTable/GenericTable';
+import GenericTable from '../../utils/genericTable/GenericTable';
 import Dropdown from '../../utils/genericTable/inputsTypes/Dropdown';
 
 const Products = () => {
