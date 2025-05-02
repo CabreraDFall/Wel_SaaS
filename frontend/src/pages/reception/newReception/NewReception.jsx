@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Papa from 'papaparse';
 import './newReception.css';
 import Sidebar from '../../../components/sidebar/Sidebar';
 import Navbar from '../../../components/navBar/Navbar';
@@ -19,6 +20,25 @@ function NewReception() {
   };
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 25;
+
+  const handleExportExcel = () => {
+    const excludedKeys = ['id', 'product_id', 'warehouse_id', 'active', 'created_by', 'created_at', 'updated_at', 'deleted_at', 'is_printed'];
+    const filteredLabels = labels.map(label => {
+      const filteredLabel = {};
+      Object.keys(label).forEach(key => {
+        if (!excludedKeys.includes(key)) {
+          filteredLabel[key] = label[key];
+        }
+      });
+      return filteredLabel;
+    });
+    const csv = Papa.unparse(filteredLabels);
+    const blob = new Blob([csv]);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'etiquetas.csv';
+    a.click();
+  };
 
   useEffect(() => {
     const fetchLabels = async () => {
@@ -66,6 +86,7 @@ function NewReception() {
             <div>
             <Link className='reception-header-button' to={`/labels/${purchase_order}`}>Nuevo etiqueta</Link>
             <PrintButton onClick={handlePrint} />
+            <button onClick={handleExportExcel}>Export excel</button>
             </div>
           </div>
           <div className='products-body'>
