@@ -1,15 +1,18 @@
 import React from 'react';
 
-const PrintButton = () => {
-    const handlePrint = () => {
-        window.print();
-    };
+const PrintButton = ({ onClick }) => {
+  const handlePrint = () => {
+    onClick();
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
 
-    return (
-        <button onClick={handlePrint}>
-            Imprimir
-        </button>
-    );
+  return (
+    <button onClick={handlePrint}>
+      Imprimir
+    </button>
+  );
 };
 
 export default PrintButton;
