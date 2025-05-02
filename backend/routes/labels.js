@@ -55,8 +55,9 @@ router.get('/', async (req, res) => {
             SELECT 
                 labels.*,
                 products.product_name,
-                products.code,
+                products.code AS product_code,
                 COALESCE(uom_master.name, 'N/A') AS udm,
+                COALESCE(uom_master.code, 'N/A') AS uom_code,
                 products.format
             FROM labels
             JOIN products ON labels.product_id = products.id

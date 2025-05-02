@@ -1,19 +1,26 @@
-@page {
-  size: 100mm 200mm;
-  margin: 0.5cm;
-}
-
-body {
-  font-size: 0.8em;
-  padding: 0;
-  margin: 0;
-}
-
 @media print {
-  @page {
-    size: 100mm 200mm;
-  }
   body {
-    -webkit-print-color-adjust: exact;
+    width: 508px;
+    height: 305px;
+    margin: 0;
+    padding: 0;
   }
+  body * {
+    visibility: hidden;
+  }
+  .label-card-container, .label-card-container * {
+    visibility: visible;
+  }
+  .label-card-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    page-break-after: always;
+   
+   
+  }
+}
+
+@page {
+  margin: 0;
 }
