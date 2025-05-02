@@ -1,8 +1,6 @@
 import './dashboard.css'
 import Sidebar from '../../components/sidebar/Sidebar'
 import Navbar from '../../components/navBar/Navbar'
-import Barcode from '../../components/Barcode'; // Status: Se importó el componente Barcode
-import LabelsToPrint from '../../components/LabelsToPrint'; // Status: Se importó el componente LabelsToPrint
 import React, { useRef } from 'react'; // Status: Se importó useRef
 
 const Dashboard = () => {

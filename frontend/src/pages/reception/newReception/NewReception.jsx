@@ -5,8 +5,8 @@ import Navbar from '../../../components/navBar/Navbar';
 import SearchIcon from '../../../components/icons/SearchIcon';
 import { Link, useParams } from 'react-router-dom';
 //import * as XLSX from 'xlsx';
-import ReceptionCard from '../../../components/ReceptionCard';
-import MemoizedPrintLabels from '../../../components/PrintLabels';
+//import ReceptionCard from '../../../components/ReceptionCard';
+//import MemoizedPrintLabels from '../../../components/PrintLabels';
 
 
 
@@ -154,11 +154,7 @@ const NewReception = () => {
                 </button>
                 <button onClick={handlePrint}>Imprimir información</button>
               </div>
-              <div id="reception-cards" style={{ display: 'none' }}>
-                {paginatedReceptions.map((reception, index) => (
-                  <MemoizedPrintLabels key={index} labels={[reception]} pageSize={pageSize} />
-                ))}
-              </div>
+            
             </div>
             <div className='products-body'>
               <div className='products-table'>
