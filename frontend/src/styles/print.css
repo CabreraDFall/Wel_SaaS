@@ -1,26 +1,36 @@
 @media print {
   body {
-    width: 508px;
-    height: 305px;
     margin: 0;
     padding: 0;
   }
-  body * {
+
+  
+  body {
     visibility: hidden;
   }
-  .label-card-container, .label-card-container * {
+  .labels-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
     visibility: visible;
   }
   .label-card-container {
-    position: absolute;
-    left: 0;
-    top: 0;
+    visibility: visible;
+  }
+
+  .label-card-container {
+    width: 2.5in;
+    height: 1.5in;
     page-break-after: always;
-   
-   
+    box-sizing: border-box;
   }
 }
 
 @page {
+  size: auto; /* or size: 2.5in 1.5in; for specific page size */
   margin: 0;
 }
