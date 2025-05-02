@@ -4,24 +4,50 @@ import Sidebar from '../../../components/sidebar/Sidebar';
 import Navbar from '../../../components/navBar/Navbar';
 import { Link, useParams } from 'react-router-dom';
 import labelService from '../../../services/api/labelService';
+import GenericTable from '../../../utils/genericTable/GenericTable';
 
 function NewReception() {
   const { purchase_order } = useParams();
   const [labels, setLabels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchLabels = async () => {
       try {
         const response = await labelService.getLabelsByPurchaseOrder(purchase_order);
-        console.log('API data:', response); // Imprimir los datos de la API
-        setLabels(response.data || []); // Establecer labels a un array vacío si data es null o undefined
-      } catch (error) {
-        console.error('Error fetching labels:', error);
+        console.log('API data:', response);
+        setLabels(response || []);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchLabels();
   }, [purchase_order]);
+
+  const totalPages = Math.ceil(labels.length / itemsPerPage);
+  const paginatedLabels = labels.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  if (loading) {
+    return <div>Cargando etiquetas...</div>;
+  }
+
+  if (error) {
+    return <div className="error-message">Error: {error}</div>;
+  }
 
   return (
     <div className='wrapper'>
@@ -33,13 +59,25 @@ function NewReception() {
             <h4>Etiquetas</h4>
             <Link className='reception-header-button' to={`/labels/${purchase_order}`}>Nuevo etiqueta</Link>
           </div>
-          {labels.map(label => (
-            <div key={label.id} className='label-item'>
-              {/* Mostrar la información de la etiqueta aquí */}
-              <p>Label ID: {label.id}</p>
-              {/* Agregar más detalles de la etiqueta según sea necesario */}
+          <div className='products-body'>
+            <div className='products-table'>
+              <GenericTable
+                columnTitles={["Fecha", "Barcode", "Codigo", "Producto", "UDM", "Formato"]}
+                elements={paginatedLabels.map(label => ({
+                  Fecha: new Date(label.created_at).toLocaleDateString(),
+                  Barcode: label.barcode,
+                  Codigo: label.product_code,
+                  Producto: label.product_name,
+                  UDM: label.uom_code,
+                  Formato: label.format
+                }))}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                handlePageChange={handlePageChange}
+               
+              />
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>
