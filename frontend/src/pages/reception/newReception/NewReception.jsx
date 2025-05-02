@@ -12,13 +12,13 @@ function NewReception() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 25;
 
   useEffect(() => {
     const fetchLabels = async () => {
       try {
         const response = await labelService.getLabelsByPurchaseOrder(purchase_order);
-        console.log('API data:', response);
+        
         setLabels(response || []);
         setError(null);
       } catch (err) {

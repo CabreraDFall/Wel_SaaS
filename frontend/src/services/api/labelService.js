@@ -21,7 +21,7 @@ class LabelService extends CrudService {
   async getLabelsByPurchaseOrder(purchaseOrder) {
     try {
       const response = await httpService.get(`${apiEndpoint}?purchase_order=${purchaseOrder}`);
-      console.log('API response:', response); // Imprimir la respuesta de la API
+      
       return response;
     } catch (error) {
       console.error('Error fetching labels:', error);
