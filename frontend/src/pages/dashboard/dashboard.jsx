@@ -1,19 +1,11 @@
 import './dashboard.css'
 import Sidebar from '../../components/sidebar/Sidebar'
 import Navbar from '../../components/navBar/Navbar'
-import React, { useRef } from 'react'; // Status: Se importó useRef
+import React from 'react'; // Status: Se importó useRef
 import LabelCard from '../../utils/print/labelCard';
 
 const Dashboard = () => {
-    const componentRef = useRef(); // Status: Se creó una referencia al componente
-    const handlePrint = () => { // Status: Se agregó la función para imprimir
-        const printContent = componentRef.current;
-        const originalContent = document.body.innerHTML;
-
-        document.body.innerHTML = printContent.innerHTML;
-        window.print();
-        document.body.innerHTML = originalContent;
-    };
+  
 
     return (
         <div className='wrapper'>
