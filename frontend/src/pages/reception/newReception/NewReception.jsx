@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import './newReception.css';
-import Sidebar from '../../../components/sidebar/Sidebar';
-import Navbar from '../../../components/navBar/Navbar';
+import Layout from '../../../components/Layout';
 import { Link, useParams } from 'react-router-dom';
 import labelService from '../../../services/api/labelService';
 import GenericTable from '../../../utils/genericTable/GenericTable';
@@ -76,10 +75,7 @@ function NewReception() {
   }
 
   return (
-    <div className='wrapper'>
-      <Sidebar />
-      <div className='container'>
-        <Navbar />
+    <Layout>
         <div className='reception-container flex flex-col gap-4'>
           <div className='reception-header flex justify-between items-center'>
             <h4>Etiquetas</h4>
@@ -123,8 +119,7 @@ function NewReception() {
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 }
 

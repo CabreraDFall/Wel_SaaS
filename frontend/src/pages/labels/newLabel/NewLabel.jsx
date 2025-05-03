@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import Sidebar from '../../../components/sidebar/Sidebar'
-import Navbar from '../../../components/navBar/Navbar'  
+import Layout from '../../../components/Layout'
 import './newLabel.css'
 import EmptyPackage from '../../../components/icons/empty_package'
 import SearchIcon from '../../../components/icons/SearchIcon'
@@ -64,43 +63,32 @@ const NewLabel = () => {
 
   if (loading) {
     return (
-      <div className='wrapper'>
-        <Sidebar />
-        <div className='container'>
-          <Navbar />
+      <Layout>
           <div className='new-label-container'>
             <h4>Etiqueta {purchase_order && `- Orden de compra: ${purchase_order}`}</h4>
             <div className='empty-package-container flex flex-col items-center justify-center'>
               <p>Cargando productos...</p>
             </div>
           </div>
-        </div>
-      </div>
+      </Layout>
     );
   }
 
   if (error) {
     return (
-      <div className='wrapper'>
-        <Sidebar />
-        <div className='container'>
-          <Navbar />
+      <Layout>
           <div className='new-label-container'>
             <h4>Etiqueta {purchase_order && `- Orden de compra: ${purchase_order}`}</h4>
             <div className='empty-package-container flex flex-col items-center justify-center'>
               <p className="error-message">Error: {error}</p>
             </div>
           </div>
-        </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className='wrapper'>
-        <Sidebar />
-        <div className='container'>
-            <Navbar />
+    <Layout>
             <div className='new-label-container'>
               <div className='flex flex justify-between items-center'>
                 <div>
@@ -157,8 +145,7 @@ const NewLabel = () => {
                     </div>
                 )}
             </div>
-        </div>
-    </div>
+    </Layout>
   );
 };
 

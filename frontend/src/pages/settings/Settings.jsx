@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/navBar/Navbar';
-import Sidebar from '../../components/sidebar/Sidebar';
+import Layout from '../../components/Layout';
 import UomCategories from './UomCategories';
 import UomMaster from './UomMaster';
 import Warehouses from './Warehouses';
@@ -11,10 +10,7 @@ function Settings() {
   const [activeTab, setActiveTab] = useState('uomCategories');
 
   return (
-    <div className="wrapper">
-      <Sidebar />
-      <div className="container">
-        <Navbar />
+    <Layout>
         <div className="dashboard-container">
           <h1>Configuración</h1>
           <div className="tabs">
@@ -53,8 +49,7 @@ function Settings() {
             {activeTab === 'uomMaster' && <UomMaster />}
           </div>
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 }
 

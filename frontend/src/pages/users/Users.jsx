@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './users.css';
-import Sidebar from '../../components/sidebar/Sidebar';
-import Navbar from '../../components/navBar/Navbar';
+import Layout from '../../components/Layout';
 import SearchIcon from '../../components/icons/SearchIcon';
 import { userService } from '../../services/api/userService';
 import GenericTable from '../../utils/genericTable/GenericTable';
@@ -136,43 +135,40 @@ const Users = () => {
   }
 
   return (
-    <div className='wrapper'>
-      <Sidebar />
-      <div className='container'>
-        <Navbar />
-        <div className='users-container flex flex-col gap-4'>
-          <div className='users-header flex justify-between items-center'>
-            <h4>Usuarios</h4>
-            <button onClick={handleNewUser}>Nuevo usuario</button>
+    <Layout>
+      
+      <div className='users-container flex flex-col gap-4'>
+        <div className='users-header flex justify-between items-center'>
+          <h4>Usuarios</h4>
+          <button onClick={handleNewUser}>Nuevo usuario</button>
+        </div>
+        <div className='users-filters flex justify-between items-center'>
+          <div className='search-container'>
+            <div className="search-wrapper">
+              <SearchIcon />
+              <input
+                type="text"
+                placeholder="Buscar usuario"
+                className="search-input"
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+            </div>
           </div>
-          <div className='users-filters flex justify-between items-center'>
-            <div className='search-container'>
-              <div className="search-wrapper">
-                <SearchIcon />
+          <div className="calendar-container">
+            <button className="calendar-btn" onClick={toggleDatePicker}>
+              <span>{selectedDate || 'Calendario'}</span>
+            </button>
+            {showDatePicker && (
+              <div className="date-picker-dropdown">
                 <input
-                  type="text"
-                  placeholder="Buscar usuario"
-                  className="search-input"
-                  value={searchQuery}
-                  onChange={handleSearch}
+                  type="date"
+                  value={selectedDate}
+                  onChange={handleDateSelect}
+                  className="date-input"
                 />
               </div>
-            </div>
-            <div className="calendar-container">
-              <button className="calendar-btn" onClick={toggleDatePicker}>
-                <span>{selectedDate || 'Calendario'}</span>
-              </button>
-              {showDatePicker && (
-                <div className="date-picker-dropdown">
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={handleDateSelect}
-                    className="date-input"
-                  />
-                </div>
-              )}
-            </div>
+            )}
           </div>
           <div className='users-body'>
             <div className='users-table'>
@@ -198,7 +194,8 @@ const Users = () => {
           </div>
         </div>
       </div>
-    </div>
+    
+    </Layout>
   );
 };
 

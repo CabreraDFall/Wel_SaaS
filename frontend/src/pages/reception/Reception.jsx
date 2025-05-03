@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './reception.css'
-import Sidebar from '../../components/sidebar/Sidebar'  
-import Navbar from '../../components/navBar/Navbar'
+import Layout from '../../components/Layout'
 import SearchIcon from '../../components/icons/SearchIcon'
 import CloseContenedorIcon from '../../components/icons/closeContenedor_icon'
 import PrintingIcon from '../../components/icons/printing_icon'
@@ -155,10 +154,7 @@ const Reception = () => {
   if (error) return <div className="error">{error}</div>
 
   return (
-    <div className='wrapper'>
-        <Sidebar />        
-        <div className='container'>
-          <Navbar />
+    <Layout>
           <div className='reception-container flex flex-col gap-4'>
             <div className='reception-header flex justify-between items-center'>
               <h4>Recepción</h4>
@@ -275,8 +271,7 @@ const Reception = () => {
               </div>
             </div>
           </div>
-        </div>
-    </div>
+    </Layout>
   )
 }
 

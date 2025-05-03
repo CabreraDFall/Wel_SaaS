@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './products.css'
-import Sidebar from '../../components/sidebar/Sidebar'  
-import Navbar from '../../components/navBar/Navbar'
+import Layout from '../../components/Layout'
 import SearchIcon from '../../components/icons/SearchIcon'
 import { productService } from '../../services/api/productService'
 import { httpService } from '../../services/api/httpService'
@@ -135,10 +134,7 @@ const Products = () => {
   }
 
   return (
-    <div className='wrapper'>
-        <Sidebar />        
-        <div className='container'>
-          <Navbar />
+    <Layout>
           <div className='products-container flex flex-col gap-4'>
             <div className='products-header flex justify-between items-center'>
               <h4>Productos</h4>
@@ -204,8 +200,7 @@ const Products = () => {
               </div>
             </div>
           </div>
-        </div>
-    </div >
+    </Layout>
   )
 }
 
