@@ -8,6 +8,12 @@
     top: 0;
     left: 0;
 }
+
+@media (min-width: 768px) {
+  .web-hidden {
+    display: none;
+  }
+}
 .top{
    padding: 40px;
 }
@@ -32,6 +38,9 @@ p.title {
     background-color: #f5f5f5;
 }
 
+
+
+
 .sidebarItems a.active {
     background-color: #e6f3ff;
     color: #1a73e8;
@@ -46,4 +55,15 @@ p.title {
     .sidebar {
         max-width: 240px; /* Slightly wider sidebar on larger screens */
     }
+}
+
+@media (max-width: 768px) {
+    #sidebar {
+        display: none;
+    }
+
+    #sidebar.sidebar-open {
+        display: flex;
+    }
+    
 }

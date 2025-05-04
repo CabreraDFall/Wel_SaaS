@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/sidebar/Sidebar';
 import Navbar from '../components/navBar/Navbar';
+import '../components/sidebar/sidebar.css';
 
 const Layout = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div>
-      <Navbar />
-      <Sidebar />
-      <div style={{ marginLeft: '240px', marginTop: '60px' }}> {/* Ajustar los estilos según sea necesario */}
+      <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+      <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <div style={{ marginLeft: isSidebarOpen ? '240px' : '0px', marginTop: '60px' }}>
         {children}
-        
       </div>
     </div>
   );

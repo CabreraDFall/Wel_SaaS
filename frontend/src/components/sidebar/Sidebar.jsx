@@ -1,19 +1,20 @@
 import React from 'react'   
 import './sidebar.css'
 import { Link, NavLink } from 'react-router-dom'
-import Logo from '../../assets/Logo'
-import Nav from '../Nav'
+import Logo from '../../assets/Logo';
+import Nav from '../Nav';
+import LeftIcon from '../icons/LeftIcon';
 
-const Sidebar = () => {
-  return (  
-    <div className='sidebar gap-12 flex flex-col'>
-      <div className='top'>
-     
-        <Link to="/" style={{textDecoration: "none", color: "inherit"}}>
-          <Logo color='black'/>
+const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+  return (
+    <div className={`sidebar gap-12 flex flex-col ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`} id="sidebar">
+      <div className='top flex items-center gap-8'>
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+          <Logo color='black' />
         </Link>
+        <LeftIcon onClick={toggleSidebar} className="web-hidden" />
       </div>
-  
+
       <div className='sidebarItems center flex flex-col'>
         <ul className='flex flex-col'>
           <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>
@@ -39,7 +40,7 @@ const Sidebar = () => {
         <div className='colorOption'></div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

@@ -1,0 +1,9 @@
+import React from 'react';
+
+const LeftIcon = ({ onClick, className }) => (
+  <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={onClick} className={className} style={{cursor: 'pointer'}}>
+    <path d="M7 1.41L2.67341 6L7 10.59L5.66802 12L6.6749e-07 6L5.66802 -1.16446e-07L7 1.41Z" fill="#968BBF"/>
+  </svg>
+);
+
+export default LeftIcon;
