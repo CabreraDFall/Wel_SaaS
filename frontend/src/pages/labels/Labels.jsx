@@ -122,6 +122,7 @@ const Labels = () => {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   handlePageChange={handlePageChange}
+                  handleReceptionClick={() => {}}
                 />
               </div>
             </div>

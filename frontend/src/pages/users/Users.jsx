@@ -63,9 +63,7 @@ const Users = () => {
     setCurrentPage(1); // Reset to first page when changing date
   };
 
-  const toggleDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+ 
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -142,8 +140,8 @@ const Users = () => {
           <h4>Usuarios</h4>
           <button onClick={handleNewUser}>Nuevo usuario</button>
         </div>
-        <div className='users-filters flex justify-between items-center'>
-          <div className='search-container'>
+        <div className='users-filters flex flex-col'>
+          <div className=' search-container'>
             <div className="search-wrapper">
               <SearchIcon />
               <input
@@ -155,21 +153,7 @@ const Users = () => {
               />
             </div>
           </div>
-          <div className="calendar-container">
-            <button className="calendar-btn" onClick={toggleDatePicker}>
-              <span>{selectedDate || 'Calendario'}</span>
-            </button>
-            {showDatePicker && (
-              <div className="date-picker-dropdown">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={handleDateSelect}
-                  className="date-input"
-                />
-              </div>
-            )}
-          </div>
+        
           <div className='users-body'>
             <div className='users-table'>
               <GenericTable

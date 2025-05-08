@@ -1,0 +1,66 @@
+.tableWeb {
+  display: block !important; /* Muestra la tabla para web por defecto */
+}
+
+.tableMobile {
+  display: none !important; /* Oculta la tabla para móvil por defecto */
+}
+
+@media (max-width: 768px) {
+  .tableWeb {
+    display: none !important; /* Oculta la tabla para web en dispositivos móviles */
+  }
+
+  .tableMobile {
+    display: block !important; /* Muestra la tabla para móvil en dispositivos móviles */
+  }
+
+  .mobile-text {
+    display: block; /* Muestra el texto en dispositivos móviles */
+    text-align: center; /* Centra el texto */
+    margin-bottom: 10px; /* Agrega un margen inferior */
+    font-size: 1.2em; /* Aumenta el tamaño de la fuente */
+    color: #333; /* Cambia el color del texto */
+  }
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.card-item {
+  margin-bottom: 8px;
+}
+
+.card-key {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.card-value {
+  color: #555;
+}
+
+.accordion {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.accordion-header {
+  background-color: #f0f0f0;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.accordion-content {
+  padding: 16px;
+  display: none;
+}
+
+.accordion-content.active {
+  display: block;
+}
