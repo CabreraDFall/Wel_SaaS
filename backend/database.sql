@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS uom_categories (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
 );
+
+-- Insert initial admin user
+-- IMPORTANT: Replace 'hashed_password_placeholder' with the actual bcrypt hashed password
+
 --Status: Agregado campo refresh_token a la tabla users
 
 -- Tabla maestra de unidades de medida
@@ -102,8 +106,10 @@ CREATE TABLE IF NOT EXISTS receptions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP,
+    inactive BOOLEAN DEFAULT false,
+    Inactive_by UUID,
     deleted_at TIMESTAMP
-); 
+);
 
 -- Tabla de etiquetas
 CREATE TABLE IF NOT EXISTS labels (

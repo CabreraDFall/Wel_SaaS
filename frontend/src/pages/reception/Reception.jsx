@@ -101,12 +101,10 @@ const Reception = () => {
   const handleNewTrip = async () => {
     const purchaseOrder = ''; // You might want to generate a default purchase order here
     try {
-      const countResponse = await receptionService.getReceptionsCountByPurchaseOrder(purchaseOrder);
-      const itemsValue = countResponse.count;
       setNewTrip({
         reception_date: '',
         vehicle: '',
-        items: itemsValue,
+        items: 0,
         purchase_order: purchaseOrder,
         status: 'en camino',
       });
@@ -131,26 +129,13 @@ const Reception = () => {
     try {
       setLoading(true);
       // Simulating the user ID. Replace with actual user ID retrieval logic.
-      const userId = '50ce4f37-91cc-43ee-814e-0850c783b67d';
+      const userId = '4f314e72-ebd0-4a2c-bb40-86cc8d54a58f';
       const purchaseOrder = newTrip.purchase_order;
 
-      // Fetch the count of receptions for the given purchase order
-      try {
-        const countResponse = await receptionService.getReceptionsCountByPurchaseOrder(purchaseOrder);
-        const itemsValue = countResponse.count;
-
-        await receptionService.createReception({ ...newTrip, items: itemsValue, created_by: userId });
-        setNewTrip(null);
-        await fetchReceptions(); // Refresh the list
-        setError(null);
-      } catch (countErr) {
-        setError('Error al obtener el número de recepciones');
-        console.error('Error fetching receptions count:', countErr);
-        await receptionService.createReception({ ...newTrip, items: 0, created_by: userId });
-        setNewTrip(null);
-        await fetchReceptions();
-        setError(null);
-      }
+      await receptionService.createReception({ ...newTrip, items: 0, created_by: userId });
+      setNewTrip(null);
+      await fetchReceptions(); // Refresh the list
+      setError(null);
     } catch (err) {
       setError('Error al guardar la recepción');
       console.error('Error saving reception:', err);

@@ -27,8 +27,3 @@ class ReceptionService {
 }
 
 export const receptionService = new ReceptionService();
-
-receptionService.getReceptionsCountByPurchaseOrder = async (purchaseOrder) => {
-  return await httpService.get(`/receptions/count/${purchaseOrder}`)
-    .then(response => response.data);
-};

@@ -15,7 +15,7 @@ class BarcodeService {
         purchase_order: purchase_order,
         quantity: quantity,
         warehouse_id: warehouse_id,
-        created_by: "0b88979e-e7d4-48e4-8905-a459c97b8ea6"
+        created_by: "4f314e72-ebd0-4a2c-bb40-86cc8d54a58f"
       });
       return data;
     } catch (error) {
