@@ -44,6 +44,18 @@ router.post('/', async (req, res) => {
   const { vehicle, items, purchase_order, status = 'en camino', reception_date = new Date(), notes, created_by, inactive = false, Inactive_by = null } = req.body;
 
   try {
+    // Verificar si el purchase_order ya existe
+    const countResult = await pool.query(
+      'SELECT COUNT(*) FROM receptions WHERE purchase_order = $1',
+      [purchase_order]
+    );
+
+    const count = parseInt(countResult.rows[0].count, 10);
+
+    if (count > 0) {
+      return res.status(400).json({ message: 'El número de orden de compra ya existe' });
+    }
+
     const result = await pool.query(
       'INSERT INTO receptions (reception_date, vehicle, items, purchase_order, status, notes, created_by, inactive, Inactive_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
       [reception_date, vehicle, items, purchase_order, status, notes, created_by, inactive, Inactive_by]
