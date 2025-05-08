@@ -98,18 +98,33 @@ const Reception = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleNewTrip = () => {
-    setNewTrip({
-      reception_date: '',
-      vehicle: '',
-      items: '',
-      purchase_order: '',
-      status: 'descargando',
-    });
+  const handleNewTrip = async () => {
+    const purchaseOrder = ''; // You might want to generate a default purchase order here
+    try {
+      const countResponse = await receptionService.getReceptionsCountByPurchaseOrder(purchaseOrder);
+      const itemsValue = countResponse.count;
+      setNewTrip({
+        reception_date: '',
+        vehicle: '',
+        items: itemsValue,
+        purchase_order: purchaseOrder,
+        status: 'en camino',
+      });
+    } catch (error) {
+      console.error('Error fetching receptions count:', error);
+      setNewTrip({
+        reception_date: '',
+        vehicle: '',
+        items: 0,
+        purchase_order: purchaseOrder,
+        status: 'en camino',
+      });
+    }
   };
 
   const handleInputChange = (e, field) => {
-    setNewTrip({ ...newTrip, [field]: e.target.value });
+    const value = field === 'items' ? parseInt(e.target.value, 10) : e.target.value;
+    setNewTrip({ ...newTrip, [field]: value });
   };
 
   const handleSave = async () => {
@@ -117,10 +132,25 @@ const Reception = () => {
       setLoading(true);
       // Simulating the user ID. Replace with actual user ID retrieval logic.
       const userId = '50ce4f37-91cc-43ee-814e-0850c783b67d';
-      await receptionService.createReception({ ...newTrip, created_by: userId });
-      setNewTrip(null);
-      await fetchReceptions(); // Refresh the list
-      setError(null);
+      const purchaseOrder = newTrip.purchase_order;
+
+      // Fetch the count of receptions for the given purchase order
+      try {
+        const countResponse = await receptionService.getReceptionsCountByPurchaseOrder(purchaseOrder);
+        const itemsValue = countResponse.count;
+
+        await receptionService.createReception({ ...newTrip, items: itemsValue, created_by: userId });
+        setNewTrip(null);
+        await fetchReceptions(); // Refresh the list
+        setError(null);
+      } catch (countErr) {
+        setError('Error al obtener el número de recepciones');
+        console.error('Error fetching receptions count:', countErr);
+        await receptionService.createReception({ ...newTrip, items: 0, created_by: userId });
+        setNewTrip(null);
+        await fetchReceptions();
+        setError(null);
+      }
     } catch (err) {
       setError('Error al guardar la recepción');
       console.error('Error saving reception:', err);
@@ -154,14 +184,14 @@ const Reception = () => {
   };
 
   // Column titles for GenericTable
-  const columnTitles = ['Fecha', 'Vehiculo', 'Items', 'Orden de compra', 'Estatus', ''];
+  const columnTitles = ['Orden de compra', 'Vehiculo', 'Items', 'Fecha', 'Estatus', ''];
 
   // Prepare data for GenericTable
   const receptionsData = paginatedReceptions.map((reception) => ({
-    fecha: new Date(reception.reception_date).toLocaleDateString(),
+    ordenDeCompra: reception.purchase_order,
     vehiculo: reception.vehicle,
     items: reception.items,
-    ordenDeCompra: reception.purchase_order,
+    fecha: new Date(reception.reception_date).toLocaleDateString(),
     estatus: reception.status,
     acciones: (
       <div className='flex gap-4'>
@@ -177,10 +207,10 @@ const Reception = () => {
 
   // New trip form inputs for GenericTable
   const newTripInputs = newTrip ? [
-    { type: 'date', name: 'reception_date', value: newTrip.reception_date, onChange: handleInputChange },
-    { type: 'text', name: 'vehicle', value: newTrip.vehicle, onChange: handleInputChange, placeholder: 'Vehiculo' },
-    { type: 'number', name: 'items', value: newTrip.items, onChange: handleInputChange, placeholder: 'Items' },
     { type: 'text', name: 'purchase_order', value: newTrip.purchase_order, onChange: handleInputChange, placeholder: 'Orden de compra' },
+    { type: 'text', name: 'vehicle', value: newTrip.vehicle, onChange: handleInputChange, placeholder: 'Vehiculo' },
+    { type: 'text', name: 'items', value: newTrip.items, readOnly: true, placeholder: 'Items' },
+    { type: 'date', name: 'reception_date', value: newTrip.reception_date, onChange: handleInputChange },
     {
       type: 'select',
       name: 'status',

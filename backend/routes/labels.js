@@ -39,6 +39,31 @@ router.post('/generate', async (req, res) => {
             [labelData.barcode, labelData.product_id, labelData.warehouse_id, labelData.quantity, labelData.created_by, purchase_order]
         );
 
+        // Increment reception items
+        if (purchase_order) {
+            try {
+                const reception = await pool.query(
+                    'SELECT id, items FROM receptions WHERE purchase_order = $1',
+                    [purchase_order]
+                );
+
+                if (reception.rows.length > 0) {
+                    const receptionId = reception.rows[0].id;
+                    const currentItems = reception.rows[0].items;
+                    const newItems = currentItems + 1;
+
+                    await pool.query(
+                        'UPDATE receptions SET items = $1 WHERE id = $2',
+                        [newItems, receptionId]
+                    );
+                } else {
+                    console.log(`Reception not found for purchase order: ${purchase_order}`);
+                }
+            } catch (err) {
+                console.error('Error incrementing reception items:', err.message);
+            }
+        }
+
         res.json(newLabel.rows[0]);
 
     } catch (err) {
@@ -103,12 +128,37 @@ router.get('/:id', async (req, res) => {
 // Create a label
 router.post('/', async (req, res) => {
     try {
-        const { barcode, product_id, warehouse_id, quantity, created_by } = req.body;
+        const { barcode, product_id, warehouse_id, quantity, created_by, purchase_order } = req.body;
 
         const newLabel = await pool.query(
-            'INSERT INTO labels (barcode, product_id, warehouse_id, quantity, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [barcode, product_id, warehouse_id, quantity, created_by]
+            'INSERT INTO labels (barcode, product_id, warehouse_id, quantity, created_by, purchase_order) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [barcode, product_id, warehouse_id, quantity, created_by, purchase_order]
         );
+
+        // Increment reception items
+        if (purchase_order) {
+            try {
+                const reception = await pool.query(
+                    'SELECT id, items FROM receptions WHERE purchase_order = $1',
+                    [purchase_order]
+                );
+
+                if (reception.rows.length > 0) {
+                    const receptionId = reception.rows[0].id;
+                    const currentItems = reception.rows[0].items;
+                    const newItems = currentItems + 1;
+
+                    await pool.query(
+                        'UPDATE receptions SET items = $1 WHERE id = $2',
+                        [newItems, receptionId]
+                    );
+                } else {
+                    console.log(`Reception not found for purchase order: ${purchase_order}`);
+                }
+            } catch (err) {
+                console.error('Error incrementing reception items:', err.message);
+            }
+        }
 
         res.json(newLabel.rows[0]);
     } catch (err) {

@@ -47,6 +47,7 @@ const GenericTable = ({ elements, columnTitles, currentPage, totalPages, handleP
                         type={input.type}
                         value={input.value}
                         onChange={(e) => input.onChange(e, input.name)}
+                        readOnly={input.readOnly}
                       />
                     )}
                   </td>

@@ -128,4 +128,18 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// GET - Obtener el número de recepciones por orden de compra
+router.get('/count/:purchase_order', async (req, res) => {
+  try {
+    const { purchase_order } = req.params;
+    const result = await pool.query(
+      'SELECT COUNT(*) FROM receptions WHERE purchase_order = $1',
+      [purchase_order]
+    );
+    res.json({ count: parseInt(result.rows[0].count, 10) });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
