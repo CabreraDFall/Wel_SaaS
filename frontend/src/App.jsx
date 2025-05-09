@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import NewReception from './pages/reception/newReception/NewReception';
 import NewLabel from './pages/labels/newLabel/NewLabel';
 import Nav from './components/Nav';
+import { UserProvider } from './UserProvider';
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
@@ -28,7 +29,7 @@ function App() {
   };
 
   return (
-    <>
+    <UserProvider>
     
       <Routes>
 <Route path="/login" element={<Login />} />
@@ -114,7 +115,7 @@ function App() {
           }
         />
       </Routes>
-    </>
+    </UserProvider>
   );
 }
 

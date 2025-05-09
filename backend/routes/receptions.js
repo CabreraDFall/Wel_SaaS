@@ -5,7 +5,7 @@ const pool = require('../index');
 // GET - Obtener todas las recepciones
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, reception_date, vehicle, items, purchase_order, status, notes, created_by, completed_at, inactive, Inactive_by, deleted_at FROM receptions ORDER BY reception_date DESC');
+    const result = await pool.query('SELECT id, reception_date, vehicle, items, purchase_order, status, notes, created_by, completed_at, inactive, Inactive_by, deleted_at FROM receptions WHERE inactive = false ORDER BY reception_date DESC');
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -30,7 +30,7 @@ router.get('/date/:date', async (req, res) => {
   try {
     const date = req.params.date;
     const result = await pool.query(
-      "SELECT id, reception_date, vehicle, items, purchase_order, status, notes, created_by, completed_at, inactive, Inactive_by, deleted_at FROM receptions WHERE DATE(reception_date) = DATE($1) ORDER BY reception_date DESC",
+      "SELECT id, reception_date, vehicle, items, purchase_order, status, notes, created_by, completed_at, inactive, Inactive_by, deleted_at FROM receptions WHERE DATE(reception_date) = DATE($1) AND inactive = false ORDER BY reception_date DESC",
       [date]
     );
     res.json(result.rows);

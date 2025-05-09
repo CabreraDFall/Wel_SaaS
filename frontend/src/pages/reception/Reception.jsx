@@ -62,12 +62,13 @@ const Reception = () => {
     }
   };
 
-  // Filter receptions based on search query
+  // Filter receptions based on search query and inactive status
   const filteredReceptions = receptions.filter((reception) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-      reception.vehicle.toLowerCase().includes(searchLower) ||
-      reception.purchase_order.toLowerCase().includes(searchLower)
+      (reception.vehicle.toLowerCase().includes(searchLower) ||
+      reception.purchase_order.toLowerCase().includes(searchLower)) &&
+      !reception.inactive
     );
   });
 
@@ -214,7 +215,38 @@ const Reception = () => {
           <CloseContenedorIcon />
         </button>
         <button onClick={(e) => e.stopPropagation()} disabled><PrintingIcon /></button>
-        <button onClick={(e) => e.stopPropagation()} disabled><EyesIcon /></button>
+        <button
+          onClick={async (e) => {
+            e.stopPropagation();
+            // Obtener el ID del usuario actual
+            const userId = '4f314e72-ebd0-4a2c-bb40-86cc8d54a58f'; //getCurrentUserId(); // Reemplazar con la lógica real para obtener el ID del usuario
+
+            // Actualizar el estado de la recepción
+            try {
+              setLoading(true);
+              await receptionService.updateReception(reception.id, {
+                ...reception,
+                inactive: true,
+                inactive_by: userId,
+              });
+
+              // Actualizar el estado local
+              setReceptions(
+                receptions.map((r) =>
+                  r.id === reception.id ? { ...r, inactive: true, inactive_by: userId } : r
+                )
+              );
+              setError(null);
+            } catch (err) {
+              setError('Error al actualizar la recepción');
+              console.error('Error updating reception:', err);
+            } finally {
+              setLoading(false);
+            }
+          }}
+        >
+          <EyesIcon />
+        </button>
       </div>
     ),
   }));
