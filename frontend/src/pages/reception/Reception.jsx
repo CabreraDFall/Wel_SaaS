@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../../UserProvider'; // Importa el contexto del usuario
 import './reception.css'; // Import the CSS file
 import Layout from '../../components/Layout';
 import SearchIcon from '../../components/icons/SearchIcon';
@@ -11,6 +12,8 @@ import GenericTable from '../../utils/genericTable/GenericTable';
 
 const Reception = () => {
   const navigate = useNavigate();
+  // Usa el contexto del usuario
+  const { user } = useContext(UserContext);
   // State declarations
   const [receptions, setReceptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -129,11 +132,9 @@ const Reception = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      // Simulating the user ID. Replace with actual user ID retrieval logic.
-      const userId = '4f314e72-ebd0-4a2c-bb40-86cc8d54a58f';
       const purchaseOrder = newTrip.purchase_order;
 
-      await receptionService.createReception({ ...newTrip, items: 0, created_by: userId });
+      await receptionService.createReception({ ...newTrip, items: 0, created_by: user.id });
       setNewTrip(null);
       await fetchReceptions(); // Refresh the list
       setError(null);
@@ -218,8 +219,6 @@ const Reception = () => {
         <button
           onClick={async (e) => {
             e.stopPropagation();
-            // Obtener el ID del usuario actual
-            const userId = '4f314e72-ebd0-4a2c-bb40-86cc8d54a58f'; //getCurrentUserId(); // Reemplazar con la lógica real para obtener el ID del usuario
 
             // Actualizar el estado de la recepción
             try {
@@ -227,13 +226,13 @@ const Reception = () => {
               await receptionService.updateReception(reception.id, {
                 ...reception,
                 inactive: true,
-                inactive_by: userId,
+                inactive_by: user.id,
               });
 
               // Actualizar el estado local
               setReceptions(
                 receptions.map((r) =>
-                  r.id === reception.id ? { ...r, inactive: true, inactive_by: userId } : r
+                  r.id === reception.id ? { ...r, inactive: true, inactive_by: user.id } : r
                 )
               );
               setError(null);
