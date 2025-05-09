@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import './newReception.css';
 import Layout from '../../../components/Layout';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import labelService from '../../../services/api/labelService';
 import GenericTable from '../../../utils/genericTable/GenericTable';
 import PrintButton from '../../../utils/print/PrintButton';
@@ -10,13 +10,10 @@ import LabelCard from '../../../utils/print/labelCard';
 
 function NewReception() {
   const { purchase_order } = useParams();
+  const navigate = useNavigate();
   const [labels, setLabels] = useState([]);
-  const [isPrinting, setIsPrinting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const handlePrint = () => {
-    setIsPrinting(true);
-  };
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 25;
 
@@ -81,25 +78,12 @@ function NewReception() {
             <h4>Etiquetas</h4>
             <div>
             <Link className='reception-header-button' to={`/labels/${purchase_order}`}>Nuevo etiqueta</Link>
-            <PrintButton onClick={handlePrint} />
+            <PrintButton onClick={() => navigate(`/reception/${purchase_order}/print`)} />
             <button onClick={handleExportExcel}>Export excel</button>
             </div>
           </div>
           <div className='products-body'>
-            {isPrinting ? (
-              <div className='labels-container'>
-                {paginatedLabels.map(label => (
-                  <LabelCard
-                    key={label.id}
-                    companyName="Mi Compania"
-                    productName={label.product_name}
-                    weight={label.weight}
-                    udmCode={label.uom_code}
-                    barcode={label.barcode}
-                  />
-                ))}
-              </div>
-            ) : (
+             
               <div className='products-table'>
                 <GenericTable
                   columnTitles={["Fecha", "Barcode", "Codigo", "Producto", "UDM", "Formato"]}
@@ -116,7 +100,6 @@ function NewReception() {
                   handlePageChange={handlePageChange}
                 />
               </div>
-            )}
           </div>
         </div>
     </Layout>

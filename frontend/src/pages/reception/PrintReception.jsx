@@ -41,8 +41,8 @@ const PrintReception = () => {
       <div className='new-label-container'>
         <div className='flex flex justify-between items-center'>
           <div>
-            <h4>Recepción - Imprimir</h4>
-            <h6>{purchase_order && `Orden de compra: ${purchase_order}`}</h6>
+            <h4>{`Imprimir: ${purchase_order}`}</h4>
+           
           </div>
           <PrintButton onClick={() => {}} />
         </div>
