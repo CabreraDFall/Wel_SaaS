@@ -13,6 +13,7 @@ import NewReception from './pages/reception/newReception/NewReception';
 import NewLabel from './pages/labels/newLabel/NewLabel';
 import Nav from './components/Nav';
 import { UserProvider } from './UserProvider';
+import PrintReception from './pages/reception/PrintReception';
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
@@ -32,7 +33,7 @@ function App() {
     <UserProvider>
     
       <Routes>
-<Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/"
           element={
@@ -74,6 +75,14 @@ function App() {
           }
         />
         <Route
+          path="/reception/:purchase_order/print"
+          element={
+            <ProtectedRoute>
+              <PrintReception />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/labels"
           element={
             <ProtectedRoute>
@@ -105,7 +114,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/settings"
           element={

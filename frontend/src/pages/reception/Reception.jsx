@@ -215,7 +215,17 @@ const Reception = () => {
         >
           <CloseContenedorIcon />
         </button>
-        <button onClick={(e) => e.stopPropagation()} disabled><PrintingIcon /></button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (reception.items > 0) {
+              navigate(`/reception/${reception.purchase_order}/print`);
+            }
+          }}
+          disabled={reception.items <= 0}
+        >
+          <PrintingIcon />
+        </button>
         <button
           onClick={async (e) => {
             e.stopPropagation();
