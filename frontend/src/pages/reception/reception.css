@@ -217,3 +217,7 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.non-clickable-row {
+  cursor: normal !important;
+}

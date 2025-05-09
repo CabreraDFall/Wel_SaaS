@@ -10,7 +10,7 @@ class ReceptionService {
     }
 
     async updateReception(id, receptionData) {
-        return await httpService.put(`/receptions/${id}`, receptionData);
+        return await httpService.patch(`/receptions/${id}`, receptionData);
     }
 
     async deleteReception(id) {

@@ -3,7 +3,7 @@ import './genericTable.css';
 import Dropdown from '../genericTable/inputsTypes/Dropdown';
 import PaginationTable from '../genericTable/pagination/PaginationTable';
 
-const GenericTable = ({ elements, columnTitles, currentPage, totalPages, handlePageChange, newFormInputs, handleInputChange, handleSave, handleCancel, handleReceptionClick, rowClickDestination }) => {
+const GenericTable = ({ elements, columnTitles, currentPage, totalPages, handlePageChange, newFormInputs, handleInputChange, handleSave, handleCancel, handleReceptionClick, rowClickDestination, rowStyle }) => {
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   const toggleAccordion = (index) => {
@@ -59,7 +59,7 @@ const GenericTable = ({ elements, columnTitles, currentPage, totalPages, handleP
               </tr>
             )}
             {elements.map((element, index) => (
-              <tr key={index} style={{cursor: 'pointer'}} {...(handleReceptionClick ? {onClick: () => handleReceptionClick(rowClickDestination(element))} : {})}>
+              <tr key={index} style={rowStyle && rowStyle(element)} {...(handleReceptionClick ? {onClick: () => handleReceptionClick(rowClickDestination(element))} : {})}>
                 {Object.values(element).map((value, index) => (
                   <td key={index}>{value}</td>
                 ))}

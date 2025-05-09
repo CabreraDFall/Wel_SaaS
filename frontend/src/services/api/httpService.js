@@ -137,6 +137,34 @@ class HttpService {
             throw this.handleError(error);
         }
     }
+
+    async patch(endpoint, data) {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${BASE_URL}${endpoint}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data),
+            });
+            if (!response.ok) {
+                 if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+             if (error.message.includes('401') || error.message.includes('403')) {
+                window.location.href = '/login';
+                return;
+            }
+            throw this.handleError(error);
+        }
+    }
 }
 
 export const httpService = new HttpService();

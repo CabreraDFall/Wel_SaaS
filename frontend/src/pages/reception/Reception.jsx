@@ -144,6 +144,28 @@ const Reception = () => {
     }
   };
 
+  const handleUpdateStatus = async (id) => {
+    try {
+      setLoading(true);
+      // Get the reception to update
+      const receptionToUpdate = receptions.find((reception) => reception.id === id);
+      if (!receptionToUpdate) {
+        setError('Recepción no encontrada');
+        return;
+      }
+
+      // Update the status to "descargando"
+      await receptionService.updateReception(id, { ...receptionToUpdate, status: 'descargando' });
+      await fetchReceptions(); // Refresh the list
+      setError(null);
+    } catch (err) {
+      setError('Error al actualizar el estado de la recepción');
+      console.error('Error updating reception status:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('¿Está seguro de que desea eliminar esta recepción?')) {
       try {
@@ -180,12 +202,19 @@ const Reception = () => {
     estatus: reception.status,
     acciones: (
       <div className='flex gap-4'>
-        <button onClick={(e) => {
-          e.stopPropagation();
-          handleDelete(reception.id);
-        }}><CloseContenedorIcon /></button>
-        <button onClick={(e) => e.stopPropagation()}><PrintingIcon /></button>
-        <button onClick={(e) => e.stopPropagation()}><EyesIcon /></button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (reception.status !== 'descargando') {
+              handleUpdateStatus(reception.id);
+            }
+          }}
+          disabled={reception.status === 'descargando'}
+        >
+          <CloseContenedorIcon />
+        </button>
+        <button onClick={(e) => e.stopPropagation()} disabled><PrintingIcon /></button>
+        <button onClick={(e) => e.stopPropagation()} disabled><EyesIcon /></button>
       </div>
     ),
   }));
@@ -261,7 +290,12 @@ const Reception = () => {
               handleSave={handleSave}
               handleCancel={handleCancel}
               handleReceptionClick={handleReceptionClick}
-              rowClickDestination={(reception) => `/reception/${reception.ordenDeCompra}`}
+              rowClickDestination={(reception) =>
+                reception.estatus === 'descargando' ? `/reception/${reception.ordenDeCompra}` : null
+              }
+              rowStyle={(reception) => ({
+                cursor: reception.estatus !== 'descargando' ? 'normal' : 'pointer',
+              })}
             />
         </div>
         </div>
