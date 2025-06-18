@@ -1,0 +1,39 @@
+.dropdown{
+    color: var(--neutrals-5);
+    display: flex;
+    flex-direction: column;
+    gap:16px;
+}
+
+.dropdown__header {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.dropdown__header span{
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.dropdown__content ul{
+    display: flex;
+     flex-direction: column;
+    gap:4px;
+
+}
+.dropdown__content ul li{
+   
+    padding: 16px 12px;
+    border-radius: 4px;
+    display: flex;
+        align-items: center;
+        gap:8px;
+  
+    
+}
+.dropdown__content ul li.active{
+   
+    background: #1E1A3760;
+    
+}

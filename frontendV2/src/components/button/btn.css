@@ -1,0 +1,13 @@
+.btn{
+  
+    background-color: #1E1A37;
+    color: var(--neutrals-1);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    border: solid 0.4px var(--neutrals-9);
+    padding: 8px 20px;
+    border-radius: 4px;
+
+
+}

@@ -1,0 +1,43 @@
+.layout-online {
+    display: flex;
+    height: 100vh; /* Asegura que el layout ocupe toda la altura de la pantalla */
+}
+
+.layout-online__sidebar {
+    width: 262px; /* Ancho del sidebar */
+    border-right: solid 1px var(--neutrals-12);
+    padding: 20px;
+    gap: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.logoWrapper{
+   display: flex;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.layout-online__content {
+    flex: 1; /* El contenido ocupa el espacio restante */
+    padding: 20px;
+}
+
+/* Media query para pantallas más pequeñas (ej: tablets y móviles) */
+@media (max-width: 768px) {
+    .layout-online {
+        flex-direction: column; /* Apila el sidebar y el contenido verticalmente */
+    }
+
+    .layout-online__sidebar {
+        width: 100%; /* El sidebar ocupa todo el ancho */
+        padding: 10px;
+    }
+
+    .layout-online__content {
+        padding: 10px;
+    }
+}

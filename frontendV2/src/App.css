@@ -1,0 +1,140 @@
+:root {
+    --darkblue_p-50: rgb(232, 230, 241);
+    --darkblue_p-100: rgb(184, 177, 212);
+    --darkblue_p-200: rgb(150, 139, 191);
+    --darkblue_p-300: rgb(102, 85, 161);
+    --darkblue_p-400: rgb(73, 53, 143);
+    --darkblue_p-500: rgb(27, 2, 115);
+    --darkblue_p-600: rgb(25, 2, 105);
+    --darkblue_p-700: rgb(19, 1, 82);
+    --darkblue_p-800: rgb(15, 1, 63);
+    --darkblue_p-900: rgb(11, 1, 48);
+
+    --lightblue_p-50: rgb(235, 240, 254);
+    --lightblue_p-100: rgb(193, 208, 251);
+    --lightblue_p-200: rgb(163, 185, 249);
+    --lightblue_p-300: rgb(122, 152, 246);
+    --lightblue_p-400: rgb(96, 133, 245);
+    --lightblue_p-500: rgb(56, 102, 242);
+    --lightblue_p-600: rgb(51, 93, 220);
+    --lightblue_p-700: rgb(40, 72, 172);
+    --lightblue_p-800: rgb(31, 56, 133);
+    --lightblue_p-900: rgb(24, 43, 102);
+
+    --purple_p-50: rgb(241, 230, 251);
+    --purple_p-100: rgb(210, 177, 243);
+    --purple_p-200: rgb(189, 140, 238);
+    --purple_p-300: rgb(159, 87, 230);
+    --purple_p-400: rgb(140, 54, 225);
+    --purple_p-500: rgb(111, 4, 217);
+    --purple_p-600: rgb(101, 4, 197);
+    --purple_p-700: rgb(79, 3, 154);
+    --purple_p-800: rgb(61, 2, 119);
+    --purple_p-900: rgb(47, 2, 91);
+
+    --neutrals-1: rgb(255, 255, 255);
+    --neutrals-2: rgb(253, 253, 253);
+    --neutrals-3: rgb(245, 245, 246);
+    --neutrals-4: rgb(240, 240, 242);
+    --neutrals-5: rgb(218, 218, 222);
+    --neutrals-6: rgb(194, 193, 201);
+    --neutrals-7: rgb(145, 143, 157);
+    --neutrals-8: rgb(96, 93, 114);
+    --neutrals-9: rgb(76, 73, 97);
+    --neutrals-10: rgb(47, 43, 71);
+    --neutrals-11: rgb(39, 36, 64);
+    --neutrals-12: rgb(30, 26, 55);
+    --neutrals-13: rgb(10, 6, 38);
+}
+
+/* Text Styles */
+
+/* Desktop Styles */
+h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 65px;
+  font-weight: bold;
+}
+
+h2 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 55px;
+  font-weight: medium;
+}
+
+h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 45px;
+  font-weight: bold;
+}
+
+h4 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 35px;
+  font-weight: medium;
+}
+
+h5 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 26px;
+  font-weight: regular;
+}
+
+p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: regular;
+}
+
+label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: regular;
+}
+span, li, ul {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: regular;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 45px;
+    font-weight: bold;
+  }
+
+  h2 {
+    font-size: 55px;
+    font-weight: bold;
+  }
+
+  h3 {
+    font-size: 25px;
+    font-weight: bold;
+  }
+
+  h4 {
+    font-size: 18px;
+    font-weight: medium;
+  }
+
+  h5 {
+    font-size: 16px;
+    font-weight: regular;
+  }
+
+  p {
+    font-size: 16px;
+    font-weight: regular;
+  }
+  label {
+    font-size: 12px;
+    font-weight: regular;
+  }
+}
+
+
+
+body {
+  background-color: var(--neutrals-13);
+}
