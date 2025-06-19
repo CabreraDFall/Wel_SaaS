@@ -13,3 +13,16 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+input[type="checkbox"] {
+  appearance: none;
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 14px;
+  height: 14px;
+  border: 0.4px solid var(--neutrals-9);
+  border-radius: 4px;
+  transform: translateY(-0.075em);
+}
+
