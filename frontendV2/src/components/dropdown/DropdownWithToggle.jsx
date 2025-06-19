@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import "./dropdown.css";
 import DropdownToggle from './DropdownToggle'; // Import the new component
 
-function DropdownWithToggle({ DropdownName, items }) {
+function DropdownWithToggle({ DropdownName, items, isCollapsed }) {
     const [isOpen, setIsOpen] = useState(false); // State for dropdown visibility
 
     const toggleDropdown = () => {
@@ -10,7 +10,7 @@ function DropdownWithToggle({ DropdownName, items }) {
     };
 
     return (
-        <div className='dropdown'>
+        <div className={`dropdown ${isCollapsed ? 'collapsed' : ''}`}>
             <div className='dropdown__header' onClick={toggleDropdown}> {/* Add onClick handler */}
                 <span>{DropdownName}</span>
                 <DropdownToggle isOpen={isOpen} /> {/* Use the new component */}

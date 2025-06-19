@@ -10,6 +10,7 @@
     gap: 24px;
     display: flex;
     flex-direction: column;
+    transition: width 0.3s ease;
 }
 
 .logoWrapper{
@@ -26,18 +27,27 @@
     padding: 20px;
 }
 
+
+.layout-online__sidebar.collapsed {
+    width: 60px;
+}
+
+.layout-online__sidebar.collapsed .logoWrapper {
+    justify-content: center;
+    transition: justify-content 0.3s ease;
+}
+
+.layout-online__sidebar.collapsed .logoWrapper > *:not(svg){
+    display: none;
+}
 /* Media query para pantallas más pequeñas (ej: tablets y móviles) */
 @media (max-width: 768px) {
     .layout-online {
-        flex-direction: column; /* Apila el sidebar y el contenido verticalmente */
+    flex-direction: column; /* Apila el sidebar y el contenido verticalmente */
     }
 
     .layout-online__sidebar {
         width: 100%; /* El sidebar ocupa todo el ancho */
-        padding: 10px;
-    }
-
-    .layout-online__content {
         padding: 10px;
     }
 }

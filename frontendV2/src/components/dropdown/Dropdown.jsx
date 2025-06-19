@@ -1,9 +1,9 @@
 import React from 'react';
 import "./dropdown.css";
 
-function Dropdown({ DropdownName, items }) {
+function Dropdown({ DropdownName, items, isCollapsed }) {
     return (
-        <div className='dropdown'>
+        <div className={`dropdown ${isCollapsed ? 'collapsed' : ''}`}>
             <div className='dropdown__header'>
                 <span>{DropdownName}</span>
             </div>

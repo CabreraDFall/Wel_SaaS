@@ -5,6 +5,10 @@
     gap:16px;
 }
 
+.dropdown.collapsed {
+    display: none;
+}
+
 .dropdown__header {
     display: flex;
     align-items: center;

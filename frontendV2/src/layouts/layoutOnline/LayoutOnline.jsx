@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import "./layoutOnline.css"
 import Logo from "../../components/logo/Logo"
 import { LeftChevron, DeliveryIcon, ProductIcon, LabelsIcon } from '../../assets/icons';
@@ -21,15 +21,21 @@ const mainMenu = [
 
 
 function LayoutOnline({ children }) {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    const toggleSidebar = () => {
+        setIsCollapsed(!isCollapsed);
+    };
+
     return (
         <div className="layout-online">
-            <div className="layout-online__sidebar">
+            <div className={`layout-online__sidebar ${isCollapsed ? 'collapsed' : ''}`}>
                 <div className='logoWrapper'>
                     <Logo />
-                    <LeftChevron />
+                    <LeftChevron onClick={toggleSidebar} style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)', cursor: 'pointer' }} />
                 </div>
-                <Dropdown DropdownName="menu" items={mainMenu} />
-                <DropdownWithToggle DropdownName="Configuracion" items={mainMenu} /> {/* Use DropdownWithToggle */}
+                <Dropdown DropdownName="menu" items={mainMenu} isCollapsed={isCollapsed} />
+                <DropdownWithToggle DropdownName="Configuracion" items={mainMenu} isCollapsed={isCollapsed} />
             </div>
             <div className="layout-online__content">
                 {children}
