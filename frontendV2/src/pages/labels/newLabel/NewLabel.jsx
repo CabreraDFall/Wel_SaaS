@@ -38,12 +38,12 @@ function NewLabel() {
                                     return (
                                         <tr key={index} className="table-row-link">
                                             <td className="table-cell">
-                                                <Link to="/utils/barcodes/fixedBarcode/FixedBarcode">
+                                                <Link to={`${producto.codigo}`}>
                                                     {producto.codigo}
                                                 </Link>
                                             </td>
                                             <td className="table-cell">
-                                                <Link to="/utils/barcodes/fixedBarcode/FixedBarcode">
+                                                <Link to={`${producto.codigo}`}>
                                                     {producto.nombre}
                                                 </Link>
                                             </td>
@@ -57,7 +57,7 @@ function NewLabel() {
             </div>
 
 
-        </div>
+        </div >
     );
 }
 

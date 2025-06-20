@@ -25,7 +25,9 @@ function App() {
             <Route path="/recepciones" element={<Receptions />} />
             <Route path="/productos" element={<Products />} />
             <Route path="/recepciones/:id" element={<PurcharseLabels />} />
-            <Route path="/labels/new" element={<NewLabel />} />
+            <Route path="/recepciones/:id/new" element={<NewLabel />} />
+            <Route path="/recepciones/:id/new/:id" element={<FixedBarcode />} />
+
           </Routes>
         </LayoutOnline>
       ) : (

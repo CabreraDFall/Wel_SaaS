@@ -25,7 +25,7 @@ function PurcharseLabels() {
                             <button>calendario</button>
                         </div>
                         <div className='table-header__btn'>
-                            <Link to={`/labels/new?purcharsorder=${id}`}>
+                            <Link to={`/recepciones/${id}/new`}>
                                 <button className="blue-button">Nuevo etiqueta</button>
                             </Link>
                             <button className="blue-button">Imprimir</button>
