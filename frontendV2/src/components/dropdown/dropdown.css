@@ -26,7 +26,7 @@
     gap:4px;
 
 }
-.dropdown__content ul li{
+.dropdown__content ul li a{
    
     padding: 16px 12px;
     border-radius: 4px;

@@ -20,8 +20,17 @@ function DropdownWithToggle({ DropdownName, items, isCollapsed }) {
                     <ul>
                         {items.map((item, index) => (
                             <li key={index} className={index === 0 ? 'active' : ''}>
-                                {item.icon && <item.icon />}
-                                <span>{item.label}</span>
+                                {item.url ? (
+                                    <a href={item.url}>
+                                        {item.icon && <item.icon />}
+                                        <span>{item.label}</span>
+                                    </a>
+                                ) : (
+                                    <>
+                                        {item.icon && <item.icon />}
+                                        <span>{item.label}</span>
+                                    </>
+                                )}
                             </li>
                         ))}
                     </ul>

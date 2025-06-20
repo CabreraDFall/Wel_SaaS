@@ -8,6 +8,10 @@ import Login from './pages/Login/Login';
 import LayoutOffline from './layouts/layoutOffline/LayoutOffline';
 import Products from './pages/products/Products';
 import LayoutOnline from './layouts/layoutOnline/LayoutOnline';
+import Receptions from './pages/receptions/Receptions';
+import PurcharseLabels from './pages/receptions/page/purcharseLabels/PurcharseLabels';
+import NewLabel from './pages/labels/newLabel/NewLabel';
+import FixedBarcode from './utils/barcodes/fixedBarcode/FixedBarcode';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -18,7 +22,10 @@ function App() {
         // Rutas para usuarios autenticados
         <LayoutOnline>
           <Routes>
-            <Route path="/" element={<Products />} />
+            <Route path="/recepciones" element={<Receptions />} />
+            <Route path="/productos" element={<Products />} />
+            <Route path="/recepciones/:id" element={<PurcharseLabels />} />
+            <Route path="/labels/new" element={<NewLabel />} />
           </Routes>
         </LayoutOnline>
       ) : (

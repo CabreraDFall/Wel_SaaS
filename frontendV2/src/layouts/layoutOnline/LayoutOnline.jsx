@@ -8,14 +8,17 @@ import DropdownWithToggle from '../../components/dropdown/DropdownWithToggle' //
 const mainMenu = [
     {
         icon: DeliveryIcon,
-        label: "Recepción"
+        label: "Recepción",
+        url: "/recepciones"
     }, {
         icon: ProductIcon,
-        label: "Productos"
+        label: "Productos",
+        url: "/productos"
     },
     {
         icon: LabelsIcon,
-        label: "Etiquetas"
+        label: "Etiquetas",
+        url: "/etiquetas"
     }
 ];
 

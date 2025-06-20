@@ -1,0 +1,17 @@
+.new-label__content{
+    display: flex;
+    justify-content: center;
+}
+
+.new-label__content .table{
+    width: 40%;
+}
+
+.table-row-link {
+  display: table-row;
+  width: 100%;
+}
+
+.table-cell {
+  display: table-cell;
+}

@@ -139,7 +139,7 @@ body {
   background-color: var(--neutrals-13);
 }
 
-.tablet{
+.table{
   color:var(--neutrals-4);
   margin: 24px 50px 24px 44px;
   display: flex;
@@ -151,7 +151,7 @@ body {
 
 }
 
-.tablet__header{
+.table__header{
     height: 70px;
     display: flex;
     align-items: center;
@@ -160,12 +160,12 @@ body {
     border-bottom: solid 0.4px var(--neutrals-10);
 }
 
-.tablet__header-filter {
+.table__header-filter {
     display: flex;
     gap: 10px;
 }
 
-.tablet__header-filter input {
+.table__header-filter input {
     background-color: transparent;
     border: solid 0.4px var(--neutrals-10);
     border-radius: 4px;
@@ -173,7 +173,7 @@ body {
     color: var(--neutrals-4);
 }
 
-.tablet__header-filter button {
+.table__header-filter button {
     background-color: transparent;
     border: solid 0.4px var(--neutrals-10);
     border-radius: 4px;
@@ -181,7 +181,7 @@ body {
     color: var(--neutrals-4);
 }
 
-.tablet__header-add {
+.table__header-add {
     background-color: transparent;
     
     border-radius: 4px;
@@ -193,20 +193,20 @@ body {
 
 
 
-.tablet__body table {
+.table__body table {
     width: 100%;
     border-collapse: collapse;
 }
-.tablet__body table thead {
+.table__body table thead {
     height: 60px;
     background-color: #161230;
     border: solid 0.4px var(--neutrals-11);
   }
-.tablet__body table thead tr {
+.table__body table thead tr {
     text-align: left;
 }
 
-.tablet__body table th {
+.table__body table th {
   height: 40px;
     padding: 12px 24px;
     font-weight: 400;
@@ -214,7 +214,7 @@ body {
      border: solid 0.4px var(--neutrals-10);
 }
 
-.tablet__body table td {
+.table__body table td {
    padding: 12px 24px;
     font-weight: 100;
     color:var(--neutrals-1);
@@ -224,6 +224,10 @@ body {
    
 }
 
+.table-header__btn{
+  display: flex;
+  
+}
 
 
 .checkInput{
@@ -233,7 +237,7 @@ body {
 
 
 }
-.tablet__footer {
+.table__footer {
     height: 70px;
     display: flex;
     align-items: center;
@@ -242,12 +246,12 @@ body {
     border-top: solid 0.4px var(--neutrals-10);
 }
 
-.tablet__footer div {
+.table__footer div {
     display: flex;
     gap: 10px;
 }
 
-.tablet__footer div span {
+.table__footer div span {
     padding: 8px;
     border: solid 0.4px var(--neutrals-10);
     border-radius: 4px;

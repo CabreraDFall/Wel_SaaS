@@ -1,31 +1,35 @@
-import React from 'react'
+import React, { useState } from 'react';
+import Title from "../../components/title//Title";
+import { UserIcon } from '../../assets/icons';
+import "./products.css";
+import AddProductPanel from './components/add/AddProductPanel';
+import TopMenu from '../../components/topmenu/TopMenu';
 
-import Title from "../../components/title//Title"
-import { UserIcon } from '../../assets/icons'
-import "./products.css"
 function Products() {
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+    const togglePanel = () => {
+        setIsPanelOpen(!isPanelOpen);
+    };
+
     return (
-        <div className='products'>
-            <div className="products__header">
-                <Title title="Productos" />
-                <UserIcon />
-            </div>
+        <div className='header'>
+            <TopMenu title={"Productos"} />
             <div className="products__content">
-                <div className="tablet">
-                    <div className='tablet__header'>
-                        <div className="tablet__header-filter">
+                <div className="table">
+                    <div className='table__header'>
+                        <div className="table__header-filter">
                             <input type="text" placeholder="Filtrar elementos" />
                             <button>calendario</button>
                         </div>
-                        <button className="tablet__header-add">
+                        <button className="table__header-add" onClick={togglePanel}>
                             <span>Agregar</span>
                         </button>
                     </div>
-                    <div className='tablet__body'>
+                    <div className='table__body'>
                         <table>
                             <thead>
                                 <tr>
-
                                     <th className='checkInput'><input type="checkbox" className="checkbox" /> Codigo</th>
                                     <th>Nombre</th>
                                     <th>Unidad</th>
@@ -38,7 +42,6 @@ function Products() {
                             </thead>
                             <tbody>
                                 <tr>
-
                                     <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
                                     <td>Alas de pollo</td>
                                     <td>kg</td>
@@ -151,7 +154,7 @@ function Products() {
                             </tbody>
                         </table>
                     </div>
-                    <div className="tablet__footer">
+                    <div className="table__footer">
                         <div>
                             <span>{"<"}</span>
                             <span>1</span>
@@ -165,8 +168,9 @@ function Products() {
                     </div>
                 </div>
             </div>
+            <AddProductPanel isOpen={isPanelOpen} onClose={togglePanel} />
         </div>
-    )
+    );
 }
 
-export default Products
+export default Products;
