@@ -1,6 +1,12 @@
+.new-label{
+   
+}
+
 .new-label__content{
     display: flex;
     justify-content: center;
+    align-items: center; height: 60vh;
+  
 }
 
 .new-label__content .table{
@@ -14,4 +20,38 @@
 
 .table-cell {
   display: table-cell;
+}
+
+.new-label__card{
+      display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-content: center;
+    align-items: center;
+
+}
+
+.form-group {
+     display: flex;
+    color: var(--neutrals-1);
+     gap: 4px;
+    align-content: center;
+    align-items: baseline;
+    flex-direction: row;
+}
+.form-group .form-control {
+  background: inherit;
+}
+
+.form-group label{
+font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+}
+
+.card__footer{
+  display: flex;
+    flex-direction: column;
+    color: var(--neutrals-1);
+    align-content: center;
+    align-items: center;;
 }

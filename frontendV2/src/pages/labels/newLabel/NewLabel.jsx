@@ -3,61 +3,42 @@ import { Link } from 'react-router-dom';
 import TopMenu from '../../../components/topmenu/TopMenu';
 import "./newlabel.css"
 function NewLabel() {
-    // Array de productos
-    const productos = [
-        { codigo: "PROD00001", nombre: "Producto 1" },
-        { codigo: "PROD00002", nombre: "Producto 2" },
-        { codigo: "PROD00003", nombre: "Producto 3" }
-    ];
 
     return (
         <div className='new-label'>
 
 
-            <TopMenu title={"Nueva etiqueta"} />
+            <TopMenu title={"Etiqueta"} />
 
             <div className="new-label__content">
-                <div className="table">
-                    <div className="table__header">
-                        <div className="table__header-filter">
-                            <input type="text" placeholder="Filtrar elementos" />
-
+                <div className="new-label__card">
+                    <div className="card__header">
+                        <h5>Nueva etiqueta</h5>
+                    </div>
+                    <div className="card__body">
+                        <div className="form-group">
+                            <label htmlFor="producto">Producto</label>
+                            <input type="text" className="form-control" id="producto" placeholder="Buscar producto" />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="almacen">Almacen</label>
+                            <input type="text" className="form-control" id="almacen" placeholder="Buscar producto" />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="cantidad">Cantidad</label>
+                            <input type="text" className="form-control" id="cantidad" placeholder="0.00 kg" />
                         </div>
                     </div>
-                    <div className="table__body">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Codigo</th>
-                                    <th>Producto</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {productos.map((producto, index) => {
-                                    return (
-                                        <tr key={index} className="table-row-link">
-                                            <td className="table-cell">
-                                                <Link to={`${producto.codigo}`}>
-                                                    {producto.codigo}
-                                                </Link>
-                                            </td>
-                                            <td className="table-cell">
-                                                <Link to={`${producto.codigo}`}>
-                                                    {producto.nombre}
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                    <div className="card__footer">
+                        <button className="btn btn-primary">Crear</button>
+                        <a className="">Cancelar</a>
                     </div>
                 </div>
             </div>
+        </div>
 
 
-        </div >
+
     );
 }
 

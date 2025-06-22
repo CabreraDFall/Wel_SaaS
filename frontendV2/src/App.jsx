@@ -11,7 +11,7 @@ import LayoutOnline from './layouts/layoutOnline/LayoutOnline';
 import Receptions from './pages/receptions/Receptions';
 import PurcharseLabels from './pages/receptions/page/purcharseLabels/PurcharseLabels';
 import NewLabel from './pages/labels/newLabel/NewLabel';
-import FixedBarcode from './utils/barcodes/fixedBarcode/FixedBarcode';
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -26,7 +26,6 @@ function App() {
             <Route path="/productos" element={<Products />} />
             <Route path="/recepciones/:id" element={<PurcharseLabels />} />
             <Route path="/recepciones/:id/new" element={<NewLabel />} />
-            <Route path="/recepciones/:id/new/:id" element={<FixedBarcode />} />
 
           </Routes>
         </LayoutOnline>
