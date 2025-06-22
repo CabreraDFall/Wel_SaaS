@@ -1,43 +1,56 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Title from "../../components/title//Title";
 import { UserIcon } from '../../assets/icons';
 import "./receptions.css";
-
 import TopMenu from '../../components/topmenu/TopMenu';
 
-
 function Receptions() {
-    const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [receptionsData, setReceptionsData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const togglePanel = () => {
-        setIsPanelOpen(!isPanelOpen);
-    };
+    useEffect(() => {
+        const fetchReceptions = async () => {
+            try {
+                setLoading(true);
+                const token = localStorage.getItem('token'); // Assuming the token is stored in local storage
+                const response = await fetch('http://localhost:3000/api/receptions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                setReceptionsData(data);
+            } catch (e) {
+                setError(e);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // Datos de ejemplo para las recepciones
-    const receptionsData = [
-        {
-            ordenCompra: "OC001",
-            vehiculo: "Vehiculo A",
-            items: "Alas de pollo",
-            fecha: "10/05/2025",
-            estatus: "Recibido"
-        },
-        {
-            ordenCompra: "OC002",
-            vehiculo: "Vehiculo B",
-            items: "Pescado fresco",
-            fecha: "11/05/2025",
-            estatus: "En tránsito"
-        },
-        {
-            ordenCompra: "OC003",
-            vehiculo: "Vehiculo C",
-            items: "Carne de res",
-            fecha: "12/05/2025",
-            estatus: "Procesando"
-        }
-    ];
+        fetchReceptions();
+    }, []);
+
+    const filteredReceptions = receptionsData.filter(reception => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            reception.vehicle.toLowerCase().includes(searchLower) ||
+            reception.purchase_order.toLowerCase().includes(searchLower)
+        );
+    });
+
+    if (loading) {
+        return <div>Cargando recepciones...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
 
     return (
         <div className='receptions'>
@@ -46,10 +59,15 @@ function Receptions() {
                 <div className="table">
                     <div className='table__header'>
                         <div className="table__header-filter">
-                            <input type="text" placeholder="Filtrar elementos" />
+                            <input
+                                type="text"
+                                placeholder="Buscar por vehículo o orden de compra"
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                            />
                             <button>calendario</button>
                         </div>
-                        <button className="table__header-add" onClick={togglePanel}>
+                        <button className="table__header-add">
                             <span>Agregar</span>
                         </button>
                     </div>
@@ -66,18 +84,18 @@ function Receptions() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {receptionsData.map((reception, index) => (
+                                {filteredReceptions.map((reception, index) => (
                                     <tr key={index}>
                                         <td className='checkInput'>
                                             <input type="checkbox" className="checkbox" />
-                                            <Link to={`/recepciones/${reception.ordenCompra}`}>
-                                                {reception.ordenCompra}
+                                            <Link to={`/recepciones/${reception.purchase_order}`}>
+                                                {reception.purchase_order}
                                             </Link>
                                         </td>
-                                        <td>{reception.vehiculo}</td>
+                                        <td>{reception.vehicle}</td>
                                         <td>{reception.items}</td>
-                                        <td>{reception.fecha}</td>
-                                        <td>{reception.estatus}</td>
+                                        <td>{reception.reception_date}</td>
+                                        <td>{reception.status}</td>
                                         <td>...</td>
                                     </tr>
                                 ))}
@@ -98,7 +116,6 @@ function Receptions() {
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }

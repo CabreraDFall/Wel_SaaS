@@ -180,6 +180,7 @@ const login = async (req, res) => {
 
     await pool.query(queryUpdate, valuesUpdate);
 
+    
     res.status(200).json({ message: 'Login successful', accessToken });
   } catch (error) {
     console.error(error);

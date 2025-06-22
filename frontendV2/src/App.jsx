@@ -22,6 +22,7 @@ function App() {
         // Rutas para usuarios autenticados
         <LayoutOnline>
           <Routes>
+            <Route path="/" element={<Receptions />} />
             <Route path="/recepciones" element={<Receptions />} />
             <Route path="/productos" element={<Products />} />
             <Route path="/recepciones/:id" element={<PurcharseLabels />} />
