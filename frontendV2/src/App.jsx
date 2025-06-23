@@ -9,6 +9,12 @@ import LayoutOnline from './layouts/layoutOnline/LayoutOnline';
 import Receptions from './pages/receptions/Receptions';
 import PurcharseLabels from './pages/receptions/page/purcharseLabels/PurcharseLabels';
 import NewLabel from './pages/labels/newLabel/NewLabel';
+import { useParams } from 'react-router-dom';
+
+function NewLabelWrapper() {
+  const { id } = useParams();
+  return <NewLabel purchase_order={id} />;
+}
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -54,7 +60,7 @@ function App() {
             <Route path="/recepciones" element={<ProtectedRoute><Receptions setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
             <Route path="/productos" element={<ProtectedRoute><Products /></ProtectedRoute>} />
             <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels /></ProtectedRoute>} />
-            <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabel /></ProtectedRoute>} />
+            <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabelWrapper /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </LayoutOnline>

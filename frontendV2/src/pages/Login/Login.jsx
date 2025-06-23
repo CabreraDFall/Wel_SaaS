@@ -24,6 +24,7 @@ function Login() {
         // Inicio de sesión exitoso
         console.log('Inicio de sesión exitoso:', responseData);
         localStorage.setItem("token", responseData.accessToken);
+        localStorage.setItem("userId", responseData.userId); // Store userId
         // Redirigir al usuario a la página principal
         window.location.href = "/";
       } else {

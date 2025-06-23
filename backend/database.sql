@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS receptions (
 -- Tabla de etiquetas
 CREATE TABLE IF NOT EXISTS labels (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    barcode VARCHAR(25) NOT NULL UNIQUE,
+    barcode VARCHAR(25) NOT NULL,
     product_id UUID NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
     warehouse_id UUID REFERENCES warehouses(id) ON DELETE RESTRICT,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
@@ -168,6 +168,12 @@ CREATE INDEX idx_users_employee_number ON users(employee_number);
 CREATE INDEX idx_receptions_status ON receptions(status);
 CREATE INDEX idx_receptions_date ON receptions(reception_date);
 CREATE INDEX idx_uom_master_code ON uom_master(code);
+
+-- Tabla de contadores de códigos de barras
+CREATE TABLE IF NOT EXISTS product_counters (
+    product_id INTEGER PRIMARY KEY,
+    counter INTEGER NOT NULL DEFAULT 0
+);
 
 -- Triggers para actualización automática de updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()

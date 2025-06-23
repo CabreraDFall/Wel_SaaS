@@ -22,6 +22,7 @@ router.post('/generate', async (req, res) => {
 
         // Generate barcode
         const barcode = await generateBarcode(warehouseNumberNum, productCodeNum, separatorDigit, format);
+        console.log('Generated barcode:', barcode);
 
         // Create label object
         const labelData = {
@@ -92,7 +93,13 @@ router.get('/', async (req, res) => {
         let params = [];
         if (purchase_order) {
             query += ` WHERE labels.purchase_order = $1`;
-            params = [purchase_order];
+            params.push(purchase_order);
+        }
+
+        const { product_id } = req.query;
+        if (product_id) {
+            query += params.length > 0 ? ` AND labels.product_id = $${params.length + 1}` : ` WHERE labels.product_id = $${params.length + 1}`;
+            params.push(product_id);
         }
 
         query += ` ORDER BY labels.created_at DESC`;
@@ -163,11 +170,7 @@ router.post('/', async (req, res) => {
         res.json(newLabel.rows[0]);
     } catch (err) {
         console.error(err.message);
-        if (err.code === '23505') { // Unique violation
-            res.status(400).json('Barcode already exists');
-        } else {
-            res.status(500).json('Server error: ' + err.message);
-        }
+        res.status(500).json('Server error: ' + err.message);
     }
 });
 
@@ -185,7 +188,7 @@ router.put('/:id', async (req, res) => {
 
         // Validate format value
         if (!['fijo', 'variable'].includes(format)) {
-            return res.status(400).json('Format must be either "fijo" or "variable"');
+            return res.status(400).json('Invalid barcode format. Must be in format: XX-XXXXXXXXXXXX');
         }
 
         const updateLabel = await pool.query(
@@ -200,11 +203,7 @@ router.put('/:id', async (req, res) => {
         res.json(updateLabel.rows[0]);
     } catch (err) {
         console.error(err.message);
-        if (err.code === '23505') { // Unique violation
-            res.status(400).json('Barcode already exists');
-        } else {
-            res.status(500).json('Server error: ' + err.message);
-        }
+        res.status(500).json('Server error: ' + err.message);
     }
 });
 
