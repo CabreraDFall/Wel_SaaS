@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Layout from '../../../components/Layout'
-import './NewLabel.css'
+import './newLabel.css'
 import EmptyPackage from '../../../components/icons/empty_package'
 import SearchIcon from '../../../components/icons/SearchIcon'
 import { productService } from '../../../services/api/productService'
