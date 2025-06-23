@@ -8,7 +8,7 @@ import PrintingIcon from '../../components/icons/printing_icon';
 import EyesIcon from '../../components/icons/eyes';
 import { receptionService } from '../../services/api/receptionService';
 import { useNavigate } from 'react-router-dom';
-import GenericTable from '../../utils/genericTable/GenericTable';
+import GenericTable from '../../utils/GenericTable/GenericTable';
 
 const Reception = () => {
   const navigate = useNavigate();
@@ -70,7 +70,7 @@ const Reception = () => {
     const searchLower = searchQuery.toLowerCase();
     return (
       (reception.vehicle.toLowerCase().includes(searchLower) ||
-      reception.purchase_order.toLowerCase().includes(searchLower)) &&
+        reception.purchase_order.toLowerCase().includes(searchLower)) &&
       !reception.inactive
     );
   });
@@ -338,7 +338,7 @@ const Reception = () => {
                 cursor: reception.estatus !== 'descargando' ? 'normal' : 'pointer',
               })}
             />
-        </div>
+          </div>
         </div>
       </div>
     </Layout>

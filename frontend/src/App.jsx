@@ -7,7 +7,7 @@ import Reception from './pages/reception/Reception';
 import Labels from './pages/labels/Labels';
 import Users from './pages/users/Users';
 import Dashboard from './pages/dashboard/dashboard';
-import Settings from './pages/settings/Settings';
+import Settings from './pages/settings/Settings.jsx';
 import { useEffect, useState } from 'react';
 import NewReception from './pages/reception/newReception/NewReception';
 import NewLabel from './pages/labels/newLabel/NewLabel';

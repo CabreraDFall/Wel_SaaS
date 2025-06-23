@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supplierService } from '../../services/api/supplierService';
-import GenericTable from '../../utils/genericTable/GenericTable';
+import GenericTable from '../../utils/GenericTable/GenericTable';
 
 function Suppliers() {
   const [suppliers, setSuppliers] = useState([]);
@@ -40,8 +40,8 @@ function Suppliers() {
   let handleInputChange = (e, name) => {
     setNewSupplier(prev => ({ ...prev, [name]: e.target.value }));
   };
-  let handleSave = () => {};
-  let handleCancel = () => {};
+  let handleSave = () => { };
+  let handleCancel = () => { };
 
   if (showNewForm) {
     handleSave = () => {

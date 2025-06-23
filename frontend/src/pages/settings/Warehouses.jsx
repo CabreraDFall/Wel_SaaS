@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { warehouseService } from '../../services/api/warehouseService';
-import GenericTable from '../../utils/genericTable/GenericTable';
+import GenericTable from '../../utils/GenericTable/GenericTable';
 
 function Warehouses() {
   const [warehouses, setWarehouses] = useState([]);
@@ -46,8 +46,8 @@ function Warehouses() {
     setNewWarehouse(prev => ({ ...prev, [name]: e.target.value }));
   };
 
-  let handleSave = () => {};
-  let handleCancel = () => {};
+  let handleSave = () => { };
+  let handleCancel = () => { };
 
   if (showNewForm) {
     handleSave = () => {
@@ -63,7 +63,7 @@ function Warehouses() {
         return;
       }
 
-      warehouseService.create({...newWarehouse, warehouse_number: warehouseNumber})
+      warehouseService.create({ ...newWarehouse, warehouse_number: warehouseNumber })
         .then(newWarehouse => {
           setWarehouses([...warehouses, newWarehouse]);
           setNewWarehouse({

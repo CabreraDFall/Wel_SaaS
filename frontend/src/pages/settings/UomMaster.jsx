@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { uomMasterService } from '../../services/api/UomMasterService';
 import { uomCategoriesService } from '../../services/api/uomCategoriesService';
-import GenericTable from '../../utils/genericTable/GenericTable';
+import GenericTable from '../../utils/GenericTable/GenericTable';
 import Dropdown from '../../utils/genericTable/inputsTypes/Dropdown';
 
 function UomMaster() {

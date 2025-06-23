@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { uomCategoriesService } from '../../services/api/uomCategoriesService';
-import GenericTable from '../../utils/genericTable/GenericTable';
+import GenericTable from '../../utils/GenericTable/GenericTable';
 
 function UomCategories() {
   const [categories, setCategories] = useState([]);
@@ -33,8 +33,8 @@ function UomCategories() {
     setNewCategory(prev => ({ ...prev, [name]: e.target.value }));
   };
 
-  let handleSave = () => {};
-  let handleCancel = () => {};
+  let handleSave = () => { };
+  let handleCancel = () => { };
 
   if (showNewForm) {
     handleSave = () => {

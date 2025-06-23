@@ -3,7 +3,7 @@ import './users.css';
 import Layout from '../../components/Layout';
 import SearchIcon from '../../components/icons/SearchIcon';
 import { userService } from '../../services/api/userService';
-import GenericTable from '../../utils/genericTable/GenericTable';
+import GenericTable from '../../utils/GenericTable/GenericTable';
 
 const Users = () => {
   // State declarations
@@ -63,7 +63,7 @@ const Users = () => {
     setCurrentPage(1); // Reset to first page when changing date
   };
 
- 
+
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -117,7 +117,7 @@ const Users = () => {
   const tableData = paginatedUsers.map(user => ({
     'ID Empleado': user.employee_number,
     'Email': user.email,
-    'Nombre': user.first_name ,
+    'Nombre': user.first_name,
     "apellido": user.last_name,
     'Cargo': user.role,
     'Fecha de creación': new Date(user.created_at).toLocaleDateString(),
@@ -134,7 +134,7 @@ const Users = () => {
 
   return (
     <Layout>
-      
+
       <div className='users-container flex flex-col gap-4'>
         <div className='users-header flex justify-between items-center'>
           <h4>Usuarios</h4>
@@ -153,7 +153,7 @@ const Users = () => {
               />
             </div>
           </div>
-        
+
           <div className='users-body'>
             <div className='users-table'>
               <GenericTable
@@ -178,7 +178,7 @@ const Users = () => {
           </div>
         </div>
       </div>
-    
+
     </Layout>
   );
 };
