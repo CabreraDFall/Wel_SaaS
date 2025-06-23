@@ -82,8 +82,8 @@ const refresh = async (req, res) => {
       expires: new Date(
         Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
       ),
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
       sameSite: 'None'
     };
 
@@ -167,8 +167,8 @@ const login = async (req, res) => {
       expires: new Date(
         Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
       ),
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
       sameSite: 'None'
     };
 
