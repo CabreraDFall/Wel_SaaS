@@ -7,7 +7,7 @@ import Reception from './pages/reception/Reception';
 import Labels from './pages/labels/Labels';
 import Users from './pages/users/Users';
 import Dashboard from './pages/dashboard/dashboard';
-import Settings from './pages/settings/settings';
+import Settings from './pages/settings/Settings';
 import { useEffect, useState } from 'react';
 import NewReception from './pages/reception/newReception/NewReception';
 import NewLabel from './pages/labels/newLabel/NewLabel';
@@ -31,7 +31,7 @@ function App() {
 
   return (
     <UserProvider>
-    
+
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
@@ -118,7 +118,7 @@ function App() {
           path="/settings"
           element={
             <ProtectedRoute>
-              <Settings/>
+              <Settings />
             </ProtectedRoute>
           }
         />
