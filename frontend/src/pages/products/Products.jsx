@@ -5,7 +5,7 @@ import SearchIcon from '../../components/icons/SearchIcon'
 import { productService } from '../../services/api/productService'
 import { httpService } from '../../services/api/httpService'
 import GenericTable from '../../utils/GenericTable/GenericTable';
-import Dropdown from '../../utils/genericTable/inputsTypes/Dropdown';
+import Dropdown from '../../utils/GenericTable/inputsTypes/Dropdown';
 
 const Products = () => {
   // State declarations
