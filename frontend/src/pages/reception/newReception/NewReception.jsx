@@ -4,7 +4,7 @@ import './newReception.css';
 import Layout from '../../../components/Layout';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import labelService from '../../../services/api/labelService';
-import GenericTable from '../../../utils/genericTable/GenericTable';
+import GenericTable from '../../../utils/GenericTable/GenericTable';
 import PrintButton from '../../../utils/print/PrintButton';
 import LabelCard from '../../../utils/print/labelCard';
 
@@ -73,35 +73,35 @@ function NewReception() {
 
   return (
     <Layout>
-        <div className='reception-container flex flex-col gap-4'>
-          <div className='reception-header flex justify-between items-center'>
-            <h4>Etiquetas</h4>
-            <div>
+      <div className='reception-container flex flex-col gap-4'>
+        <div className='reception-header flex justify-between items-center'>
+          <h4>Etiquetas</h4>
+          <div>
             <Link className='reception-header-button' to={`/labels/${purchase_order}`}>Nuevo etiqueta</Link>
             <PrintButton onClick={() => navigate(`/reception/${purchase_order}/print`)} />
             <button onClick={handleExportExcel}>Export excel</button>
-            </div>
-          </div>
-          <div className='products-body'>
-             
-              <div className='products-table'>
-                <GenericTable
-                  columnTitles={["Fecha", "Barcode", "Codigo", "Producto", "UDM", "Formato"]}
-                  elements={paginatedLabels.map(label => ({
-                    Fecha: new Date(label.created_at).toLocaleDateString(),
-                    Barcode: label.barcode,
-                    Codigo: label.product_code,
-                    Producto: label.product_name,
-                    UDM: label.uom_code,
-                    Formato: label.format
-                  }))}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  handlePageChange={handlePageChange}
-                />
-              </div>
           </div>
         </div>
+        <div className='products-body'>
+
+          <div className='products-table'>
+            <GenericTable
+              columnTitles={["Fecha", "Barcode", "Codigo", "Producto", "UDM", "Formato"]}
+              elements={paginatedLabels.map(label => ({
+                Fecha: new Date(label.created_at).toLocaleDateString(),
+                Barcode: label.barcode,
+                Codigo: label.product_code,
+                Producto: label.product_name,
+                UDM: label.uom_code,
+                Formato: label.format
+              }))}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handlePageChange={handlePageChange}
+            />
+          </div>
+        </div>
+      </div>
     </Layout>
   );
 }
