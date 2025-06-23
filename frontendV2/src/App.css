@@ -47,6 +47,16 @@
     --neutrals-13: rgb(10, 6, 38);
 }
 
+@media print {
+ 
+}
+
+@media print {
+  .print-content * {
+    visibility: visible !important;
+  }
+}
+
 /* Text Styles */
 
 /* Desktop Styles */

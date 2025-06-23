@@ -9,7 +9,13 @@ import LayoutOnline from './layouts/layoutOnline/LayoutOnline';
 import Receptions from './pages/receptions/Receptions';
 import PurcharseLabels from './pages/receptions/page/purcharseLabels/PurcharseLabels';
 import NewLabel from './pages/labels/newLabel/NewLabel';
+import Print from './pages/labels/print/Print';
 import { useParams } from 'react-router-dom';
+
+function PrintWrapper() {
+  const { id } = useParams();
+  return <Print purchase_order={id} />;
+}
 
 function NewLabelWrapper() {
   const { id } = useParams();
@@ -61,6 +67,7 @@ function App() {
             <Route path="/productos" element={<ProtectedRoute><Products /></ProtectedRoute>} />
             <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels /></ProtectedRoute>} />
             <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabelWrapper /></ProtectedRoute>} />
+            <Route path="/labels/print/:id" element={<ProtectedRoute><PrintWrapper /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </LayoutOnline>

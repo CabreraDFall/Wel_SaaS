@@ -1,0 +1,18 @@
+.print {
+    /* Estilos existentes */
+}
+
+.printable-area {
+    width: 210mm; /* Ancho estándar de una hoja A4 */
+    min-height: 297mm; /* Alto estándar de una hoja A4 */
+    margin: 10mm; /* Márgenes */
+    padding: 10mm;
+    box-sizing: border-box; /* Incluir el padding y el borde en el ancho y alto */
+    /* Otros estilos que puedas necesitar para el diseño de impresión */
+    background-color: #f0f0f0; /* Color de fondo de prueba */
+    border: 1px solid black; /* Borde de prueba */
+}
+
+.no-print {
+    display: none;
+}

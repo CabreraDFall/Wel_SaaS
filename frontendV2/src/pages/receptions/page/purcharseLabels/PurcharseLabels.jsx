@@ -9,6 +9,8 @@ function PurcharseLabels() {
     const { id } = useParams();
     const [labelsData, setLabelsData] = useState([]);
 
+    console.log("id en PurcharseLabels:", id);
+
     useEffect(() => {
         const fetchLabels = async () => {
             try {
@@ -45,7 +47,9 @@ function PurcharseLabels() {
                             <Link to={`/recepciones/${id}/new`}>
                                 <button className="blue-button">Nuevo etiqueta</button>
                             </Link>
-                            <button className="blue-button">Imprimir</button>
+                            <Link to={`/labels/print/${id}`}>
+                                <button className="blue-button">Imprimir</button>
+                            </Link>
                             <button className="blue-button">Export excel</button>
                         </div>
                     </div>
