@@ -1,21 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Title from '../../../../components/title/Title';
-import './PurcharseLabels.css'; // Import the CSS file
+import './PurcharseLabels.css';
 import TopMenu from '../../../../components/topmenu/TopMenu';
 import { Link } from 'react-router-dom';
 
 function PurcharseLabels() {
     const { id } = useParams();
+    const [labelsData, setLabelsData] = useState([]);
 
-    const labelsData = [
-        { fecha: '2024-07-01', barcode: '1234567890', codigo: 'PROD-001', producto: 'Product 1', udm: 'kg', formato: 'Box' },
-        { fecha: '2024-07-02', barcode: '0987654321', codigo: 'PROD-002', producto: 'Product 2', udm: 'm', formato: 'Roll' },
-    ];
+    useEffect(() => {
+        const fetchLabels = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:3000/api/labels?purchase_order=${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                setLabelsData(data);
+            } catch (error) {
+                console.error('Error fetching labels:', error);
+            }
+        };
+
+        fetchLabels();
+    }, [id]);
 
     return (
         <div className="purcharse-labels">
-
             <TopMenu title={`Recepcion: ${id}`} />
             <div className="purcharse-labels__content">
                 <div className="table">
@@ -32,7 +49,6 @@ function PurcharseLabels() {
                             <button className="blue-button">Export excel</button>
                         </div>
                     </div>
-
                     <div className="table__body">
                         <table className="labels-table">
                             <thead>
@@ -46,14 +62,14 @@ function PurcharseLabels() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {labelsData.map((label, index) => (
+                                {Array.isArray(labelsData) && labelsData.map((label, index) => (
                                     <tr key={index}>
-                                        <td>{label.fecha}</td>
+                                        <td>{new Date(label.created_at).toLocaleDateString()}</td>
                                         <td>{label.barcode}</td>
-                                        <td>{label.codigo}</td>
-                                        <td>{label.producto}</td>
+                                        <td>{label.product_code}</td>
+                                        <td>{label.product_name}</td>
                                         <td>{label.udm}</td>
-                                        <td>{label.formato}</td>
+                                        <td>{label.format}</td>
                                     </tr>
                                 ))}
                             </tbody>
