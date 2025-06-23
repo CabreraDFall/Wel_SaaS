@@ -5,7 +5,7 @@ import { UserIcon } from '../../assets/icons';
 import "./receptions.css";
 import TopMenu from '../../components/topmenu/TopMenu';
 
-function Receptions() {
+function Receptions({ setIsAuthenticated }) {
     const [receptionsData, setReceptionsData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,6 +22,9 @@ function Receptions() {
                     }
                 });
                 if (!response.ok) {
+                    if (response.status === 403) {
+                        setIsAuthenticated(false);
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
@@ -34,7 +37,7 @@ function Receptions() {
         };
 
         fetchReceptions();
-    }, []);
+    }, [setIsAuthenticated]);
 
     const filteredReceptions = receptionsData.filter(reception => {
         const searchLower = searchQuery.toLowerCase();

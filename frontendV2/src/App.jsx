@@ -50,8 +50,8 @@ function App() {
         // Rutas para usuarios autenticados
         <LayoutOnline>
           <Routes>
-            <Route path="/" element={<ProtectedRoute><Receptions /></ProtectedRoute>} />
-            <Route path="/recepciones" element={<ProtectedRoute><Receptions /></ProtectedRoute>} />
+            <Route path="/" element={<ProtectedRoute><Receptions setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
+            <Route path="/recepciones" element={<ProtectedRoute><Receptions setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
             <Route path="/productos" element={<ProtectedRoute><Products /></ProtectedRoute>} />
             <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels /></ProtectedRoute>} />
             <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabel /></ProtectedRoute>} />
