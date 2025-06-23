@@ -6,7 +6,7 @@ const { generateBarcode } = require('../utils/barcodeGenerator');
 router.post('/generate', async (req, res) => {
     console.log("creando barcode");
     try {
-        const { product_id, warehouse_id, quantity, active, created_by, warehouseNumber, productCode, separatorDigit = 1, format, purchase_order } = req.body;
+        const { product_id, warehouse_id, quantity, active, created_by, warehouseNumber, productCode, separatorDigit = 1, format, purchase_order, labelCount } = req.body;
 
         // Ensure warehouseNumber and productCode are numbers
         const warehouseNumberNum = Number(warehouseNumber);
@@ -21,7 +21,7 @@ router.post('/generate', async (req, res) => {
         }
 
         // Generate barcode
-        const barcode = await generateBarcode(warehouseNumberNum, productCodeNum, separatorDigit, format);
+        const barcode = await generateBarcode(warehouseNumberNum, productCodeNum, separatorDigit, format, labelCount);
         console.log('Generated barcode:', barcode);
 
         // Create label object

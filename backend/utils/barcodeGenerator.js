@@ -11,7 +11,7 @@ const pool = require('../config/db');
  * @throws {Error} If separatorDigit is not 1 or 8
  * @throws {Error} If warehouseNumber or productCode are not numbers
  */
-async function generateBarcode(warehouseNumber, productCode, separatorDigit = 1, format) {
+async function generateBarcode(warehouseNumber, productCode, separatorDigit = 1, format, labelCount) {
     // Validate that inputs are numbers and are positive integers
     if (typeof warehouseNumber !== 'number' || isNaN(warehouseNumber)) {
         throw new Error('Warehouse number must be a number');
@@ -52,9 +52,9 @@ async function generateBarcode(warehouseNumber, productCode, separatorDigit = 1,
         // Return the base barcode for the fijo format
         return baseBarcode;
     } else if (format === 'variable') {
-        // For variable format, you might want to implement a different logic or return a modified barcode
-        // For now, let's return the base barcode as a placeholder
-        return baseBarcode;
+        // For variable format, add the labelCount to the base barcode
+        const formattedLabelCount = String(labelCount).padStart(4, '0');
+        return `${baseBarcode}-${formattedLabelCount}`;
     }
 }
 
