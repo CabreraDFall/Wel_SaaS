@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { uomMasterService } from '../../services/api/UomMasterService';
 import { uomCategoriesService } from '../../services/api/uomCategoriesService';
 import GenericTable from '../../utils/GenericTable/GenericTable';
-import Dropdown from '../../utils/genericTable/inputsTypes/Dropdown';
+import Dropdown from '../../utils/GenericTable/inputsTypes/Dropdown';
 
 function UomMaster() {
   const [uoms, setUoms] = useState([]);
