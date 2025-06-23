@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './genericTable.css';
 import Dropdown from '../GenericTable/inputsTypes/Dropdown';
-import PaginationTable from '../genericTable/pagination/PaginationTable';
+import PaginationTable from './pagination/PaginationTable';
 
 const GenericTable = ({ elements, columnTitles, currentPage, totalPages, handlePageChange, newFormInputs, handleInputChange, handleSave, handleCancel, handleReceptionClick, rowClickDestination, rowStyle }) => {
   const [activeAccordion, setActiveAccordion] = useState(null);
