@@ -13,6 +13,7 @@ import Print from './pages/labels/print/Print';
 import { useParams } from 'react-router-dom';
 import AddProductPanel from './pages/products/components/add/AddProductPanel';
 import { UserContext, UserProvider } from './UserProvider'; // Importa UserContext y UserProvider
+import NewReception from './pages/receptions/newReception/NewReception'; // Importa el nuevo componente NewReception
 
 function PrintWrapper() {
   const { id } = useParams();
@@ -75,6 +76,7 @@ function App() {
               <Route path="/" element={<ProtectedRoute><Receptions /></ProtectedRoute>} />
               <Route path="/recepciones" element={<ProtectedRoute><Receptions /></ProtectedRoute>} />
               <Route path="/productos" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+              <Route path="/recepciones/new" element={<ProtectedRoute><NewReception /></ProtectedRoute>} /> {/* Agrega la nueva ruta para crear una recepción */}
               <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels /></ProtectedRoute>} />
               <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabelWrapper /></ProtectedRoute>} />
               <Route path="/labels/print/:id" element={<ProtectedRoute><PrintWrapper /></ProtectedRoute>} />
