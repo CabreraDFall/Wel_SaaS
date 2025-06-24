@@ -1,12 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Pagination from '../../components/Pagination/Pagination';
 import Title from "../../components/title//Title";
 import { UserIcon } from '../../assets/icons';
 import "./products.css";
 import AddProductPanel from './components/add/AddProductPanel';
 import TopMenu from '../../components/topmenu/TopMenu';
+import ActionMenu from '../../components/ActionMenu/ActionMenu';
 
 function Products() {
     const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10); // You can adjust this
+    const [totalItems, setTotalItems] = useState(0);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await fetch('http://localhost:3000/api/products', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    setProducts(data);
+                    setTotalItems(data.length); // Assuming data is an array of products
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                    // Consider setting an error state here to display an error message to the user
+                }
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const togglePanel = () => {
         setIsPanelOpen(!isPanelOpen);
@@ -41,131 +79,27 @@ function Products() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Alas de pollo</td>
-                                    <td>kg</td>
-                                    <td>fijo</td>
-                                    <td>10.05</td>
-                                    <td>Miguel A.</td>
-                                    <td>05/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Pescado fresco</td>
-                                    <td>kg</td>
-                                    <td>variable</td>
-                                    <td>0.00</td>
-                                    <td>Laura S.</td>
-                                    <td>06/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Carne de res</td>
-                                    <td>kg</td>
-                                    <td>fijo</td>
-                                    <td>15.75</td>
-                                    <td>Carlos M.</td>
-                                    <td>07/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Frutas mixtas</td>
-                                    <td>kg</td>
-                                    <td>variable</td>
-                                    <td>0.00</td>
-                                    <td>Ana G.</td>
-                                    <td>08/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Verduras ...</td>
-                                    <td>kg</td>
-                                    <td>fijo</td>
-                                    <td>5.20</td>
-                                    <td>Jorge T.</td>
-                                    <td>09/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Queso parmes ...</td>
-                                    <td>kg</td>
-                                    <td>variable</td>
-                                    <td>0.00</td>
-                                    <td>Sofía L.</td>
-                                    <td>10/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Aceite de oliva</td>
-                                    <td>L</td>
-                                    <td>fijo</td>
-                                    <td>6.75</td>
-                                    <td>Luis R.</td>
-                                    <td>11/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Arroz integral</td>
-                                    <td>kg</td>
-                                    <td>variable</td>
-                                    <td>0.00</td>
-                                    <td>Claudia P.</td>
-                                    <td>12/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Lentejas</td>
-                                    <td>kg</td>
-                                    <td>fijo</td>
-                                    <td>4.50</td>
-                                    <td>Ricardo H.</td>
-                                    <td>13/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Pan integral</td>
-                                    <td>kg</td>
-                                    <td>variable</td>
-                                    <td>0.00</td>
-                                    <td>Elena F.</td>
-                                    <td>14/09/2025</td>
-                                    <td>...</td>
-                                </tr>
-                                <tr>
-                                    <td className='checkInput'><input type="checkbox" className="checkbox" />PODOOO001</td>
-                                    <td>Leche entera</td>
-                                    <td>L</td>
-                                    <td>fijo</td>
-                                    <td>1.25</td>
-                                    <td>Fernando Q.</td>
-                                    <td>15/09/2025</td>
-                                    <td>...</td>
-                                </tr>
+                                {currentItems.map((product) => (
+                                    <tr key={product.id}>
+                                        <td className='checkInput'><input type="checkbox" className="checkbox" />{product.code}</td>
+                                        <td>{product.name}</td>
+                                        <td>{product.uom}</td>
+                                        <td>{product.format}</td>
+                                        <td>{product.weight}</td>
+                                        <td>{product.supplier}</td>
+                                        <td>{product.date}</td>
+                                        <td><ActionMenu /></td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
-                    <div className="table__footer">
-                        <div>
-                            <span>{"<"}</span>
-                            <span>1</span>
-                            <span>2</span>
-                            <span>3</span>
-                            <span>4</span>
-                            <span>5</span>
-                            <span>{">"}</span>
-                            <span>todos</span>
-                        </div>
-                    </div>
+                    <Pagination
+                        totalItems={totalItems}
+                        itemsPerPage={itemsPerPage}
+                        currentPage={currentPage}
+                        onPageChange={paginate}
+                    />
                 </div>
             </div>
             <AddProductPanel isOpen={isPanelOpen} onClose={togglePanel} />

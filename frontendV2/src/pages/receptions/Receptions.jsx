@@ -4,12 +4,16 @@ import Title from "../../components/title//Title";
 import { UserIcon } from '../../assets/icons';
 import "./receptions.css";
 import TopMenu from '../../components/topmenu/TopMenu';
+import ActionMenu from '../../components/ActionMenu/ActionMenu';
+import Pagination from '../../components/Pagination/Pagination';
 
 function Receptions({ setIsAuthenticated }) {
     const [receptionsData, setReceptionsData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10); // Puedes permitir que el usuario lo cambie
 
     useEffect(() => {
         const fetchReceptions = async () => {
@@ -46,6 +50,16 @@ function Receptions({ setIsAuthenticated }) {
             reception.purchase_order.toLowerCase().includes(searchLower)
         );
     });
+
+    // Calculate the items for the current page
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredReceptions.slice(indexOfFirstItem, indexOfLastItem);
+
+    // Function to change the page
+    const onPageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     if (loading) {
         return <div>Cargando recepciones...</div>;
@@ -87,7 +101,7 @@ function Receptions({ setIsAuthenticated }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredReceptions.map((reception, index) => (
+                                {currentItems.map((reception, index) => (
                                     <tr key={index}>
                                         <td className='checkInput'>
                                             <input type="checkbox" className="checkbox" />
@@ -99,24 +113,18 @@ function Receptions({ setIsAuthenticated }) {
                                         <td>{reception.items}</td>
                                         <td>{reception.reception_date}</td>
                                         <td>{reception.status}</td>
-                                        <td>...</td>
+                                        <td><ActionMenu /></td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-                    <div className="table__footer">
-                        <div>
-                            <span>{"<"}</span>
-                            <span>1</span>
-                            <span>2</span>
-                            <span>3</span>
-                            <span>4</span>
-                            <span>5</span>
-                            <span>{">"}</span>
-                            <span>todos</span>
-                        </div>
-                    </div>
+                    <Pagination
+                        totalItems={filteredReceptions.length}
+                        itemsPerPage={itemsPerPage}
+                        currentPage={currentPage}
+                        onPageChange={onPageChange}
+                    />
                 </div>
             </div>
         </div>
