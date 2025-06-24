@@ -7,7 +7,7 @@ import WarehouseSelect from './components/WarehouseSelect';
 import QuantityInput from './components/QuantityInput';
 import useFetchLabels from './hooks/useFetchLabels';
 
-function NewLabel({ purchase_order }) {
+function NewLabel({ purchase_order, setIsAuthenticated }) {
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState('');
     const [warehouses, setWarehouses] = useState([]);
@@ -31,6 +31,9 @@ function NewLabel({ purchase_order }) {
                     },
                 });
                 if (!response.ok) {
+                    if (response.status === 403) {
+                        setIsAuthenticated(false);
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
@@ -51,6 +54,9 @@ function NewLabel({ purchase_order }) {
                     },
                 });
                 if (!response.ok) {
+                    if (response.status === 403) {
+                        setIsAuthenticated(false);
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();

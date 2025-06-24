@@ -64,10 +64,10 @@ function App() {
           <Routes>
             <Route path="/" element={<ProtectedRoute><Receptions setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
             <Route path="/recepciones" element={<ProtectedRoute><Receptions setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
-            <Route path="/productos" element={<ProtectedRoute><Products /></ProtectedRoute>} />
-            <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels /></ProtectedRoute>} />
-            <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabelWrapper /></ProtectedRoute>} />
-            <Route path="/labels/print/:id" element={<ProtectedRoute><PrintWrapper /></ProtectedRoute>} />
+            <Route path="/productos" element={<ProtectedRoute><Products setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
+            <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
+            <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabelWrapper setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
+            <Route path="/labels/print/:id" element={<ProtectedRoute><PrintWrapper setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </LayoutOnline>

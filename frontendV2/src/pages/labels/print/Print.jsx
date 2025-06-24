@@ -4,7 +4,7 @@ import TopMenu from "../../../components/topmenu/TopMenu";
 import LabelCard from "../../../utils/print/labelCard";
 import './Print.css';
 
-function Print({ purchase_order }) {
+function Print({ purchase_order, setIsAuthenticated }) {
     const [labelData, setLabelData] = useState([]);
     const [loading, setLoading] = useState(true);
     const componentRef = useRef();
@@ -19,6 +19,12 @@ function Print({ purchase_order }) {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        setIsAuthenticated(false);
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
                 setLabelData(data);
             } catch (error) {

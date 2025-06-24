@@ -6,7 +6,7 @@ import './PurcharseLabels.css';
 import TopMenu from '../../../../components/topmenu/TopMenu';
 import { Link } from 'react-router-dom';
 
-function PurcharseLabels() {
+function PurcharseLabels({ setIsAuthenticated }) {
     const { id } = useParams();
     const [labelsData, setLabelsData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -34,9 +34,7 @@ function PurcharseLabels() {
 
                 if (!response.ok) {
                     if (response.status === 403) {
-                        // Assuming you have a way to set the authentication state
-                        // For example, if you have a state variable called isAuthenticated
-                        // setIsAuthenticated(false);
+                        setIsAuthenticated(false);
                     }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

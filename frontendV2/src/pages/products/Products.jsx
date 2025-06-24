@@ -7,7 +7,7 @@ import AddProductPanel from './components/add/AddProductPanel';
 import TopMenu from '../../components/topmenu/TopMenu';
 import ActionMenu from '../../components/ActionMenu/ActionMenu';
 
-function Products() {
+function Products({ setIsAuthenticated }) {
     const [isPanelOpen, setIsPanelOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -31,6 +31,7 @@ function Products() {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const data = await response.json();
+                    console.log("Products data:", data); // Add this line
                     setProducts(data);
                     setTotalItems(data.length); // Assuming data is an array of products
                 } catch (error) {
@@ -85,12 +86,12 @@ function Products() {
                                 {currentItems.map((product) => (
                                     <tr key={product.id}>
                                         <td className='checkInput'><input type="checkbox" className="checkbox" />{product.code}</td>
-                                        <td>{product.name}</td>
-                                        <td>{product.uom}</td>
+                                        <td>{product.product_name}</td>
+                                        <td>{product.udm_name}</td>
                                         <td>{product.format}</td>
                                         <td>{product.weight}</td>
-                                        <td>{product.supplier}</td>
-                                        <td>{product.date}</td>
+                                        <td>{product.supplier_name}</td>
+                                        <td>{product.created_at}</td>
                                         <td><ActionMenu /></td>
                                     </tr>
                                 ))}
