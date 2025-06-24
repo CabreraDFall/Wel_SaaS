@@ -11,6 +11,7 @@ import PurcharseLabels from './pages/receptions/page/purcharseLabels/PurcharseLa
 import NewLabel from './pages/labels/newLabel/NewLabel';
 import Print from './pages/labels/print/Print';
 import { useParams } from 'react-router-dom';
+import AddProductPanel from './pages/products/components/add/AddProductPanel';
 
 function PrintWrapper() {
   const { id } = useParams();
@@ -68,6 +69,7 @@ function App() {
             <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
             <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabelWrapper setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
             <Route path="/labels/print/:id" element={<ProtectedRoute><PrintWrapper setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
+            <Route path="/products/new" element={<ProtectedRoute><AddProductPanel /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </LayoutOnline>

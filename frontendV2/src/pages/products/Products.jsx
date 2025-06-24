@@ -3,12 +3,10 @@ import Pagination from '../../components/Pagination/Pagination';
 import Title from "../../components/title//Title";
 import { UserIcon } from '../../assets/icons';
 import "./products.css";
-import AddProductPanel from './components/add/AddProductPanel';
 import TopMenu from '../../components/topmenu/TopMenu';
 import ActionMenu from '../../components/ActionMenu/ActionMenu';
 
 function Products({ setIsAuthenticated }) {
-    const [isPanelOpen, setIsPanelOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10); // You can adjust this
@@ -50,10 +48,6 @@ function Products({ setIsAuthenticated }) {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    const togglePanel = () => {
-        setIsPanelOpen(!isPanelOpen);
-    };
-
     return (
         <div className='header'>
             <TopMenu title={"Productos"} />
@@ -64,7 +58,7 @@ function Products({ setIsAuthenticated }) {
                             <input type="text" placeholder="Filtrar elementos" />
                             <button>calendario</button>
                         </div>
-                        <button className="table__header-add" onClick={togglePanel}>
+                        <button className="table__header-add" onClick={() => { window.location.href = '/products/new'; }}>
                             <span>Agregar</span>
                         </button>
                     </div>
@@ -106,7 +100,6 @@ function Products({ setIsAuthenticated }) {
                     />
                 </div>
             </div>
-            <AddProductPanel isOpen={isPanelOpen} onClose={togglePanel} />
         </div>
     );
 }
