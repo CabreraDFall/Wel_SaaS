@@ -25,6 +25,9 @@ function Products() {
                         }
                     });
                     if (!response.ok) {
+                        if (response.status === 403) {
+                            setIsAuthenticated(false);
+                        }
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const data = await response.json();

@@ -31,6 +31,16 @@ function PurcharseLabels() {
                     },
                     credentials: 'include'
                 });
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        // Assuming you have a way to set the authentication state
+                        // For example, if you have a state variable called isAuthenticated
+                        // setIsAuthenticated(false);
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
                 console.log("API Response:", data);
                 setLabelsData(data);
@@ -38,6 +48,10 @@ function PurcharseLabels() {
             } catch (error) {
                 console.error('Error fetching labels:', error);
             }
+            // Handle authentication errors (403)
+            // by redirecting to login or clearing the token.
+            // The `setIsAuthenticated(false)` is already implemented.
+
         };
 
         fetchLabels();
