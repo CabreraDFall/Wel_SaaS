@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react'; // Importa useContext, useState, useEffect
 
 import './App.css'
 import Login from './pages/Login/Login';
@@ -12,6 +12,7 @@ import NewLabel from './pages/labels/newLabel/NewLabel';
 import Print from './pages/labels/print/Print';
 import { useParams } from 'react-router-dom';
 import AddProductPanel from './pages/products/components/add/AddProductPanel';
+import { UserContext, UserProvider } from './UserProvider'; // Importa UserContext y UserProvider
 
 function PrintWrapper() {
   const { id } = useParams();
@@ -24,14 +25,20 @@ function NewLabelWrapper() {
 }
 
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/" />;
+  const { user, loading } = useContext(UserContext); // Usa el contexto del usuario
+
+  if (loading) {
+    return <div>Cargando...</div>; // Muestra un indicador de carga mientras se carga el usuario
+  }
+
+  if (!user) {
+    return <Navigate to="/" />; // Redirige si no hay usuario autenticado
   }
   return children;
 }
 
 function App() {
+  // Restaura la lógica de autenticación basada en localStorage y isAuthenticated para la renderización condicional inicial
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
@@ -54,25 +61,28 @@ function App() {
   console.log('isAuthenticated:', isAuthenticated);
 
   if (isAuthenticated === null) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Indicador de carga inicial mientras se verifica el token
   }
 
   return (
     <BrowserRouter>
-      {isAuthenticated ? (
+      {isAuthenticated ? ( // Usa isAuthenticated para decidir si renderizar la parte privada o pública
         // Rutas para usuarios autenticados
-        <LayoutOnline>
-          <Routes>
-            <Route path="/" element={<ProtectedRoute><Receptions setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
-            <Route path="/recepciones" element={<ProtectedRoute><Receptions setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
-            <Route path="/productos" element={<ProtectedRoute><Products setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
-            <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
-            <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabelWrapper setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
-            <Route path="/labels/print/:id" element={<ProtectedRoute><PrintWrapper setIsAuthenticated={setIsAuthenticated} /></ProtectedRoute>} />
-            <Route path="/products/new" element={<ProtectedRoute><AddProductPanel /></ProtectedRoute>} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </LayoutOnline>
+        <UserProvider> {/* Envuelve la parte privada con UserProvider */}
+          <LayoutOnline>
+            <Routes>
+              {/* Elimina setIsAuthenticated de las rutas protegidas */}
+              <Route path="/" element={<ProtectedRoute><Receptions /></ProtectedRoute>} />
+              <Route path="/recepciones" element={<ProtectedRoute><Receptions /></ProtectedRoute>} />
+              <Route path="/productos" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+              <Route path="/recepciones/:id" element={<ProtectedRoute><PurcharseLabels /></ProtectedRoute>} />
+              <Route path="/recepciones/:id/new" element={<ProtectedRoute><NewLabelWrapper /></ProtectedRoute>} />
+              <Route path="/labels/print/:id" element={<ProtectedRoute><PrintWrapper /></ProtectedRoute>} />
+              <Route path="/products/new" element={<ProtectedRoute><AddProductPanel /></ProtectedRoute>} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </LayoutOnline>
+        </UserProvider>
       ) : (
         // Layout offline para usuarios no autenticados
         <LayoutOffline>
