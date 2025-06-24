@@ -83,7 +83,7 @@ function PurcharseLabels() {
                                         <td>{label.barcode}</td>
                                         <td>{label.product_code}</td>
                                         <td>{label.product_name}</td>
-                                        <td>{label.quantity}</td>
+                                        <td>{label.weight}</td>
                                         <td>{label.udm}</td>
                                         <td>{label.format}</td>
                                     </tr>
