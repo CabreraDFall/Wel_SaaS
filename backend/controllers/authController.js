@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 //Status: Agregadas dependencias para JWT y cookies
-const pool = require('../index');
+const pool = require('../index-0');
 
 //Status: Agregado middleware para verificar el token JWT
 const verifyJWT = (req, res, next) => {

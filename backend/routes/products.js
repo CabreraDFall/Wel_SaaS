@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../index');
+const pool = require('../index-0');
 
 // @desc    Get all products
 // @route   GET /api/products

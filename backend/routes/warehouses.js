@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const pool = require('../index');
+const pool = require('../index-0');
 
 // Get all warehouses
 router.get('/', async (req, res) => {
