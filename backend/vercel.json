@@ -1,18 +1,12 @@
 {
-  "version": 3,
+  "version": 2,
   "builds": [
     {
-      "src": "index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["index.js", "config/**", "controllers/**", "routes/**", "utils/**", ".env", "database.sql", "package.json", "package-lock.json"]
-      }
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "index.js"
-    }
+    { "src": "/api/(.*)", "dest": "/api/index.js" }
   ]
 }
