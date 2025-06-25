@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const serverless = require('serverless-http');
+
 const productsRoute = require('./products');
 const { verifyJWT } = require('../controllers/authController');
 
@@ -39,4 +39,4 @@ app.get('/', (req, res) => {
   res.send('API Wel_SaaS funcionando 🚀');
 });
 
-module.exports.handler = serverless(app);
+module.exports
