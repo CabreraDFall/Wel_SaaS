@@ -84,9 +84,11 @@ function Receptions({ setIsAuthenticated }) {
                             />
                             <button>calendario</button>
                         </div>
-                        <button className="table__header-add">
-                            <span>Agregar</span>
-                        </button>
+                        <Link to={`/recepciones/new`}>
+                            <button className="table__header-add">
+                                <span>Agregar</span>
+                            </button>
+                        </Link>
                     </div>
                     <div className='table__body'>
                         <table>
@@ -127,7 +129,7 @@ function Receptions({ setIsAuthenticated }) {
                     />
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
