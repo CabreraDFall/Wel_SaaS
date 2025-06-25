@@ -12,7 +12,7 @@ import NewLabel from './pages/labels/newLabel/NewLabel';
 import Print from './pages/labels/print/Print';
 import { useParams } from 'react-router-dom';
 import AddProductPanel from './pages/products/components/add/AddProductPanel';
-import { UserContext, UserProvider } from './UserProvider'; // Importa UserContext y UserProvider
+import { UserContext, UserProvider } from './utils/userProvider/UserProvider'; // Importa UserContext y UserProvider
 import NewReception from './pages/receptions/newReception/NewReception'; // Importa el nuevo componente NewReception
 
 function PrintWrapper() {

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react'; // Importar useEffect
 import TopMenu from '../../../components/topmenu/TopMenu';
 import "./new-reception.css"
-import { UserContext } from '../../../UserProvider';
+import { UserContext } from '../../../utils/userProvider/UserProvider';
 
 
 function NewReception() {
