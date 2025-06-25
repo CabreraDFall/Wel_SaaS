@@ -11,8 +11,17 @@
     /* Otros estilos que puedas necesitar para el diseño de impresión */
     background-color: #f0f0f0; /* Color de fondo de prueba */
     border: 1px solid black; /* Borde de prueba */
+    page-break-after: always;
 }
 
 .no-print {
     display: none;
+}
+
+
+.print__content{
+     display: grid;
+    grid-template-columns: repeat(6, 1fr); /* 3 columnas iguales */
+    gap: 20px; 
+     page-break-after: always;
 }

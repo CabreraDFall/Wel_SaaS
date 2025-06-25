@@ -50,13 +50,13 @@ function Print({ purchase_order, setIsAuthenticated }) {
     }
 
     return (
-        <div>
+        <div className='print'>
             <TopMenu title="Print" className="no-print" />
             <button onClick={() => handlePrint()} className="">
                 Imprimir
             </button>
             {loading ? <p>Cargando etiquetas...</p> :
-                <div ref={componentRef}>
+                <div ref={componentRef} className='print__content'>
                     {labelData.map((label) => (
                         <LabelCard
                             key={label.id}
