@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ActionMenu.css';
+import { DotsIcon } from '../../assets/icons';
+
 
 function ActionMenu() {
     const [showMenu, setShowMenu] = useState(false);
@@ -25,7 +27,7 @@ function ActionMenu() {
     return (
         <div className="action-menu-container">
             <button className="action-button" onClick={toggleMenu}>
-                ...
+                <DotsIcon />
             </button>
             {showMenu && (
                 <div className="action-menu" ref={menuRef}>

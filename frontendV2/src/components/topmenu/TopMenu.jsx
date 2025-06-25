@@ -1,14 +1,28 @@
 import React from 'react'
-import { UserIcon } from '../../assets/icons'
+import { ChevronDownIcon, UserIcon } from '../../assets/icons'
 import "./topmenu.css"
-function TopMenu({ title }) {
-    return (
+import { useLocation } from 'react-router-dom';
 
+function TopMenu({ title }) {
+    const location = useLocation();
+    const goBack = () => {
+        window.history.back();
+    };
+
+    const showBackButton = location.pathname !== '/';
+
+    return (
         <div className="header__content">
-            <h4>{title}</h4>
+            <div className='header__content-left'>
+                {showBackButton && (
+                    <span className='left__icon' onClick={goBack} style={{ cursor: 'pointer' }}>
+                        <ChevronDownIcon />
+                    </span>
+                )}
+                <h4>{title}</h4>
+            </div>
             <UserIcon />
         </div>
-
     )
 }
 

@@ -26,3 +26,8 @@ input[type="checkbox"] {
   transform: translateY(-0.075em);
 }
 
+a{
+ color: currentColor;
+ text-decoration: none;
+ font: inherit;
+}
