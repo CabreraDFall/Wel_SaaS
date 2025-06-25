@@ -42,7 +42,7 @@ app.get('/api/test', verifyJWT, (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('Welcome to the API');
+  res.send('nada que ver');
 });
 
 const PORT = process.env.PORT || 5000;
