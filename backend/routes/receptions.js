@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../index-0');
+const pool = require('..');
 
 // GET - Obtener todas las recepciones
 router.get('/', async (req, res) => {

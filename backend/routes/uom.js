@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../index-0');
+const pool = require('..');
 
 // @desc    Get all UOMs
 // @route   GET /api/uom_master

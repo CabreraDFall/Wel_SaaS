@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const pool = require('../index-0');
+const pool = require('..');
 
 // Crear usuario
 // Status: Deshabilitada la creación de usuarios desde este endpoint.  La creación de usuarios ahora se maneja a través de /register en auth.js
