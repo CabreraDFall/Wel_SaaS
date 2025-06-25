@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Title from "../../components/title//Title";
+import TableFilter from '../../components/TableFilter/TableFilter';
 import { UserIcon } from '../../assets/icons';
 import "./receptions.css";
 import TopMenu from '../../components/topmenu/TopMenu';
@@ -76,13 +77,11 @@ function Receptions({ setIsAuthenticated }) {
                 <div className="table">
                     <div className='table__header'>
                         <div className="table__header-filter">
-                            <input
-                                type="text"
+                            <TableFilter
                                 placeholder="Buscar por vehículo o orden de compra"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                             />
-                            <button>calendario</button>
                         </div>
                         <Link to={`/recepciones/new`}>
                             <button className="table__header-add">

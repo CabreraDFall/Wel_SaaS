@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './AddProductPanel.css';
 import InputText from "../../../../components/InputText/InputText";
+import TopMenu from '../../../../components/topmenu/TopMenu';
 
 function AddProductPanel() {
     // State variables for form inputs
@@ -53,7 +54,7 @@ function AddProductPanel() {
             if (response.ok) {
                 console.log('Product added successfully!');
                 // Optionally, close the modal or reset the form
-                onClose();
+
             } else {
                 console.error('Failed to add product:', response.status, await response.text());
                 // Handle error (e.g., display an error message)
@@ -109,9 +110,10 @@ function AddProductPanel() {
     }, [formato]);
 
     return (
-        <div className="add-product-panel">
+        <div >
+            <TopMenu title={"Producto"} />
             <div className="add-product-panel__header">
-                <h5>Agregar Producto</h5>
+                Nuevo producto
             </div>
             <div className="add-product-panel__content">
                 <form onSubmit={handleSubmit}>

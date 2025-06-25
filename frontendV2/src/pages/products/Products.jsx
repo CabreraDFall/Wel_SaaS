@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import TableFilter from '../../components/TableFilter/TableFilter';
+
 import Pagination from '../../components/Pagination/Pagination';
 import Title from "../../components/title//Title";
 import { UserIcon } from '../../assets/icons';
@@ -11,6 +13,11 @@ function Products({ setIsAuthenticated }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10); // You can adjust this
     const [totalItems, setTotalItems] = useState(0);
+    const [filterValue, setFilterValue] = useState('');
+
+    const handleFilterChange = (event) => {
+        setFilterValue(event.target.value);
+    };
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -30,8 +37,15 @@ function Products({ setIsAuthenticated }) {
                     }
                     const data = await response.json();
                     console.log("Products data:", data); // Add this line
-                    setProducts(data);
-                    setTotalItems(data.length); // Assuming data is an array of products
+                    let filteredProducts = data;
+                    if (filterValue) {
+                        filteredProducts = data.filter(product =>
+                            product.product_name.toLowerCase().includes(filterValue.toLowerCase()) ||
+                            product.code.toLowerCase().includes(filterValue.toLowerCase())
+                        );
+                    }
+                    setProducts(filteredProducts);
+                    setTotalItems(filteredProducts.length);
                 } catch (error) {
                     console.error('Error fetching products:', error);
                     // Consider setting an error state here to display an error message to the user
@@ -40,7 +54,7 @@ function Products({ setIsAuthenticated }) {
         };
 
         fetchProducts();
-    }, []);
+    }, [filterValue]);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -55,8 +69,12 @@ function Products({ setIsAuthenticated }) {
                 <div className="table">
                     <div className='table__header'>
                         <div className="table__header-filter">
-                            <input type="text" placeholder="Filtrar elementos" />
-                            <button>calendario</button>
+                            <TableFilter
+                                placeholder="Filtrar elementos"
+                                value={filterValue}
+                                onChange={handleFilterChange}
+                            />
+
                         </div>
                         <button className="table__header-add" onClick={() => { window.location.href = '/products/new'; }}>
                             <span>Agregar</span>
