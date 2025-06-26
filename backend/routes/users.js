@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const pool = require('..');
+const supabase = require('../config/db');
+// const pool = require('..'); // Eliminamos la importación de pool
 
 // Crear usuario
 // Status: Deshabilitada la creación de usuarios desde este endpoint.  La creación de usuarios ahora se maneja a través de /register en auth.js
@@ -44,10 +45,20 @@ const pool = require('..');
 // Obtener todos los usuarios
 router.get('/', async (req, res) => {
   try {
-    const usuarios = await pool.query(
-      'SELECT id, first_name, last_name, email, employee_number, role, created_at FROM users ORDER BY created_at DESC'
-    );
-    res.json(usuarios.rows);
+    const { data: usuarios, error } = await supabase
+      .from('users')
+      .select('id, first_name, last_name, email, employee_number, role, created_at')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error al obtener usuarios:', error);
+      return res.status(500).json({
+        mensaje: 'Error al obtener usuarios',
+        error: error.message
+      });
+    }
+
+    res.json(usuarios);
   } catch (error) {
     res.status(500).json({
       mensaje: 'Error al obtener usuarios',
@@ -60,16 +71,25 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const usuario = await pool.query(
-      'SELECT id, first_name, last_name, email, employee_number, role, created_at FROM users WHERE id = $1',
-      [id]
-    );
+    const { data: usuario, error } = await supabase
+      .from('users')
+      .select('id, first_name, last_name, email, employee_number, role, created_at')
+      .eq('id', id)
+      .single();
 
-    if (usuario.rows.length === 0) {
+    if (error) {
+      console.error('Error al obtener usuario por ID:', error);
+      return res.status(500).json({
+        mensaje: 'Error al obtener el usuario',
+        error: error.message
+      });
+    }
+
+    if (!usuario) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
 
-    res.json(usuario.rows[0]);
+    res.json(usuario);
   } catch (error) {
     res.status(500).json({
       mensaje: 'Error al obtener el usuario',
@@ -85,30 +105,55 @@ router.put('/:id', async (req, res) => {
     const { first_name, last_name, email, employee_number, role } = req.body;
 
     // Verificar si el usuario existe
-    const usuarioExiste = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    const { data: usuarioExiste, error: errorUsuarioExiste } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .single();
 
-    if (usuarioExiste.rows.length === 0) {
+    if (errorUsuarioExiste) {
+      console.error('Error al verificar si el usuario existe:', errorUsuarioExiste);
+      return res.status(500).json({ mensaje: 'Error al verificar el usuario', error: errorUsuarioExiste.message });
+    }
+
+    if (!usuarioExiste) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
 
     // Verificar si el correo o número de empleado ya existe en otro usuario
-    const duplicado = await pool.query(
-      'SELECT * FROM users WHERE (email = $1 OR employee_number = $2) AND id != $3',
-      [email, employee_number, id]
-    );
+    const { data: duplicado, error: errorDuplicado } = await supabase
+      .from('users')
+      .select('*')
+      .or(`email.eq.${email},employee_number.eq.${employee_number}`)
+      .neq('id', id);
 
-    if (duplicado.rows.length > 0) {
+    if (errorDuplicado) {
+      console.error('Error al verificar duplicados:', errorDuplicado);
+      return res.status(500).json({ mensaje: 'Error al verificar duplicados', error: errorDuplicado.message });
+    }
+
+    if (duplicado && duplicado.length > 0) {
       return res.status(400).json({
         mensaje: 'El correo o número de empleado ya está registrado por otro usuario'
       });
     }
 
-    const usuario = await pool.query(
-      'UPDATE users SET first_name = $1, last_name = $2, email = $3, employee_number = $4, role = $5 WHERE id = $6 RETURNING id, first_name, last_name, email, employee_number, role, created_at',
-      [first_name, last_name, email, employee_number, role, id]
-    );
+    const { data: usuario, error } = await supabase
+      .from('users')
+      .update({ first_name, last_name, email, employee_number, role })
+      .eq('id', id)
+      .select('id, first_name, last_name, email, employee_number, role, created_at')
+      .single();
 
-    res.json(usuario.rows[0]);
+    if (error) {
+      console.error('Error al actualizar usuario:', error);
+      return res.status(500).json({
+        mensaje: 'Error al actualizar el usuario',
+        error: error.message
+      });
+    }
+
+    res.json(usuario);
   } catch (error) {
     res.status(500).json({
       mensaje: 'Error al actualizar el usuario',
@@ -121,10 +166,17 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', id);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    if (error) {
+      console.error('Error al eliminar usuario:', error);
+      return res.status(500).json({
+        mensaje: 'Error al eliminar el usuario',
+        error: error.message
+      });
     }
 
     res.json({ mensaje: 'Usuario eliminado correctamente' });

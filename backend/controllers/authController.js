@@ -35,10 +35,14 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Store the user in the database
-    const query = 'INSERT INTO users (first_name, last_name, email, employee_number, role, password) VALUES ($1, $2, $3, $4, $5, $6)';
-    const values = [first_name, last_name, email, employee_number, role, hashedPassword];
+    const { data, error } = await supabase
+      .from('users')
+      .insert([{ first_name, last_name, email, employee_number, role, password: hashedPassword }]);
 
-    await pool.query(query, values);
+    if (error) {
+      console.error(error);
+      throw error; // Re-throw the error to be caught by the outer try-catch
+    }
 
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
@@ -58,13 +62,13 @@ const refresh = async (req, res) => {
 
   try {
     // Check if the user exists
-    const query = 'SELECT * FROM users WHERE refresh_token = $1';
-    const values = [refreshToken];
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('refresh_token', refreshToken)
+      .single();
 
-    const result = await pool.query(query, values);
-    const user = result.rows[0];
-
-    if (!user) {
+    if (userError || !user) {
       return res.status(403).json({ message: 'Invalid refresh token' });
     }
 
@@ -78,14 +82,14 @@ const refresh = async (req, res) => {
       });
 
       //options for cookie
-    const options = {
-      expires: new Date(
-        Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: false,
-      secure: false,
-      sameSite: 'None'
-    };
+      const options = {
+        expires: new Date(
+          Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: false,
+        secure: false,
+        sameSite: 'None'
+      };
 
       res.cookie('jwt', accessToken, options);
       res.status(200).json({ message: 'Access token refreshed successfully', accessToken });
@@ -107,22 +111,26 @@ const logout = async (req, res) => {
 
   try {
     // Check if the user exists
-    const query = 'SELECT * FROM users WHERE refresh_token = $1';
-    const values = [refreshToken];
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('refresh_token', refreshToken)
+      .single();
 
-    const result = await pool.query(query, values);
-    const user = result.rows[0];
-
-    if (!user) {
+    if (userError || !user) {
       res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
       return res.sendStatus(204); // No content
     }
 
     // Delete refresh token in database
-    const queryUpdate = 'UPDATE users SET refresh_token = $1 WHERE id = $2';
-    const valuesUpdate = [null, user.id];
+    const { error } = await supabase
+      .from('users')
+      .update({ refresh_token: null })
+      .eq('id', user.id);
 
-    await pool.query(queryUpdate, valuesUpdate);
+    if (error) {
+      console.error(error);
+    }
 
     res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
     res.status(200).json({ message: 'Logout successful' });
@@ -137,13 +145,13 @@ const login = async (req, res) => {
 
   try {
     // Check if the user exists
-    const query = 'SELECT * FROM users WHERE email = $1';
-    const values = [email];
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
 
-    const result = await pool.query(query, values);
-    const user = result.rows[0];
-
-    if (!user) {
+    if (error || !user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -175,10 +183,14 @@ const login = async (req, res) => {
     res.cookie('jwt', accessToken, options);
 
     // update refresh token in database
-    const queryUpdate = 'UPDATE users SET refresh_token = $1 WHERE id = $2';
-    const valuesUpdate = [refreshToken, user.id];
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ refresh_token: refreshToken })
+      .eq('id', user.id);
 
-    await pool.query(queryUpdate, valuesUpdate);
+    if (updateError) {
+      console.error(updateError);
+    }
 
     
     res.status(200).json({ message: 'Login successful', accessToken });

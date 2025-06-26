@@ -1,11 +1,11 @@
 require('dotenv').config();
 
-const { Pool } = require('pg');
-const dbConfig = require('./config/db');
+const supabase = require('./config/db');
 
-const pool = new Pool(dbConfig); // Status: Inicialización de la conexión a la base de datos
+// No es necesario crear un pool de conexiones con Supabase
+// Supabase se encarga de la gestión de conexiones internamente
 
-module.exports = pool;
+module.exports = supabase;
 
 const express = require('express');
 const cors = require('cors');

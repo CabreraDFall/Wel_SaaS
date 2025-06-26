@@ -5,8 +5,16 @@ const pool = require('..');
 // GET - Obtener todas las recepciones
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, reception_date, vehicle, items, purchase_order, status, notes, created_by, completed_at, inactive, Inactive_by, deleted_at FROM receptions WHERE inactive = false ORDER BY reception_date DESC');
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('receptions')
+      .select('*')
+      .eq('inactive', false)
+      .order('reception_date', { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ message: error.message });
+    }
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -15,11 +23,16 @@ router.get('/', async (req, res) => {
 // GET - Obtener una recepción específica
 router.get('/:id', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, reception_date, vehicle, items, purchase_order, status, notes, created_by, completed_at, inactive, Inactive_by, deleted_at FROM receptions WHERE id = $1', [req.params.id]);
-    if (result.rows.length === 0) {
+    const { data, error } = await supabase
+      .from('receptions')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error) {
       return res.status(404).json({ message: 'Recepción no encontrada' });
     }
-    res.json(result.rows[0]);
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -29,11 +42,18 @@ router.get('/:id', async (req, res) => {
 router.get('/date/:date', async (req, res) => {
   try {
     const date = req.params.date;
-    const result = await pool.query(
-      "SELECT id, reception_date, vehicle, items, purchase_order, status, notes, created_by, completed_at, inactive, Inactive_by, deleted_at FROM receptions WHERE DATE(reception_date) = DATE($1) AND inactive = false ORDER BY reception_date DESC",
-      [date]
-    );
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('receptions')
+      .select('*')
+      .eq('inactive', false)
+      .gte('reception_date', date)
+      .lte('reception_date', date)
+      .order('reception_date', { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ message: error.message });
+    }
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -45,22 +65,30 @@ router.post('/', async (req, res) => {
 
   try {
     // Verificar si el purchase_order ya existe
-    const countResult = await pool.query(
-      'SELECT COUNT(*) FROM receptions WHERE purchase_order = $1',
-      [purchase_order]
-    );
+    const { data: countResult, error: countError } = await supabase
+      .from('receptions')
+      .select('purchase_order', { count: 'exact' })
+      .eq('purchase_order', purchase_order);
 
-    const count = parseInt(countResult.rows[0].count, 10);
+    if (countError) {
+      console.error(countError);
+      return res.status(500).json({ message: 'Server Error', error: countError.message });
+    }
 
-    if (count > 0) {
+    if (countResult && countResult.length > 0) {
       return res.status(400).json({ message: 'El número de orden de compra ya existe' });
     }
 
-    const result = await pool.query(
-      'INSERT INTO receptions (reception_date, vehicle, items, purchase_order, status, notes, created_by, inactive, Inactive_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-      [reception_date, vehicle, items, purchase_order, status, notes, created_by, inactive, Inactive_by]
-    );
-    res.status(201).json(result.rows[0]);
+    const { data, error } = await supabase
+      .from('receptions')
+      .insert([{ reception_date, vehicle, items, purchase_order, status, notes, created_by, inactive, Inactive_by }])
+      .select('*');
+
+    if (error) {
+      console.error(error);
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(201).json(data[0]);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -72,66 +100,22 @@ router.patch('/:id', async (req, res) => {
     const { id } = req.params;
     const { vehicle, items, purchase_order, status, reception_date, inactive, Inactive_by } = req.body;
 
-    // Construir la consulta dinámica
-    let updates = [];
-    let values = [];
-    let paramCount = 1;
+    const { data, error } = await supabase
+      .from('receptions')
+      .update({ vehicle, items, purchase_order, status, reception_date, inactive, Inactive_by })
+      .eq('id', id)
+      .select('*');
 
-    if (vehicle) {
-      updates.push(`vehicle = $${paramCount}`);
-      values.push(vehicle);
-      paramCount++;
-    }
-    if (items !== undefined) {
-      updates.push(`items = $${paramCount}`);
-      values.push(items);
-      paramCount++;
-    }
-    if (purchase_order) {
-      updates.push(`purchase_order = $${paramCount}`);
-      values.push(purchase_order);
-      paramCount++;
-    }
-    if (status) {
-      updates.push(`status = $${paramCount}`);
-      values.push(status);
-      paramCount++;
-    }
-    if (reception_date) {
-      updates.push(`reception_date = $${paramCount}`);
-      values.push(reception_date);
-      paramCount++;
-    }
-    if (inactive !== undefined) {
-      updates.push(`inactive = $${paramCount}`);
-      values.push(inactive);
-      paramCount++;
-    }
-    if (Inactive_by) {
-      updates.push(`Inactive_by = $${paramCount}`);
-      values.push(Inactive_by);
-      paramCount++;
+    if (error) {
+      console.error(error);
+      return res.status(400).json({ message: error.message });
     }
 
-    if (updates.length === 0) {
-      return res.status(400).json({ message: 'No se proporcionaron datos para actualizar' });
-    }
-
-    values.push(id);
-    const query = `
-      UPDATE receptions
-      SET ${updates.join(', ')}
-      WHERE id = $${paramCount}
-      RETURNING *
-    `;
-
-    const result = await pool.query(query, values);
-
-    if (result.rows.length === 0) {
+    if (data.length === 0) {
       return res.status(404).json({ message: 'Recepción no encontrada' });
     }
 
-    res.json(result.rows[0]);
+    res.json(data[0]);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -154,11 +138,16 @@ router.delete('/:id', async (req, res) => {
 router.get('/count/:purchase_order', async (req, res) => {
   try {
     const { purchase_order } = req.params;
-    const result = await pool.query(
-      'SELECT COUNT(*) FROM receptions WHERE purchase_order = $1',
-      [purchase_order]
-    );
-    res.json({ count: parseInt(result.rows[0].count, 10) });
+    const { data, error } = await supabase
+      .from('receptions')
+      .select('purchase_order', { count: 'exact' })
+      .eq('purchase_order', purchase_order);
+
+    if (error) {
+      return res.status(500).json({ message: error.message });
+    }
+
+    res.json({ count: data ? data.length : 0 });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

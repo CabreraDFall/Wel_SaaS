@@ -35,28 +35,42 @@ router.post('/generate', async (req, res) => {
         };
 
         // Save label to database
-        const newLabel = await pool.query(
-            'INSERT INTO labels (barcode, product_id, warehouse_id, quantity, created_by, purchase_order) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [labelData.barcode, labelData.product_id, labelData.warehouse_id, labelData.quantity, labelData.created_by, purchase_order]
-        );
+        const { data: newLabel, error: labelError } = await supabase
+            .from('labels')
+            .insert([{ barcode: labelData.barcode, product_id: labelData.product_id, warehouse_id: labelData.warehouse_id, quantity: labelData.quantity, created_by: labelData.created_by, purchase_order: purchase_order }])
+            .select('*');
+
+        if (labelError) {
+            console.error(labelError);
+            return res.status(500).json('Server error: ' + labelError.message);
+        }
 
         // Increment reception items
         if (purchase_order) {
             try {
-                const reception = await pool.query(
-                    'SELECT id, items FROM receptions WHERE purchase_order = $1',
-                    [purchase_order]
-                );
+                const { data: reception, error: receptionError } = await supabase
+                    .from('receptions')
+                    .select('id, items')
+                    .eq('purchase_order', purchase_order)
+                    .single();
 
-                if (reception.rows.length > 0) {
-                    const receptionId = reception.rows[0].id;
-                    const currentItems = reception.rows[0].items;
+                if (receptionError) {
+                    console.error('Error fetching reception:', receptionError.message);
+                }
+
+                if (reception) {
+                    const receptionId = reception.id;
+                    const currentItems = reception.items;
                     const newItems = currentItems + 1;
 
-                    await pool.query(
-                        'UPDATE receptions SET items = $1 WHERE id = $2',
-                        [newItems, receptionId]
-                    );
+                    const { error: updateError } = await supabase
+                        .from('receptions')
+                        .update({ items: newItems })
+                        .eq('id', receptionId);
+
+                    if (updateError) {
+                        console.error('Error incrementing reception items:', updateError.message);
+                    }
                 } else {
                     console.log(`Reception not found for purchase order: ${purchase_order}`);
                 }
@@ -65,7 +79,7 @@ router.post('/generate', async (req, res) => {
             }
         }
 
-        res.json(newLabel.rows[0]);
+        res.json(newLabel[0]);
 
     } catch (err) {
         console.error(err.message);
@@ -77,35 +91,32 @@ router.post('/generate', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const { purchase_order } = req.query;
-        let query = `
-            SELECT 
-                labels.*,
-                products.product_name,
-                products.code AS product_code,
-                COALESCE(uom_master.name, 'N/A') AS udm,
-                COALESCE(uom_master.code, 'N/A') AS uom_code,
-                products.format
-            FROM labels
-            JOIN products ON labels.product_id = products.id
-            LEFT JOIN uom_master ON products.uom_id = uom_master.id
-        `;
+        let query = supabase
+            .from('labels')
+            .select(
+                `*,
+                products (product_name, code as product_code, format),
+                uom_master (name as udm, code as uom_code)`
+            )
+            .order('created_at', { ascending: false });
 
-        let params = [];
         if (purchase_order) {
-            query += ` WHERE labels.purchase_order = $1`;
-            params.push(purchase_order);
+            query = query.eq('purchase_order', purchase_order);
         }
 
         const { product_id } = req.query;
         if (product_id) {
-            query += params.length > 0 ? ` AND labels.product_id = $${params.length + 1}` : ` WHERE labels.product_id = $${params.length + 1}`;
-            params.push(product_id);
+            query = query.eq('product_id', product_id);
         }
 
-        query += ` ORDER BY labels.created_at DESC`;
+        const { data, error } = await query;
 
-        const allLabels = await pool.query(query, params);
-        res.json(allLabels.rows);
+        if (error) {
+            console.error(error);
+            return res.status(500).json('Server error: ' + error.message);
+        }
+
+        res.json(data);
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error: ' + err.message);
@@ -116,16 +127,17 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const label = await pool.query(
-            'SELECT * FROM labels WHERE id = $1',
-            [id]
-        );
-        
-        if (label.rows.length === 0) {
+        const { data, error } = await supabase
+            .from('labels')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) {
             return res.status(404).json('Label not found');
         }
-        
-        res.json(label.rows[0]);
+
+        res.json(data);
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error: ' + err.message);
@@ -137,28 +149,42 @@ router.post('/', async (req, res) => {
     try {
         const { barcode, product_id, warehouse_id, quantity, created_by, purchase_order } = req.body;
 
-        const newLabel = await pool.query(
-            'INSERT INTO labels (barcode, product_id, warehouse_id, quantity, created_by, purchase_order) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [barcode, product_id, warehouse_id, quantity, created_by, purchase_order]
-        );
+        const { data: newLabel, error: labelError } = await supabase
+            .from('labels')
+            .insert([{ barcode, product_id, warehouse_id, quantity, created_by, purchase_order }])
+            .select('*');
+
+        if (labelError) {
+            console.error(labelError);
+            return res.status(500).json('Server error: ' + labelError.message);
+        }
 
         // Increment reception items
         if (purchase_order) {
             try {
-                const reception = await pool.query(
-                    'SELECT id, items FROM receptions WHERE purchase_order = $1',
-                    [purchase_order]
-                );
+                const { data: reception, error: receptionError } = await supabase
+                    .from('receptions')
+                    .select('id, items')
+                    .eq('purchase_order', purchase_order)
+                    .single();
 
-                if (reception.rows.length > 0) {
-                    const receptionId = reception.rows[0].id;
-                    const currentItems = reception.rows[0].items;
+                if (receptionError) {
+                    console.error('Error fetching reception:', receptionError.message);
+                }
+
+                if (reception) {
+                    const receptionId = reception.id;
+                    const currentItems = reception.items;
                     const newItems = currentItems + 1;
 
-                    await pool.query(
-                        'UPDATE receptions SET items = $1 WHERE id = $2',
-                        [newItems, receptionId]
-                    );
+                    const { error: updateError } = await supabase
+                        .from('receptions')
+                        .update({ items: newItems })
+                        .eq('id', receptionId);
+
+                    if (updateError) {
+                        console.error('Error incrementing reception items:', updateError.message);
+                    }
                 } else {
                     console.log(`Reception not found for purchase order: ${purchase_order}`);
                 }
@@ -167,7 +193,7 @@ router.post('/', async (req, res) => {
             }
         }
 
-        res.json(newLabel.rows[0]);
+        res.json(newLabel[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error: ' + err.message);
@@ -191,16 +217,22 @@ router.put('/:id', async (req, res) => {
             return res.status(400).json('Invalid barcode format. Must be in format: XX-XXXXXXXXXXXX');
         }
 
-        const updateLabel = await pool.query(
-            'UPDATE labels SET barcode = $1, product_code = $2, product_name = $3, udm = $4, format = $5 WHERE id = $6 RETURNING *',
-            [barcode, product_code, product_name, udm, format, id]
-        );
+        const { data, error } = await supabase
+            .from('labels')
+            .update({ barcode, product_code, product_name, udm, format })
+            .eq('id', id)
+            .select('*');
 
-        if (updateLabel.rows.length === 0) {
+        if (error) {
+            console.error(error);
+            return res.status(500).json('Server error: ' + error.message);
+        }
+
+        if (data.length === 0) {
             return res.status(404).json('Label not found');
         }
 
-        res.json(updateLabel.rows[0]);
+        res.json(data[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error: ' + err.message);
@@ -211,13 +243,14 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteLabel = await pool.query(
-            'DELETE FROM labels WHERE id = $1 RETURNING *',
-            [id]
-        );
+        const { error } = await supabase
+            .from('labels')
+            .delete()
+            .eq('id', id);
 
-        if (deleteLabel.rows.length === 0) {
-            return res.status(404).json('Label not found');
+        if (error) {
+            console.error(error);
+            return res.status(500).json('Server error: ' + error.message);
         }
 
         res.json('Label deleted successfully');
@@ -232,11 +265,17 @@ router.delete('/:id', async (req, res) => {
 router.get('/:id/prints', async (req, res) => {
     try {
         const { id } = req.params;
-        const labelPrints = await pool.query(
-            'SELECT * FROM label_prints WHERE label_id = $1 ORDER BY printed_at DESC',
-            [id]
-        );
-        res.json(labelPrints.rows);
+        const { data, error } = await supabase
+            .from('label_prints')
+            .select('*')
+            .eq('label_id', id)
+            .order('printed_at', { ascending: false });
+
+        if (error) {
+            console.error(error);
+            return res.status(500).json('Server error: ' + error.message);
+        }
+        res.json(data);
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error: ' + err.message);
@@ -249,18 +288,27 @@ router.post('/:id/prints', async (req, res) => {
         const { id } = req.params;
         const { printed_by, quantity } = req.body;
 
-        const newLabelPrint = await pool.query(
-            'INSERT INTO label_prints (label_id, printed_by, quantity) VALUES ($1, $2, $3) RETURNING *',
-            [id, printed_by, quantity]
-        );
+        const { data: newLabelPrint, error: printError } = await supabase
+            .from('label_prints')
+            .insert([{ label_id: id, printed_by, quantity }])
+            .select('*');
+
+        if (printError) {
+            console.error(printError);
+            return res.status(500).json('Server error: ' + printError.message);
+        }
 
         // Update label to is_printed = true
-        await pool.query(
-            'UPDATE labels SET is_printed = TRUE WHERE id = $1',
-            [id]
-        );
+        const { error: updateError } = await supabase
+            .from('labels')
+            .update({ is_printed: true })
+            .eq('id', id);
 
-        res.json(newLabelPrint.rows[0]);
+        if (updateError) {
+            console.error(updateError);
+        }
+
+        res.json(newLabelPrint[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error: ' + err.message);

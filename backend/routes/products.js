@@ -7,15 +7,18 @@ const pool = require('..');
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT p.*, m.name as udm_name, s.supplier_name as supplier_name
-      FROM products p
-      LEFT JOIN uom_master m ON p.uom_id = m.id
-      LEFT JOIN suppliers s ON p.supplier_id = s.id
-      ORDER BY p.created_at DESC
-    `);
-    console.log('Products with UOM:', result.rows.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.udm_name })));
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, uom_master(name as udm_name, id), suppliers(supplier_name)')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+
+    console.log('Products with UOM:', data.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.udm_name })));
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -26,20 +29,19 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT p.*, m.name as udm_name, s.supplier_name as supplier_name
-      FROM products p
-      LEFT JOIN uom_master m ON p.uom_id = m.id
-      LEFT JOIN suppliers s ON p.supplier_id = s.id
-      WHERE p.id = $1
-    `, [req.params.id]);
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, uom_master(name as udm_name, id), suppliers(supplier_name)')
+      .eq('id', req.params.id)
+      .single();
 
-    if (result.rows.length === 0) {
+    if (error) {
+      console.error(error);
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    console.log('Product by ID with UOM:', result.rows.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.udm_name })));
-    res.json(result.rows[0]);
+    console.log('Product by ID with UOM:', { product_id: data.id, uom_id: data.uom_id, udm_name: data.udm_name });
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -102,20 +104,17 @@ router.post('/', async (req, res) => {
 
     console.log('UOM ID after processing:', finalUomId);
     console.log('Attempting to insert product:', { code, product_name, uom_id: finalUomId, format, supplier_id, weight });
-    const result = await pool.query(
-      'INSERT INTO products (code, product_name, uom_id, format, supplier_id, weight, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [code, product_name, finalUomId, format, supplier_id, weight, description]
-    );
+    const { data, error } = await supabase
+      .from('products')
+      .insert([{ code, product_name, uom_id: finalUomId, format, supplier_id, weight, description }])
+      .select('*, uom_master(name as udm_name, id)');
 
-    // Fetch the complete product with UDM name
-    const completeProduct = await pool.query(`
-      SELECT p.*, m.name as udm_name 
-      FROM products p
-      LEFT JOIN uom_master m ON p.uom_id = m.id
-      WHERE p.id = $1
-    `, [result.rows[0].id]);
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
 
-    res.status(201).json(completeProduct.rows[0]);
+    res.status(201).json(data[0]);
   } catch (error) {
     if (error.code === '23502') { // not null violation
       return res.status(400).json({ 
@@ -188,20 +187,18 @@ router.put('/:id', async (req, res) => {
       console.log('UDM is null or undefined');
     }
 
-    const result = await pool.query(
-      'UPDATE products SET code = COALESCE($1, code), product_name = COALESCE($2, product_name), uom_id = COALESCE($3, uom_id), format = COALESCE($4, format), supplier_id = COALESCE($5, supplier_id), weight = COALESCE($6, weight), description = COALESCE($7, description) WHERE id = $8 RETURNING *',
-      [code, product_name, uom_id, format, supplier_id, weight, description, req.params.id]
-    );
+    const { data, error } = await supabase
+      .from('products')
+      .update({ code, product_name, uom_id, format, supplier_id, weight, description })
+      .eq('id', req.params.id)
+      .select('*, uom_master(name as udm_name, id)');
 
-    // Fetch the complete product with UDM name
-    const completeProduct = await pool.query(`
-      SELECT p.*, m.name as udm_name 
-      FROM products p
-      LEFT JOIN uom_master m ON p.uom_id = m.id
-      WHERE p.id = $1
-    `, [result.rows[0].id]);
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
 
-    res.json(completeProduct.rows[0]);
+    res.json(data[0]);
   } catch (error) {
     if (error.code === '23502') {
       return res.status(400).json({ 
@@ -223,10 +220,14 @@ router.put('/:id', async (req, res) => {
 // @access  Private
 router.delete('/:id', async (req, res) => {
   try {
-    const result = await pool.query('DELETE FROM products WHERE id = $1 RETURNING *', [req.params.id]);
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', req.params.id);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Product not found' });
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server Error', error: error.message });
     }
 
     res.json({ message: 'Product removed' });
