@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const pool = require('..');
 const { generateBarcode } = require('../utils/barcodeGenerator');
+const supabase = require('../config/db');
 
 // Generate barcode
 router.post('/generate', async (req, res) => {
@@ -89,14 +90,15 @@ router.post('/generate', async (req, res) => {
 
 // Get all labels
 router.get('/', async (req, res) => {
+    console.log('GET /api/labels endpoint hit');
+    console.log('Request query:', req.query);
     try {
         const { purchase_order } = req.query;
         let query = supabase
             .from('labels')
             .select(
                 `*,
-                products (product_name, code as product_code, format),
-                uom_master (name as udm, code as uom_code)`
+                products!left(id, product_name, code, format, uom_id)` // Select product fields and uom_id, use left join
             )
             .order('created_at', { ascending: false });
 
@@ -109,14 +111,43 @@ router.get('/', async (req, res) => {
             query = query.eq('product_id', product_id);
         }
 
-        const { data, error } = await query;
+        const { data: labels, error } = await query; // Rename data to labels
 
         if (error) {
             console.error(error);
             return res.status(500).json('Server error: ' + error.message);
         }
 
-        res.json(data);
+        // Fetch uom_master data for each product
+        const labelsWithUom = await Promise.all(labels.map(async (label) => {
+            if (label.products && label.products.uom_id) {
+                const { data: uomData, error: uomError } = await supabase
+                    .from('uom_master')
+                    .select('name as udm, code as uom_code')
+                    .eq('id', label.products.uom_id)
+                    .single();
+
+                if (uomError) {
+                    console.error('Error fetching uom_master:', uomError.message);
+                    // Optionally handle the error, e.g., return label without uom data
+                    return label;
+                }
+
+                // Attach uom data to the product object within the label
+                return {
+                    ...label,
+                    products: {
+                        ...label.products,
+                        uom_master: uomData // Attach the fetched uom data
+                    }
+                };
+            }
+            return label; // Return label as is if no product or uom_id
+        }));
+
+        console.log('Response data:', labelsWithUom);
+        res.json(labelsWithUom); // Send the modified data
+
     } catch (err) {
         console.error(err.message);
         res.status(500).json('Server error: ' + err.message);

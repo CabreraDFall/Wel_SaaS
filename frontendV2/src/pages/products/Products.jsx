@@ -102,7 +102,7 @@ function Products({ setIsAuthenticated }) {
                                         <td>{product.udm_name}</td>
                                         <td>{product.format}</td>
                                         <td>{product.weight}</td>
-                                        <td>{product.supplier_name}</td>
+                                        <td>{product.suppliers.supplier_name}</td>
                                         <td>{product.created_at}</td>
                                         <td><ActionMenu /></td>
                                     </tr>

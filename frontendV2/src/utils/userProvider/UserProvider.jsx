@@ -5,15 +5,18 @@ export const UserContext = createContext();
 
 // Crea el proveedor del usuario
 export const UserProvider = ({ children }) => {
-    // Define el estado del usuario
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // Agrega un estado de carga
+    // Estado del usuario
+    const [user, setUser] = useState(false);
+    // Estado de carga
+    const [loading, setLoading] = useState(true);
 
-    // Efecto para cargar la información del usuario al inicio
+    // Carga la información del usuario al inicio
     useEffect(() => {
         const getCurrentUser = async () => {
             try {
+                // Obtiene el token del localStorage
                 const token = localStorage.getItem('token');
+                // Si no hay token, establece el usuario como null y retorna
                 if (!token) {
                     setUser(null);
                     setLoading(false);
@@ -21,6 +24,7 @@ export const UserProvider = ({ children }) => {
                     return;
                 }
 
+                // Realiza la petición al backend para obtener la información del usuario
                 const response = await fetch('http://localhost:3000/api/users', {
                     headers: {
                         'Content-Type': 'application/json',
@@ -28,8 +32,9 @@ export const UserProvider = ({ children }) => {
                     }
                 });
 
+                // Si la respuesta no es exitosa, maneja el error
                 if (!response.ok) {
-                    // Si la respuesta no es OK (ej. 401 Unauthorized), limpia el token y redirige
+                    // Si el error es 401 o 403, elimina el token y redirige al login
                     if (response.status === 401 || response.status === 403) {
                         localStorage.removeItem('token');
                         // Considerar redirigir al login aquí si es necesario en App.jsx o en la ruta protegida
@@ -37,15 +42,36 @@ export const UserProvider = ({ children }) => {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const userData = await response.json();
+                // Parsea la respuesta a JSON
+                let userData = await response.json();
+
+                // Decodifica el token para obtener el ID del usuario
+                if (token) {
+                    try {
+                        const base64Url = token.split('.')[1];
+                        const base64 = base64Url.replace('-', '+').replace('_', '/');
+                        const decodedToken = JSON.parse(atob(base64));
+                        const userId = decodedToken.id; // Asume que el ID del usuario está en el token
+                        // Filtra los datos del usuario para obtener solo el usuario actual
+                        userData = Array.isArray(userData) ? userData.filter(user => user.id === userId)[0] || null : userData;
+                    } catch (error) {
+                        console.error('Error al decodificar el token:', error);
+                        // Si hay un error al decodificar el token, establece el usuario como null
+                        userData = null;
+                    }
+                }
+
+                // Establece la información del usuario en el estado
                 setUser(userData);
-                console.log('Datos del usuario cargados:', userData);
+                console.log('Datos del usuario cargados (después de setUser):', userData);
 
             } catch (error) {
+                // Maneja cualquier error que ocurra durante la petición
                 console.error('Error al cargar el usuario:', error);
                 setUser(null);
                 console.log('Error al cargar el usuario. Usuario establecido a null.');
             } finally {
+                // Establece el estado de carga a false
                 setLoading(false);
             }
         };
@@ -62,13 +88,13 @@ export const UserProvider = ({ children }) => {
     const contextValue = {
         user,
         updateUser,
-        loading, // Proporciona el estado de carga
+        loading,
     };
 
     // Proporciona el contexto a los componentes hijos
+    console.log("UserProvider - user:", user); // Agregado console.log
     return (
         <UserContext.Provider value={contextValue}>
-            {/* Puedes agregar un indicador de carga o renderizar los hijos directamente */}
             {loading ? <p>Cargando información del usuario...</p> : children}
         </UserContext.Provider>
     );

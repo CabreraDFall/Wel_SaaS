@@ -1,26 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('..');
+const supabase = require('../config/db');
 
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const { data, error } = await supabase
+    const { data, error, status, count } = await supabase
       .from('products')
-      .select('*, uom_master(name as udm_name, id), suppliers(supplier_name)')
+      .select('*, uom_master(id, name), suppliers(supplier_name)')
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error(error);
+      console.error('Supabase Error:', error);
+      console.error('Supabase Status:', status);
+      console.error('Supabase Count:', count);
       return res.status(500).json({ message: 'Server Error', error: error.message });
     }
 
-    console.log('Products with UOM:', data.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.udm_name })));
+    console.log('Products with UOM:', data.map(row => ({ product_id: row.id, uom_id: row.uom_id, udm_name: row.uom_master?.name })));
     res.json(data);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    console.error('Error fetching products:', error);
+    res.status(500).json({ message: 'Error interno del servidor al obtener productos', error: error.message });
   }
 });
 
@@ -31,7 +35,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('products')
-      .select('*, uom_master(name as udm_name, id), suppliers(supplier_name)')
+      .select('*, uom_master(name, id), suppliers(supplier_name)')
       .eq('id', req.params.id)
       .single();
 
@@ -107,7 +111,7 @@ router.post('/', async (req, res) => {
     const { data, error } = await supabase
       .from('products')
       .insert([{ code, product_name, uom_id: finalUomId, format, supplier_id, weight, description }])
-      .select('*, uom_master(name as udm_name, id)');
+      .select('*, uom_master(name, id)');
 
     if (error) {
       console.error(error);
@@ -191,7 +195,7 @@ router.put('/:id', async (req, res) => {
       .from('products')
       .update({ code, product_name, uom_id, format, supplier_id, weight, description })
       .eq('id', req.params.id)
-      .select('*, uom_master(name as udm_name, id)');
+      .select('*, uom_master(name, id)');
 
     if (error) {
       console.error(error);

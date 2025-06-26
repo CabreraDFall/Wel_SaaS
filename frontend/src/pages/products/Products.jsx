@@ -176,7 +176,7 @@ const Products = () => {
               elements={paginatedProducts.map(product => ({
                 codigo: product.code,
                 productos: product.product_name,
-                udm: product.udm_name || 'N/A',
+                udm: product.uom_master?.name || 'N/A',
                 formato: product.format,
                 proveedor: product.supplier_name || 'N/A',
                 fecha: new Date(product.created_at).toLocaleDateString(),

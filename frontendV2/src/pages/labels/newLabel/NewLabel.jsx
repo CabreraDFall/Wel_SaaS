@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../../../utils/userProvider/UserProvider';
 import { Link } from 'react-router-dom';
 import TopMenu from '../../../components/topmenu/TopMenu';
 import "./newlabel.css";
@@ -12,14 +13,14 @@ function NewLabel({ purchase_order, setIsAuthenticated }) {
     const [selectedProduct, setSelectedProduct] = useState('');
     const [warehouses, setWarehouses] = useState([]);
     const [selectedWarehouse, setSelectedWarehouse] = useState('');
-
+    const { user } = useContext(UserContext);
     const [labels] = useFetchLabels(selectedProduct);
 
     useEffect(() => {
         console.log("Number of labels:", labels?.length);
     }, [labels]);
 
-    //const labels = useFetchLabels(selectedProduct);
+    console.log("user from labels", user.id);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -85,8 +86,13 @@ function NewLabel({ purchase_order, setIsAuthenticated }) {
             return;
         }
 
+        if (!user.id || !user.id) {
+            alert('Debe iniciar sesión para crear una etiqueta.');
+            return;
+        }
+
         try {
-            const userId = '4f314e72-ebd0-4a2c-bb40-86cc8d54a58f';
+            const userId = user.id;
             const token = localStorage.getItem('token');
             const generateResponse = await fetch('http://localhost:3000/api/labels/generate', {
                 method: 'POST',

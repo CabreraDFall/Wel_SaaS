@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('..');
+const supabase = require('../config/db');
+
 
 // Rutas para las categorías de unidades de medida (UOM)
 
 // Obtener todas las categorías de UOM
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM uom_categories');
-    res.json(result.rows);
+    const { data: result, error } = await supabase.from('uom_categories').select('*');
+    if (error) throw error;
+    res.json(result);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server Error');
@@ -19,13 +21,20 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query('SELECT * FROM uom_categories WHERE id = $1', [id]);
+    const { data: result, error } = await supabase.from('uom_categories').select('*').eq('id', id).single();
 
-    if (result.rows.length === 0) {
+    if (error) {
+      if (error.message === 'Not found') {
+        return res.status(404).json({ message: 'UOM Category not found' });
+      }
+      throw error;
+    }
+
+    if (!result) {
       return res.status(404).json({ message: 'UOM Category not found' });
     }
 
-    res.json(result.rows[0]);
+    res.json(result);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server Error');
@@ -36,11 +45,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, description } = req.body;
-    const result = await pool.query(
-      'INSERT INTO uom_categories (name, description) VALUES ($1, $2) RETURNING *',
-      [name, description]
-    );
-    res.json(result.rows[0]);
+    const { data: result, error } = await supabase.from('uom_categories').insert([{ name, description }]).select().single();
+    if (error) throw error;
+    res.json(result);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server Error');
@@ -53,16 +60,20 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { name, description } = req.body;
 
-    const result = await pool.query(
-      'UPDATE uom_categories SET name = $1, description = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *',
-      [name, description, id]
-    );
+    const { data: result, error } = await supabase.from('uom_categories').update({ name, description, updated_at: new Date().toISOString() }).eq('id', id).select().single();
 
-    if (result.rows.length === 0) {
+    if (error) {
+      if (error.message === 'Not found') {
+        return res.status(404).json({ message: 'UOM Category not found' });
+      }
+      throw error;
+    }
+
+    if (!result) {
       return res.status(404).json({ message: 'UOM Category not found' });
     }
 
-    res.json(result.rows[0]);
+    res.json(result);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server Error');
@@ -73,10 +84,10 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query('DELETE FROM uom_categories WHERE id = $1 RETURNING *', [id]);
+    const { error } = await supabase.from('uom_categories').delete().eq('id', id);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'UOM Category not found' });
+    if (error) {
+      throw error;
     }
 
     res.json({ message: 'UOM Category deleted' });

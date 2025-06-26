@@ -1,14 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('..');
+const supabase = require('../config/db');
 
 // @desc    Get all suppliers
 // @route   GET /api/suppliers
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM suppliers ORDER BY created_at DESC');
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('suppliers')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -19,13 +27,20 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM suppliers WHERE id = $1', [req.params.id]);
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Supplier not found' });
+    const { data, error } = await supabase
+      .from('suppliers')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') { // No rows found
+        return res.status(404).json({ message: 'Supplier not found' });
+      }
+      throw error;
     }
-    
-    res.json(result.rows[0]);
+
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -43,12 +58,19 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Supplier name and description are required' });
     }
 
-    const result = await pool.query(
-      'INSERT INTO suppliers (supplier_name, contact_name, contact_email, contact_phone, description) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [supplier_name, contact_name, contact_email, contact_phone, description]
-    );
+    const { data, error } = await supabase
+      .from('suppliers')
+      .insert([
+        { supplier_name, contact_name, contact_email, contact_phone, description }
+      ])
+      .select('*')
+      .single();
 
-    res.status(201).json(result.rows[0]);
+    if (error) {
+      throw error;
+    }
+
+    res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -62,18 +84,38 @@ router.put('/:id', async (req, res) => {
     const { supplier_name, contact_name, contact_email, contact_phone, description } = req.body;
 
     // Check if supplier exists
-    const supplier = await pool.query('SELECT * FROM suppliers WHERE id = $1', [req.params.id]);
+    const { data: existingSupplier, error: fetchError } = await supabase
+      .from('suppliers')
+      .select('id')
+      .eq('id', req.params.id)
+      .single();
 
-    if (supplier.rows.length === 0) {
+    if (fetchError || !existingSupplier) {
+       if (fetchError && fetchError.code !== 'PGRST116') { // Ignore "No rows found" error for existence check
+         throw fetchError;
+       }
       return res.status(404).json({ message: 'Supplier not found' });
     }
 
-    const result = await pool.query(
-      'UPDATE suppliers SET supplier_name = COALESCE($1, supplier_name), contact_name = COALESCE($2, contact_name), contact_email = COALESCE($3, contact_email), contact_phone = COALESCE($4, contact_phone), description = COALESCE($5, description) WHERE id = $6 RETURNING *',
-      [supplier_name, contact_name, contact_email, contact_phone, description, req.params.id]
-    );
+    const updatePayload = {};
+    if (supplier_name !== undefined) updatePayload.supplier_name = supplier_name;
+    if (contact_name !== undefined) updatePayload.contact_name = contact_name;
+    if (contact_email !== undefined) updatePayload.contact_email = contact_email;
+    if (contact_phone !== undefined) updatePayload.contact_phone = contact_phone;
+    if (description !== undefined) updatePayload.description = description;
 
-    res.json(result.rows[0]);
+    const { data, error } = await supabase
+      .from('suppliers')
+      .update(updatePayload)
+      .eq('id', req.params.id)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -84,10 +126,23 @@ router.put('/:id', async (req, res) => {
 // @access  Private
 router.delete('/:id', async (req, res) => {
   try {
-    const result = await pool.query('DELETE FROM suppliers WHERE id = $1 RETURNING *', [req.params.id]);
+    const { data, error } = await supabase
+      .from('suppliers')
+      .delete()
+      .eq('id', req.params.id)
+      .select('*')
+      .single(); // Use single to check if a row was deleted
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Supplier not found' });
+    if (error) {
+       if (error.code === 'PGRST116') { // No rows found
+        return res.status(404).json({ message: 'Supplier not found' });
+      }
+      throw error;
+    }
+
+    // If data is null, it means no row was found with that ID
+    if (!data) {
+       return res.status(404).json({ message: 'Supplier not found' });
     }
 
     res.json({ message: 'Supplier removed' });

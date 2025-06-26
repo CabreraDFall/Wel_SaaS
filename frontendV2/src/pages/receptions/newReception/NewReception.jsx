@@ -13,7 +13,7 @@ function NewReception() {
         items: 0, // Items se inicializa a 0 y no es un campo de formulario
         reception_date: '',
         status: 'descargando', // Inicializar estatus a 'descargando'
-        created_by: user[0].id  // Inicializar a null, se actualizará con useEffect
+        created_by: user.id  // Inicializar a null, se actualizará con useEffect
     });
 
     const handleChange = (e) => {
@@ -42,6 +42,7 @@ function NewReception() {
         // Los datos a enviar ya incluyen created_by en el estado local (con el id del usuario)
         const dataToSend = formData;
 
+        console.log('formData:', formData); // Log de formData
         console.log('Datos a enviar:', dataToSend); // Log para verificar los datos antes de enviar
         console.log('Valor de created_by antes de fetch:', formData.created_by); // Verificar created_by
         try {

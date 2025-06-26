@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('..');
+const supabase = require('../config/db');
 
 // GET - Obtener todas las recepciones
 router.get('/', async (req, res) => {
@@ -16,7 +17,9 @@ router.get('/', async (req, res) => {
     }
     res.json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // TODO: Check Supabase table and column names, API key permissions, and Supabase status.
+    console.error('Error fetching receptions:', error);
+    res.status(500).json({ message: 'Error interno del servidor al obtener recepciones', error: error.message });
   }
 });
 
@@ -61,7 +64,7 @@ router.get('/date/:date', async (req, res) => {
 
 // POST - Crear una nueva recepción
 router.post('/', async (req, res) => {
-  const { vehicle, items, purchase_order, status = 'en camino', reception_date = new Date(), notes, created_by, inactive = false, Inactive_by = null } = req.body;
+  const { vehicle, items, purchase_order, status = 'en camino', reception_date = new Date(), notes, created_by, inactive = false, inactive_by = null } = req.body;
 
   try {
     // Verificar si el purchase_order ya existe
@@ -81,7 +84,7 @@ router.post('/', async (req, res) => {
 
     const { data, error } = await supabase
       .from('receptions')
-      .insert([{ reception_date, vehicle, items, purchase_order, status, notes, created_by, inactive, Inactive_by }])
+      .insert([{ reception_date, vehicle, items, purchase_order, status, notes, created_by, inactive, inactive_by }])
       .select('*');
 
     if (error) {
@@ -98,11 +101,11 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { vehicle, items, purchase_order, status, reception_date, inactive, Inactive_by } = req.body;
+    const { vehicle, items, purchase_order, status, reception_date, inactive, inactive_by } = req.body;
 
     const { data, error } = await supabase
       .from('receptions')
-      .update({ vehicle, items, purchase_order, status, reception_date, inactive, Inactive_by })
+      .update({ vehicle, items, purchase_order, status, reception_date, inactive, inactive_by })
       .eq('id', id)
       .select('*');
 

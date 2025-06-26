@@ -1,11 +1,16 @@
 const router = require('express').Router();
-const pool = require('..');
+const supabase = require('../config/db');
 
 // Get all warehouses
 router.get('/', async (req, res) => {
     try {
-        const warehouses = await pool.query('SELECT * FROM warehouses ORDER BY warehouse_number');
-        res.json(warehouses.rows);
+        const { data, error } = await supabase
+            .from('warehouses')
+            .select('*')
+            .order('warehouse_number');
+
+        if (error) throw error;
+        res.json(data);
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: 'Error al obtener almacenes' });
@@ -25,21 +30,22 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'El número de almacén debe estar entre 0 y 9' });
         }
 
-        try {
-            const newWarehouse = await pool.query(
-                'INSERT INTO warehouses (warehouse_name, warehouse_number) VALUES ($1, $2) RETURNING *',
-                [warehouse_name, warehouse_number]
-            );
+        const { data, error } = await supabase
+            .from('warehouses')
+            .insert([{ warehouse_name, warehouse_number }])
+            .select()
 
-            res.json(newWarehouse.rows[0]);
-        } catch (err) {
-            console.error(err.message);
-            if (err.code === '23505') { // Unique violation
+        if (error) {
+            console.error(error.message);
+            if (error.code === '23505') { // Unique violation
                 return res.status(400).json({ error: 'El número de almacén ya existe' });
             } else {
                 return res.status(500).json({ error: 'Error al crear almacén' });
             }
         }
+
+        res.json(data[0]);
+
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: 'Error al crear almacén' });
@@ -60,23 +66,29 @@ router.put('/:id', async (req, res) => {
             return res.status(400).json({ error: 'El número de almacén debe estar entre 0 y 9' });
         }
 
-        const updateWarehouse = await pool.query(
-            'UPDATE warehouses SET warehouse_name = $1, warehouse_number = $2 WHERE id = $3 RETURNING *',
-            [warehouse_name, warehouse_number, id]
-        );
+        const { data, error } = await supabase
+            .from('warehouses')
+            .update({ warehouse_name, warehouse_number })
+            .eq('id', id)
+            .select()
 
-        if (updateWarehouse.rows.length === 0) {
+        if (error) {
+            console.error(error.message);
+            if (error.code === '23505') { // Unique violation
+                res.status(400).json({ error: 'El número de almacén ya existe' });
+            } else {
+                res.status(500).json({ error: 'Error al actualizar almacén' });
+            }
+        }
+
+        if (!data || data.length === 0) {
             return res.status(404).json({ error: 'Almacén no encontrado' });
         }
 
-        res.json(updateWarehouse.rows[0]);
+        res.json(data[0]);
     } catch (err) {
         console.error(err.message);
-        if (err.code === '23505') { // Unique violation
-            res.status(400).json({ error: 'El número de almacén ya existe' });
-        } else {
-            res.status(500).json({ error: 'Error al actualizar almacén' });
-        }
+        res.status(500).json({ error: 'Error al actualizar almacén' });
     }
 });
 
@@ -84,9 +96,18 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteWarehouse = await pool.query('DELETE FROM warehouses WHERE id = $1 RETURNING *', [id]);
-        
-        if (deleteWarehouse.rows.length === 0) {
+        const { data, error } = await supabase
+            .from('warehouses')
+            .delete()
+            .eq('id', id)
+            .select()
+
+        if (error) {
+            console.error(error.message);
+            res.status(500).json({ error: 'Error al eliminar almacén' });
+        }
+
+        if (!data || data.length === 0) {
             return res.status(404).json({ error: 'Almacén no encontrado' });
         }
 

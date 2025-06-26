@@ -1,20 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('..');
+const supabase = require('../config/db');
 
 // @desc    Get all UOMs
 // @route   GET /api/uom_master
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT m.*, c.name as category_name 
-      FROM uom_master m
-      LEFT JOIN uom_categories c ON m.category_id = c.id
-      WHERE m.deleted_at IS NULL
-      ORDER BY m.name
-    `);
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('uom_master')
+      .select('*, uom_categories!inner(name)')
+      .order('name', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -25,18 +26,18 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT m.*, c.name as category_name 
-      FROM uom_master m
-      LEFT JOIN uom_categories c ON m.category_id = c.id
-      WHERE m.id = $1 AND m.deleted_at IS NULL
-    `, [req.params.id]);
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'UOM not found' });
+    const { data, error } = await supabase
+      .from('uom_master')
+      .select('*, uom_categories!inner(name)')
+      .eq('id', req.params.id)
+      .eq('deleted_at', null)
+      .single();
+
+    if (error) {
+      return res.status(404).json({ message: 'UOM not found', error: error.message });
     }
-    
-    res.json(result.rows[0]);
+
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -51,30 +52,27 @@ router.post('/', async (req, res) => {
 
     // Basic validation
     if (!code || !name || !category_id) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'All fields are required',
         required: ['code', 'name', 'category_id'],
         received: req.body
       });
     }
 
-    const result = await pool.query(
-      'INSERT INTO uom_master (code, name, category_id) VALUES ($1, $2, $3) RETURNING *',
-      [code, name, category_id]
-    );
+    const { data, error } = await supabase
+      .from('uom_master')
+      .insert([{ code, name, category_id }])
+      .select('*');
 
-    const completeUOM = await pool.query(`
-      SELECT m.*, c.name as category_name 
-      FROM uom_master m
-      LEFT JOIN uom_categories c ON m.category_id = c.id
-      WHERE m.id = $1
-    `, [result.rows[0].id]);
-
-    res.status(201).json(completeUOM.rows[0]);
-  } catch (error) {
-    if (error.code === '23505') { // unique violation
-      return res.status(400).json({ message: 'UOM code already exists' });
+    if (error) {
+      if (error.code === '23505') { // unique violation
+        return res.status(400).json({ message: 'UOM code already exists' });
+      }
+      throw error;
     }
+
+    res.status(201).json(data[0]);
+  } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });
@@ -86,30 +84,29 @@ router.put('/:id', async (req, res) => {
   try {
     const { code, name, category_id } = req.body;
 
-    // Check if UOM exists
-    const uom = await pool.query('SELECT * FROM uom_master WHERE id = $1', [req.params.id]);
+    const { data, error } = await supabase
+      .from('uom_master')
+      .update({
+        code: code,
+        name: name,
+        category_id: category_id,
+      })
+      .eq('id', req.params.id)
+      .select('*');
 
-    if (uom.rows.length === 0) {
+    if (error) {
+      if (error.code === '23505') { // unique violation
+        return res.status(400).json({ message: 'UOM code already exists' });
+      }
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
       return res.status(404).json({ message: 'UOM not found' });
     }
 
-    const result = await pool.query(
-      'UPDATE uom_master SET code = COALESCE($1, code), name = COALESCE($2, name), category_id = COALESCE($3, category_id) WHERE id = $4 RETURNING *',
-      [code, name, category_id, req.params.id]
-    );
-
-    const completeUOM = await pool.query(`
-      SELECT m.*, c.name as category_name 
-      FROM uom_master m
-      LEFT JOIN uom_categories c ON m.category_id = c.id
-      WHERE m.id = $1
-    `, [result.rows[0].id]);
-
-    res.json(completeUOM.rows[0]);
+    res.json(data[0]);
   } catch (error) {
-    if (error.code === '23505') { // unique violation
-      return res.status(400).json({ message: 'UOM code already exists' });
-    }
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });
@@ -119,14 +116,13 @@ router.put('/:id', async (req, res) => {
 // @access  Private
 router.delete('/:id', async (req, res) => {
   try {
-    // Soft delete
-    const result = await pool.query(
-      'UPDATE uom_master SET deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *', 
-      [req.params.id]
-    );
+    const { error } = await supabase
+      .from('uom_master')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', req.params.id);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'UOM not found' });
+    if (error) {
+      throw error;
     }
 
     res.json({ message: 'UOM removed' });

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const supabase = require('../config/db');
+
 // const pool = require('..'); // Eliminamos la importación de pool
 
 // Crear usuario

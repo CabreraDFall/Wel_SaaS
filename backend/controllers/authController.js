@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
+const supabase = require('../config/db');
 //Status: Agregadas dependencias para JWT y cookies
 const pool = require('..');
 
