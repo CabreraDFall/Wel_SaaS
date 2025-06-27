@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import "./layoutOnline.css"
 import Logo from "../../components/logo/Logo"
 import { LeftChevron, DeliveryIcon, ProductIcon, LabelsIcon } from '../../assets/icons';
@@ -25,6 +25,21 @@ const mainMenu = [
 
 function LayoutOnline({ children }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 780);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 780);
+            setIsCollapsed(window.innerWidth < 780);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup function
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
@@ -32,7 +47,7 @@ function LayoutOnline({ children }) {
 
     return (
         <div className="layout-online">
-            <div className={`layout-online__sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+            <div className={`layout-online__sidebar ${isCollapsed ? 'collapsed' : ''} `}>
                 <div className='logoWrapper'>
                     <Logo />
                     <LeftChevron onClick={toggleSidebar} style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)', cursor: 'pointer' }} />

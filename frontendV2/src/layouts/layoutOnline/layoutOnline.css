@@ -40,14 +40,80 @@
 .layout-online__sidebar.collapsed .logoWrapper > *:not(svg){
     display: none;
 }
+
+.tabsViews{
+
+    color: white;
+}
+
+.tabsViews__content .card{
+    display: flex;
+    flex-direction: column;
+    height: 86px;
+    background: #1E1A3760;
+    margin: 10px;
+    padding: 20px;
+    border-radius: 4px;
+    border: solid 0.4px var(--neutrals-10);
+    justify-content: space-between;
+}
+
+.tabsViews__content h4{
+   font-weight: 500;
+}
+
+.tabsViews .date{
+    color: var(--neutrals-9);
+    font-size: 12px;
+}
+
+.tabsViews .items{
+    color: var(--neutrals-4);
+    font-size: 12px;
+}
+
+.tabsViews .line{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.line__bubble{
+    display: flex;
+    gap: 6px;
+}
+
+.tabsViews .bubble{
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    font-size:11px;
+    padding: 10px;
+    background: #1E1A3760;
+    border-radius: 50px;
+    color: var(--neutrals-9);
+
+}
+
+
+
 /* Media query para pantallas más pequeñas (ej: tablets y móviles) */
 @media (max-width: 768px) {
     .layout-online {
-    flex-direction: column; /* Apila el sidebar y el contenido verticalmente */
+    flex-direction: row; /* Apila el sidebar y el contenido verticalmente */
     }
 
     .layout-online__sidebar {
-        width: 100%; /* El sidebar ocupa todo el ancho */
+       width: max-content;
         padding: 10px;
+        
     }
+    .logoWrapper{
+        gap: 24px;
+    }
+
+    .layout-online__sidebar.collapsed {
+    width: 40px;
+}
 }

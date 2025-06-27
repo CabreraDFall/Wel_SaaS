@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import TabsViews from './components/TabsViews';
 import { Link } from 'react-router-dom';
 import Title from "../../components/title//Title";
 import TableFilter from '../../components/TableFilter/TableFilter';
@@ -15,6 +16,22 @@ function Receptions({ setIsAuthenticated }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10); // Puedes permitir que el usuario lo cambie
+
+    const [isSmallOrMediumScreen, setIsSmallOrMediumScreen] = useState(() => {
+        return window.matchMedia('(max-width: 768px)').matches;
+    });
+
+    const handleMediaQueryChange = useCallback(e => {
+        setIsSmallOrMediumScreen(e.matches);
+    }, []);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(max-width: 768px)');
+        mediaQuery.addEventListener('change', handleMediaQueryChange);
+        return () => {
+            mediaQuery.removeEventListener('change', handleMediaQueryChange);
+        };
+    }, [handleMediaQueryChange]);
 
     useEffect(() => {
         const fetchReceptions = async () => {
@@ -73,61 +90,67 @@ function Receptions({ setIsAuthenticated }) {
     return (
         <div className='receptions'>
             <TopMenu title={"Recepciones"} />
-            <div className="receptions__content">
-                <div className="table">
-                    <div className='table__header'>
-                        <div className="table__header-filter">
-                            <TableFilter
-                                placeholder="Buscar por vehículo o orden de compra"
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                            />
+            {isSmallOrMediumScreen ? (
+                <TabsViews receptionsData={receptionsData} />
+
+
+            ) : (
+                <div className="receptions__content">
+                    <div className="table">
+                        <div className='table__header'>
+                            <div className="table__header-filter">
+                                <TableFilter
+                                    placeholder="Buscar por vehículo o orden de compra"
+                                    value={searchQuery}
+                                    onChange={e => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            <Link to={`/recepciones/new`}>
+                                <button className="table__header-add">
+                                    <span>Agregar</span>
+                                </button>
+                            </Link>
                         </div>
-                        <Link to={`/recepciones/new`}>
-                            <button className="table__header-add">
-                                <span>Agregar</span>
-                            </button>
-                        </Link>
-                    </div>
-                    <div className='table__body'>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th className='checkInput'><input type="checkbox" className="checkbox" /> Codigo</th>
-                                    <th>Vehiculo</th>
-                                    <th>Items</th>
-                                    <th>Fecha</th>
-                                    <th>Estatus</th>
-                                    <th>Accion</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {currentItems.map((reception, index) => (
-                                    <tr key={index}>
-                                        <td className='checkInput'>
-                                            <input type="checkbox" className="checkbox" />
-                                            <Link to={`/recepciones/${reception.purchase_order}`}>
-                                                {reception.purchase_order}
-                                            </Link>
-                                        </td>
-                                        <td>{reception.vehicle}</td>
-                                        <td>{reception.items}</td>
-                                        <td>{reception.reception_date}</td>
-                                        <td>{reception.status}</td>
-                                        <td><ActionMenu /></td>
+                        <div className='table__body'>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th className='checkInput'><input type="checkbox" className="checkbox" /> Codigo</th>
+                                        <th>Vehiculo</th>
+                                        <th>Items</th>
+                                        <th>Fecha</th>
+                                        <th>Estatus</th>
+                                        <th>Accion</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {currentItems.map((reception, index) => (
+                                        <tr key={index}>
+                                            <td className='checkInput'>
+                                                <input type="checkbox" className="checkbox" />
+                                                <Link to={`/recepciones/${reception.purchase_order}`}>
+                                                    {reception.purchase_order}
+                                                </Link>
+                                            </td>
+                                            <td>{reception.vehicle}</td>
+                                            <td>{reception.items}</td>
+                                            <td>{reception.reception_date}</td>
+                                            <td>{reception.status}</td>
+                                            <td><ActionMenu /></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <Pagination
+                            totalItems={filteredReceptions.length}
+                            itemsPerPage={itemsPerPage}
+                            currentPage={currentPage}
+                            onPageChange={onPageChange}
+                        />
                     </div>
-                    <Pagination
-                        totalItems={filteredReceptions.length}
-                        itemsPerPage={itemsPerPage}
-                        currentPage={currentPage}
-                        onPageChange={onPageChange}
-                    />
                 </div>
-            </div>
+            )}
         </div >
     );
 }
