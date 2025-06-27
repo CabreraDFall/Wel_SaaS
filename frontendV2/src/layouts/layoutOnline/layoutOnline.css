@@ -57,7 +57,14 @@
     border: solid 0.4px var(--neutrals-10);
     justify-content: space-between;
 }
-
+.tabsViews__header{
+    display: flex;
+    padding: 20px 10px 10px;
+     justify-content: space-between;
+}
+.tabsViews__header button{
+ border: none;
+}
 .tabsViews__content h4{
    font-weight: 500;
 }

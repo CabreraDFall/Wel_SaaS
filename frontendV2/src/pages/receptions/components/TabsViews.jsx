@@ -1,16 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import ActionMenu from '../../../components/ActionMenu/ActionMenu';
+import TableFilter from '../../../components/TableFilter/TableFilter';
+import { Link } from 'react-router-dom';
+import { PlusIcon } from '../../../assets/icons';
+function TabsViews({ receptionsData, searchQuery, setSearchQuery }) {
 
-function TabsViews({ receptionsData }) {
-
-    console.log(receptionsData);
+    const filteredReceptions = useMemo(() => {
+        if (!searchQuery) {
+            return receptionsData;
+        }
+        const searchLower = searchQuery.toLowerCase();
+        return receptionsData.filter(reception => {
+            return (
+                reception.vehicle.toLowerCase().includes(searchLower) ||
+                reception.purchase_order.toLowerCase().includes(searchLower)
+            );
+        });
+    }, [receptionsData, searchQuery]);
 
     return (
         <div className='tabsViews'>
-            <div className="tabsViews__header"></div>
+            <div className="tabsViews__header">
+                <TableFilter placeholder="Buscar..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                <Link to={`/recepciones/new`}>
+                    <button className="table__header-add">
+                        <PlusIcon />
+                    </button>
+                </Link>
+            </div>
             <div className="tabsViews__content">
-                {receptionsData.map((data, index) => (
+                {filteredReceptions.map((data, index) => (
                     <div key={index} className='card'>
                         <div>
                             <div className='line'>

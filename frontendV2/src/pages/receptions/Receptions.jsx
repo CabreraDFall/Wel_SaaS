@@ -91,7 +91,7 @@ function Receptions({ setIsAuthenticated }) {
         <div className='receptions'>
             <TopMenu title={"Recepciones"} />
             {isSmallOrMediumScreen ? (
-                <TabsViews receptionsData={receptionsData} />
+                <TabsViews receptionsData={receptionsData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
 
             ) : (
