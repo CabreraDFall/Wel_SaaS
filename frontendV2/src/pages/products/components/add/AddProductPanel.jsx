@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './AddProductPanel.css';
-import InputText from "../../../../components/InputText/InputText";
 import TopMenu from '../../../../components/topmenu/TopMenu';
 
 function AddProductPanel() {
@@ -110,56 +109,71 @@ function AddProductPanel() {
     }, [formato]);
 
     return (
-        <div >
+        <div>
             <TopMenu title={"Producto"} />
             <div className="add-product-panel__header">
                 Nuevo producto
             </div>
             <div className="add-product-panel__content">
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <input type="text" placeholder="Codigo" pattern="[0-9]{8}" title="El código debe tener 8 dígitos" value={codigo} onChange={(e) => setCodigo(e.target.value)} />
+                <form onSubmit={handleSubmit} className="form">
+
+                    <div className="form__group">
+                        <input
+                            type="text"
+                            id="codigo"
+                            className="form__input"
+                            placeholder=" "
+                            pattern="[0-9]{8}"
+                            title="El código debe tener 8 dígitos"
+                            value={codigo}
+                            onChange={(e) => setCodigo(e.target.value)}
+                        />
+                        <label htmlFor="codigo" className="form__label">Código</label>
                     </div>
-                    <div className="form-group">
-                        <input type="text" placeholder="Nombre" pattern="[a-zA-Z\s]+" title="El nombre debe contener solo texto" maxLength="50" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+
+                    <div className="form__group">
+                        <input
+                            type="text"
+                            id="nombre"
+                            className="form__input"
+                            placeholder=" "
+                            pattern="[a-zA-Z\s]+"
+                            title="El nombre debe contener solo texto"
+                            maxLength="50"
+                            value={nombre}
+                            onChange={(e) => setNombre(e.target.value)}
+                        />
+                        <label htmlFor="nombre" className="form__label">Nombre</label>
                     </div>
-                    <div className="form-group">
-                        <select value={uom} onChange={(e) => setUom(e.target.value)}>
-                            <option value="">Elige una opcion</option>
+                    <div className="form__group-selected">
+                        <select className="form__selected" id='uom' value={uom} onChange={(e) => setUom(e.target.value)}>
+                            <option className="form_seleted-option" value="">Elige una opcion</option>
                             {uoms.map(uom => (
                                 <option key={uom.id} value={uom.name}>{uom.name}</option>
                             ))}
                         </select>
+                        <label htmlFor="uom" className="form__label">UOM</label>
                     </div>
-                    <div className="form-group">
-                        <select onChange={e => setFormato(e.target.value)}>
-                            <option value="">Elige un formato</option>
-                            <option value="fijo">Fijo</option>
-                            <option value="variable">Variable</option>
-                        </select>
-                    </div>
-                    {formato === 'fijo' && (
+
+                    <div className="form__group-selected">
                         <div className="form-group">
-                            <input type="text" placeholder="Peso" value={peso} onChange={(e) => setPeso(e.target.value)} />
+                            <select
+                                className="form__selected" id='formato'
+                                onChange={e => setFormato(e.target.value)}>
+                                <option value="">Elige un formato</option>
+                                <option value="fijo">Fijo</option>
+                                <option value="variable">Variable</option>
+                            </select>
+
+                            <label htmlFor="formato" className="form__label">Formato</label>
                         </div>
-                    )}
-                    <div className="form-group">
-                        <label htmlFor="proveedor">Proveedor:</label>
-                        <select id="proveedor" value={proveedor} onChange={(e) => setProveedor(e.target.value)}>
-                            <option value="">Elige una opcion</option>
-                            {suppliers.map(supplier => (
-                                <option key={supplier.id} value={supplier.supplier_name}>{supplier.supplier_name}</option>
-                            ))}
-                        </select>
+
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="fecha">Fecha:</label>
-                        <input type="date" id="fecha" name="fecha" value={fecha} onChange={(e) => setFecha(e.target.value)} />
-                    </div>
-                    <button type="submit">Guardar</button>
+
                 </form>
             </div>
         </div>
+
     );
 }
 
