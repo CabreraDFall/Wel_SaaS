@@ -8,6 +8,7 @@ import "./receptions.css";
 import TopMenu from '../../components/topmenu/TopMenu';
 import ActionMenu from '../../components/ActionMenu/ActionMenu';
 import Pagination from '../../components/Pagination/Pagination';
+import { format } from 'date-fns';
 
 function Receptions({ setIsAuthenticated }) {
     const [receptionsData, setReceptionsData] = useState([]);
@@ -134,7 +135,7 @@ function Receptions({ setIsAuthenticated }) {
                                             </td>
                                             <td>{reception.vehicle}</td>
                                             <td>{reception.items}</td>
-                                            <td>{reception.reception_date}</td>
+                                            <td>{format(new Date(reception.reception_date), 'dd/MM/yyyy')}</td>
                                             <td>{reception.status}</td>
                                             <td><ActionMenu /></td>
                                         </tr>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TableFilter from '../../components/TableFilter/TableFilter';
-
+import { format } from 'date-fns';
 import Pagination from '../../components/Pagination/Pagination';
 import Title from "../../components/title//Title";
 import { UserIcon } from '../../assets/icons';
@@ -99,11 +99,11 @@ function Products({ setIsAuthenticated }) {
                                     <tr key={product.id}>
                                         <td className='checkInput'><input type="checkbox" className="checkbox" />{product.code}</td>
                                         <td>{product.product_name}</td>
-                                        <td>{product.udm_name}</td>
+                                        <td>{product.uom_master.name}</td>
                                         <td>{product.format}</td>
                                         <td>{product.weight}</td>
                                         <td>{product.suppliers.supplier_name}</td>
-                                        <td>{product.created_at}</td>
+                                        <td>{format(new Date(product.created_at), 'dd/MM/yyyy')}</td>
                                         <td><ActionMenu /></td>
                                     </tr>
                                 ))}

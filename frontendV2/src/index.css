@@ -31,3 +31,14 @@ a{
  text-decoration: none;
  font: inherit;
 }
+
+button {
+    border: solid 1px var(--neutrals-10);
+    background-color: #161230 !important;
+    border-radius: 4px;
+    padding: 8px 16px;
+    color: var(--neutrals-4);
+    
+}
+
+   
