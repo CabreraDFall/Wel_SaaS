@@ -20,7 +20,7 @@ export const UserProvider = ({ children }) => {
                 if (!token) {
                     setUser(null);
                     setLoading(false);
-                    console.log('No hay token de autenticación.');
+
                     return;
                 }
 

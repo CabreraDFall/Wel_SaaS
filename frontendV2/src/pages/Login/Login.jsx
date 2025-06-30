@@ -41,21 +41,28 @@ function Login() {
   return (
     <div className='login'>
       <h5>Iniciar sesion</h5>
-      <div className='inputWrapper'>
+      <div className='form__group'>
         {/* Input para el usuario */}
         <input
+          className='form__input'
           type="email"
-          placeholder={"Usuario"}
+          placeholder={""}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        <label htmlFor="usuario" className='form__label'>Usuario</label>
         {/* Input para la contraseña */}
+      </div>
+      <div className='form__group'>
         <input
+          className='form__input'
           type="password"
-          placeholder={"Contraseña"}
+          id='pass'
+          placeholder={" "}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <label htmlFor="pass" className='form__label'>Contraseña</label>
       </div>
       <div>
         {/* Botón para iniciar sesión */}

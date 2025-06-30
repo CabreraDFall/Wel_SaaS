@@ -109,10 +109,12 @@ function AddProductPanel() {
     }, [formato]);
 
     return (
-        <div>
+        <div className='add-product-panel'>
             <TopMenu title={"Producto"} />
             <div className="add-product-panel__header">
-                Nuevo producto
+                <h4>
+                    Nuevo producto
+                </h4>
             </div>
             <div className="add-product-panel__content">
                 <form onSubmit={handleSubmit} className="form">
@@ -130,6 +132,8 @@ function AddProductPanel() {
                         />
                         <label htmlFor="codigo" className="form__label">Código</label>
                     </div>
+
+
 
                     <div className="form__group">
                         <input
@@ -156,7 +160,7 @@ function AddProductPanel() {
                     </div>
 
                     <div className="form__group-selected">
-                        <div className="form-group">
+                        <div className="form__group">
                             <select
                                 className="form__selected" id='formato'
                                 onChange={e => setFormato(e.target.value)}>
@@ -169,6 +173,31 @@ function AddProductPanel() {
                         </div>
 
                     </div>
+
+                    {formato === 'fijo' && (
+                        <div className="form__group">
+                            <input type="text"
+                                id="peso"
+                                className="form__input"
+                                placeholder=" " value={peso} onChange={(e) => setPeso(e.target.value)} />
+                            <label htmlFor="peso" className="form__label">Peso</label>
+
+                        </div>
+                    )}
+                    <div className="form__group-selected">
+                        <select id="proveedor" className="form__selected" value={proveedor} onChange={(e) => setProveedor(e.target.value)}>
+                            <option value="">Elige una opcion</option>
+                            {suppliers.map(supplier => (
+                                <option key={supplier.id} value={supplier.supplier_name}>{supplier.supplier_name}</option>
+                            ))}
+                        </select>
+                        <label htmlFor="proveedor">Proveedor:</label>
+                    </div>
+                    <div className="form__group">
+                        <input type="date" id="fecha" name="fecha" className="form__input" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+                        <label htmlFor="fecha" className="form__label">Fecha:</label>
+                    </div>
+                    <button type="submit">Guardar</button>
 
                 </form>
             </div>

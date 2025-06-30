@@ -131,7 +131,7 @@ function NewLabel({ purchase_order, setIsAuthenticated }) {
             <div className="new-label__content">
                 <div className="new-label__card">
                     <div className="card__header">
-                        <h5>Nueva etiqueta</h5>
+                        <h4>Nueva etiqueta</h4>
                     </div>
                     <div className="card__body">
                         <ProductSelect
@@ -148,7 +148,7 @@ function NewLabel({ purchase_order, setIsAuthenticated }) {
                     </div>
                     <div className="card__footer">
                         <button className="btn btn-primary" onClick={handleCreateLabel}>Crear</button>
-                        <a className="">Cancelar</a>
+
                     </div>
                 </div>
             </div>

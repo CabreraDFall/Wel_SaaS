@@ -2,10 +2,9 @@ import React from 'react';
 
 function ProductSelect({ products, selectedProduct, handleProductChange }) {
     return (
-        <div className="form-group">
-            <label htmlFor="producto">Producto</label>
+        <div className="form__group">
             <select
-                className="form-control"
+                className="form-control form__selected"
                 id="producto"
                 value={selectedProduct}
                 onChange={handleProductChange}
@@ -17,6 +16,7 @@ function ProductSelect({ products, selectedProduct, handleProductChange }) {
                     </option>
                 ))}
             </select>
+            <label htmlFor="producto">Producto</label>
         </div>
     );
 }

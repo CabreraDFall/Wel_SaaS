@@ -44,14 +44,14 @@ function App() {
 
   useEffect(() => {
     const checkAuth = () => {
-      console.log('Checking authentication...');
+
       const token = localStorage.getItem('token');
-      console.log('token:', token);
+
       if (token) {
-        console.log('User is authenticated');
+
         setIsAuthenticated(true);
       } else {
-        console.log('User is not authenticated');
+
         setIsAuthenticated(false);
       }
     };
@@ -59,7 +59,7 @@ function App() {
     checkAuth();
   }, []);
 
-  console.log('isAuthenticated:', isAuthenticated);
+
 
   if (isAuthenticated === null) {
     return <div>Loading...</div>; // Indicador de carga inicial mientras se verifica el token

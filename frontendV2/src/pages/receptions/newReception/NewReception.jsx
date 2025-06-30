@@ -71,63 +71,83 @@ function NewReception() {
 
     return (
         <div>
-            <TopMenu title={"Nueva Recepción"} />
+            <TopMenu title={"Recepción"} />
             <div className="new-reception-form">
-                <h2>Crear Nueva Recepción</h2>
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="vehicle">Vehículo:</label>
-                        <input
-                            type="text"
-                            id="vehicle"
-                            name="vehicle"
-                            value={formData.vehicle}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="purchase_order">Orden de Compra:</label>
-                        <input
-                            type="text"
-                            id="purchase_order"
-                            name="purchase_order"
-                            value={formData.purchase_order}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    {/* El campo Items ya no es un input y se inicializa a 0 */}
-                    <div>
-                        <label htmlFor="reception_date">Fecha de Recepción:</label>
-                        <input
-                            type="date"
-                            id="reception_date"
-                            name="reception_date"
-                            value={formData.reception_date}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="status">Estatus:</label>
-                        <select
-                            id="status"
-                            name="status"
-                            value={formData.status}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="descargando">descargando</option>
-                            <option value="finalizado">finalizado</option>
-                            <option value="en camino">en camino</option>
-                        </select>
-                    </div>
+                <div className='new-reception__header'>
 
-                    <button type="submit"> {/* Eliminar disabled y texto condicional */}
-                        Guardar Recepción
-                    </button>
-                </form>
+                    <h4>Nueva Recepción</h4>
+                </div>
+                <div className='new-reception__content'>
+
+
+                    <form onSubmit={handleSubmit}>
+                        <div className='form'>
+                            <div className="form__group">
+
+
+                                <input
+                                    type="text"
+                                    className='form__input'
+                                    id="vehicle"
+                                    name="vehicle"
+                                    value={formData.vehicle}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder=' '
+                                />
+                                <label htmlFor="vehicle" className='form__label'>Vehículo</label>
+                            </div>
+
+                            <div className="form__group">
+
+
+                                <input
+                                    className='form__input'
+                                    placeholder=' '
+                                    type="text"
+                                    id="purchase_order"
+                                    name="purchase_order"
+                                    value={formData.purchase_order}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <label htmlFor="purchase_order" className='form__label'>Orden de Compra</label>
+                            </div>
+                            {/* El campo Items ya no es un input y se inicializa a 0 */}
+                            <div className="form__group">
+                                <input
+                                    className='form__input'
+                                    type="date"
+                                    id="reception_date"
+                                    name="reception_date"
+                                    value={formData.reception_date}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <label htmlFor="reception_date" className='form__label'>Fecha de Recepción</label>
+                            </div>
+                            <div className="form__group">
+                                <select
+                                    className='form__input'
+                                    id="status"
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleChange}
+                                    required
+                                >
+                                    <option value="descargando">descargando</option>
+                                    <option value="finalizado">finalizado</option>
+                                    <option value="en camino">en camino</option>
+                                </select>
+                                <label htmlFor="status" className='form__label'>Estatus:</label>
+                            </div>
+
+                            <button type="submit"> {/* Eliminar disabled y texto condicional */}
+                                Guardar
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

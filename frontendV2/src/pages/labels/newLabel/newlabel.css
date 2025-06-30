@@ -1,11 +1,10 @@
-.new-label{
-   
-}
+
 
 .new-label__content{
     display: flex;
     justify-content: center;
     align-items: center; height: 60vh;
+    gap: 5rem;
   
 }
 
@@ -25,7 +24,7 @@
 .new-label__card{
       display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 40px;
     align-content: center;
     align-items: center;
 

@@ -2,10 +2,9 @@ import React from 'react';
 
 function WarehouseSelect({ warehouses, selectedWarehouse, handleWarehouseChange }) {
     return (
-        <div className="form-group">
-            <label htmlFor="almacen">Almacén</label>
+        <div className="form__group">
             <select
-                className="form-control"
+                className="form__selected"
                 id="almacen"
                 value={selectedWarehouse}
                 onChange={handleWarehouseChange}
@@ -16,6 +15,7 @@ function WarehouseSelect({ warehouses, selectedWarehouse, handleWarehouseChange 
                         {warehouse.warehouse_name}
                     </option>
                 ))}
+                <label htmlFor="almacen" className='form__label'>Almacén</label>
             </select>
         </div>
     );
